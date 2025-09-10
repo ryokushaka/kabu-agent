@@ -1,0 +1,92 @@
+# 환경변수 및 비밀정보
+.env
+.env.local
+.env.production
+
+# Python 가상환경
+.venv
+venv/
+env/
+
+# Python 캐시 및 빌드 파일
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE 및 에디터
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 테스트 및 커버리지
+.pytest_cache/
+.coverage
+.coverage.*
+.coverage.xml
+.coverage.json
+.coverage.yaml
+htmlcov/
+.tox/
+.nox/
+
+# 운영체제
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 데이터 폴더 (자동생성, 대용량, 개인정보)
+data/raw/
+data/interim/
+data/processed/
+data/archive/
+data/*.json
+data/*.parquet
+data/*.csv
+data/*.xlsx
+data/*.xls
+
+# 리포트 폴더 (자동생성)
+reports/portfolio_report.xlsx
+reports/archive/
+reports/*.pdf
+# 템플릿 파일은 제외 (공유 필요)
+!reports/template.xlsx
+
+# 설정 파일 (비밀정보 포함)
+config/env.local.yaml
+config/env.production.yaml
+config/*.key
+config/*.pem
+
+# 로그 파일
+*.log
+logs/
+
+# 임시 파일
+*.tmp
+*.temp
+temp/
+tmp/

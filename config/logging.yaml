@@ -1,0 +1,48 @@
+# 로그 포맷/레벨 설정
+
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  console:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    datefmt: '%Y-%m-%d %H:%M:%S'
+
+  json:
+    format: '%(asctime)s %(name)s %(levelname)s %(message)s'
+    datefmt: '%Y-%m-%dT%H:%M:%S'
+    class: pythonjsonlogger.jsonlogger.JsonFormatter
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: console
+    stream: ext://sys.stdout
+
+  file:
+    class: logging.handlers.RotatingFileHandler
+    level: INFO
+    formatter: json
+    filename: logs/portfolio_reporter.log
+    maxBytes: 10485760 # 10MB
+    backupCount: 5
+    encoding: utf8
+
+loggers:
+  portfolio_reporter:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: false
+
+  # 외부 라이브러리 로그 레벨 조정
+  urllib3:
+    level: WARNING
+  boto3:
+    level: WARNING
+  botocore:
+    level: WARNING
+
+root:
+  level: INFO
+  handlers: [console]

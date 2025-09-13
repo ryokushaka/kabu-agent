@@ -72,6 +72,9 @@ data/*.xls
 reports/portfolio_report.xlsx
 reports/archive/
 reports/*.pdf
+reports/*.xlsx
+reports/*.txt
+reports/*.html
 # 템플릿 파일은 제외 (공유 필요)
 !reports/template.xlsx
 

@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:apiportal.koreainvestment.com)",
+      "Bash(git checkout:*)",
+      "Bash(git commit:*)",
+      "Bash(git branch:*)",
+      "Bash(git merge:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -17,6 +17,8 @@
 
 ### 1. 요약 대시보드 시트
 
+<img width="1241" height="400" alt="요약 시트" src="https://github.com/user-attachments/assets/85528fd4-fd96-4f7e-b747-0f4643f179ea" />
+
 #### 📈 핵심 지표 (KPI)
 
 ```python
@@ -66,6 +68,8 @@ asset_trend = {
 ```
 
 ### 2. 상세 포트폴리오 시트
+
+<img width="1239" height="454" alt="상세구조 시트" src="https://github.com/user-attachments/assets/6c30ba78-0368-4fef-aaad-1e9b0b0b86eb" />
 
 #### 💱 환율 정보
 

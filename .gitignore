@@ -29,6 +29,7 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+MANIFEST
 
 # IDE 및 에디터
 .vscode/
@@ -93,3 +94,7 @@ logs/
 *.temp
 temp/
 tmp/
+
+# 생성된 엑셀 파일
+*.xlsx
+!example.xlsx

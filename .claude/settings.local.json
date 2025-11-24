@@ -6,7 +6,9 @@
       "Bash(git commit:*)",
       "Bash(git branch:*)",
       "Bash(git merge:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "mcp__kis-open-api-kis-code-assistant-mcp__search_overseas_stock_api",
+      "mcp__kis-open-api-kis-code-assistant-mcp__read_source_code"
     ],
     "deny": [],
     "ask": []

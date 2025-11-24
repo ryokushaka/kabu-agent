@@ -98,3 +98,9 @@ tmp/
 # 생성된 엑셀 파일
 *.xlsx
 !example.xlsx
+
+# Local Settings
+.claude/
+
+# External SDKs
+open-trading-api/

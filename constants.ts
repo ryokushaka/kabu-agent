@@ -1,6 +1,7 @@
 import { StockPosition, HistoryData, SectorData } from './types';
 
-export const EXCHANGE_RATE = 1350; // 1 USD = 1350 KRW (Mock)
+// Exchange rate is now dynamic - use exchangeRateService.getUSDToKRW() 
+// export const EXCHANGE_RATE = 1350; // Removed hardcoded rate
 
 export const MOCK_POSITIONS: StockPosition[] = [
   {

@@ -1,7 +1,7 @@
-import { MOCK_POSITIONS, EXCHANGE_RATE, SECTOR_COLORS } from '../constants';
+import { SECTOR_COLORS } from '../constants';
 import { PortfolioSummary, SectorData, StockPosition } from '../types';
 
-export const calculatePortfolioSummary = (positions: StockPosition[]): PortfolioSummary => {
+export const calculatePortfolioSummary = (positions: StockPosition[], exchangeRate?: number): PortfolioSummary => {
   let totalAssetUsd = 0;
   let totalInvestedUsd = 0;
   let dailyProfitLoss = 0; // Simulated for demo
@@ -27,7 +27,7 @@ export const calculatePortfolioSummary = (positions: StockPosition[]): Portfolio
 
   return {
     totalAssetUsd,
-    totalAssetKrw: totalAssetUsd * EXCHANGE_RATE,
+    totalAssetKrw: exchangeRate ? totalAssetUsd * exchangeRate : undefined,
     totalInvestedUsd,
     dailyProfitLoss,
     dailyProfitLossPercent,

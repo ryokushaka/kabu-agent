@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from datetime import timedelta
 from typing import List
 
-from src.api import auth_routes, portfolio_routes, analysis_routes, ai_routes, exchange_routes
+from src.api import auth_routes, portfolio_routes, analysis_routes, ai_routes, exchange_routes, export_routes
 from src.models import User, PortfolioSummary, MarketNews
 from src.kis_api import kis_client
 from src.utils import setup_logging, setup_project_path
@@ -33,10 +33,11 @@ app.add_middleware(
 
 # Include Routers
 app.include_router(auth_routes.router)
-# app.include_router(portfolio_routes.router) # To be implemented/enabled
-# app.include_router(analysis_routes.router) # To be implemented/enabled
-# app.include_router(ai_routes.router) # To be implemented/enabled
-# app.include_router(exchange_routes.router) # To be implemented/enabled
+app.include_router(portfolio_routes.router)
+app.include_router(export_routes.router)
+app.include_router(analysis_routes.router)
+app.include_router(ai_routes.router)
+app.include_router(exchange_routes.router)
 
 @app.get("/users/me", response_model=User)
 async def read_users_me(current_user: User = Depends(get_current_active_user)):

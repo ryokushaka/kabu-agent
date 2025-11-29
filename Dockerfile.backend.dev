@@ -1,0 +1,69 @@
+# 개발용 Backend Dockerfile - Hot Reload 지원
+FROM python:3.11-slim
+
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# 시스템 패키지 업데이트 및 필요한 패키지 설치
+RUN apt-get update && apt-get install -y \
+    gcc \
+    postgresql-client \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Python 의존성 파일 복사
+COPY requirements.txt .
+
+# Python 의존성 설치
+RUN pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+# 추가 의존성 설치 (PostgreSQL, Redis)
+RUN pip install --no-cache-dir \
+    psycopg2-binary==2.9.9 \
+    redis==5.0.1 \
+    alembic==1.13.1 \
+    sqlalchemy==2.0.23
+
+# 개발용 추가 패키지
+RUN pip install --no-cache-dir \
+    watchdog==3.0.0 \
+    python-multipart==0.0.6
+
+# 애플리케이션 코드 복사 (볼륨 마운트로 덮어씌워질 예정)
+COPY . .
+
+# 로그 및 데이터 디렉토리 생성
+RUN mkdir -p /app/logs /app/data
+
+# 환경변수 설정
+ENV PYTHONPATH=/app
+ENV PYTHONUNBUFFERED=1
+
+# 포트 노출
+EXPOSE 8000
+
+# 헬스체크 스크립트 생성
+RUN echo '#!/bin/bash\ncurl -f http://localhost:8000/health || exit 1' > /app/healthcheck.sh && \
+    chmod +x /app/healthcheck.sh
+
+# 개발용 시작 스크립트 생성 (Hot Reload)
+RUN echo '#!/bin/bash\n\
+# 데이터베이스 연결 대기\n\
+echo "Waiting for PostgreSQL..."\n\
+until pg_isready -h postgres-dev -p 5432 -U kabu_dev; do\n\
+  sleep 2\n\
+done\n\
+echo "PostgreSQL is ready!"\n\
+\n\
+# 데이터베이스 마이그레이션 (있는 경우)\n\
+echo "Running database migrations..."\n\
+# alembic upgrade head 2>/dev/null || echo "No migrations to run"\n\
+\n\
+# FastAPI 개발 서버 시작 (Hot Reload)\n\
+echo "Starting FastAPI development server..."\n\
+uvicorn src.app:app --host 0.0.0.0 --port 8000 --reload --reload-dir /app/src --reload-dir /app/config\n\
+' > /app/start-dev.sh && chmod +x /app/start-dev.sh
+
+# 시작 명령
+CMD ["/app/start-dev.sh"]

@@ -1,0 +1,161 @@
+version: '3.8'
+
+# 개발 환경용 Docker Compose 설정
+services:
+  # PostgreSQL Database (개발용)
+  postgres-dev:
+    image: postgres:15-alpine
+    container_name: kabu-postgres-dev
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: kabu_agent_dev
+      POSTGRES_USER: kabu_dev
+      POSTGRES_PASSWORD: kabu_dev_password
+    volumes:
+      - postgres_dev_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d
+    ports:
+      - "5433:5432"
+    networks:
+      - kabu-dev-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kabu_dev -d kabu_agent_dev"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache (개발용)
+  redis-dev:
+    image: redis:7-alpine
+    container_name: kabu-redis-dev
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass dev_password
+    volumes:
+      - redis_dev_data:/data
+    ports:
+      - "6380:6379"
+    networks:
+      - kabu-dev-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # FastAPI Backend (개발용)
+  backend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend.dev
+    container_name: kabu-backend-dev
+    restart: unless-stopped
+    environment:
+      # Database
+      DATABASE_URL: postgresql://kabu_dev:kabu_dev_password@postgres-dev:5432/kabu_agent_dev
+      # Redis
+      REDIS_URL: redis://:dev_password@redis-dev:6379/0
+      # KIS API (will be loaded from .env)
+      KIS_APP_KEY: ${KIS_APP_KEY}
+      KIS_APP_SECRET: ${KIS_APP_SECRET}
+      KIS_ACCOUNT_NUMBER: ${KIS_ACCOUNT_NUMBER}
+      KIS_IS_LIVE: ${KIS_IS_LIVE:-false}
+      # App settings
+      ENVIRONMENT: development
+      DEBUG: true
+    volumes:
+      - ./src:/app/src
+      - ./config:/app/config
+      - ./logs:/app/logs
+      - ./data:/app/data
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres-dev:
+        condition: service_healthy
+      redis-dev:
+        condition: service_healthy
+    networks:
+      - kabu-dev-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # React Frontend (개발용)
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend.dev
+    container_name: kabu-frontend-dev
+    restart: unless-stopped
+    environment:
+      REACT_APP_API_BASE_URL: http://localhost:8000
+      NODE_ENV: development
+    volumes:
+      - ./src:/app/src
+      - ./components:/app/components
+      - ./services:/app/services
+      - ./types:/app/types
+      - ./public:/app/public
+      - ./package.json:/app/package.json
+      - ./vite.config.ts:/app/vite.config.ts
+      - ./index.html:/app/index.html
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend-dev
+    networks:
+      - kabu-dev-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # pgAdmin (데이터베이스 관리 툴)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: kabu-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@kabu-agent.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres-dev
+    networks:
+      - kabu-dev-network
+
+  # Redis Insight (Redis 관리 툴)
+  redis-insight:
+    image: redislabs/redisinsight:latest
+    container_name: kabu-redis-insight
+    restart: unless-stopped
+    volumes:
+      - redis_insight_data:/db
+    ports:
+      - "8001:8001"
+    depends_on:
+      - redis-dev
+    networks:
+      - kabu-dev-network
+
+# Named volumes for development data persistence
+volumes:
+  postgres_dev_data:
+    driver: local
+  redis_dev_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  redis_insight_data:
+    driver: local
+
+# Development network
+networks:
+  kabu-dev-network:
+    driver: bridge

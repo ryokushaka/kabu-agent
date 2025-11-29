@@ -60,26 +60,32 @@ const Admin: React.FC = () => {
 
       {/* Mobile Scrollable Tabs */}
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide border-b border-toss-grey-100">
-        <button 
+        <button
           onClick={() => setActiveTab('users')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-colors whitespace-nowrap ${
-            activeTab === 'users' ? 'bg-toss-blue text-white shadow-sm shadow-blue-200' : 'text-toss-grey-500 hover:text-toss-grey-900 hover:bg-toss-grey-50'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-200 whitespace-nowrap min-h-[44px] ${
+            activeTab === 'users'
+              ? 'bg-blue-600 text-white shadow-sm shadow-blue-200 hover:bg-blue-700'
+              : 'bg-white text-toss-grey-700 hover:text-toss-grey-900 hover:bg-toss-grey-50 border border-toss-grey-200'
           }`}
         >
           <Users size={18} /> 사용자 관리
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('monitoring')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-colors whitespace-nowrap ${
-            activeTab === 'monitoring' ? 'bg-toss-blue text-white shadow-sm shadow-blue-200' : 'text-toss-grey-500 hover:text-toss-grey-900 hover:bg-toss-grey-50'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-200 whitespace-nowrap min-h-[44px] ${
+            activeTab === 'monitoring'
+              ? 'bg-blue-600 text-white shadow-sm shadow-blue-200 hover:bg-blue-700'
+              : 'bg-white text-toss-grey-700 hover:text-toss-grey-900 hover:bg-toss-grey-50 border border-toss-grey-200'
           }`}
         >
           <Activity size={18} /> 시스템 상태
         </button>
-        <button 
+        <button
           onClick={() => setActiveTab('system')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-colors whitespace-nowrap ${
-            activeTab === 'system' ? 'bg-toss-blue text-white shadow-sm shadow-blue-200' : 'text-toss-grey-500 hover:text-toss-grey-900 hover:bg-toss-grey-50'
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all duration-200 whitespace-nowrap min-h-[44px] ${
+            activeTab === 'system'
+              ? 'bg-blue-600 text-white shadow-sm shadow-blue-200 hover:bg-blue-700'
+              : 'bg-white text-toss-grey-700 hover:text-toss-grey-900 hover:bg-toss-grey-50 border border-toss-grey-200'
           }`}
         >
           <Server size={18} /> 시스템 설정
@@ -91,17 +97,19 @@ const Admin: React.FC = () => {
         <div className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4 justify-between bg-white p-4 rounded-3xl border border-toss-grey-100 shadow-sm">
             <div className="relative flex-1 max-w-md">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-toss-grey-400 w-4 h-4" />
-              <input 
-                type="text" 
-                placeholder="사용자 검색..." 
+              <div className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                <Search className="text-toss-grey-400 w-4 h-4" />
+              </div>
+              <input
+                type="text"
+                placeholder="사용자 검색..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-toss-grey-50 border border-toss-grey-100 text-toss-grey-900 pl-10 pr-4 py-2.5 rounded-xl focus:outline-none focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/10 transition-all"
+                className="w-full bg-toss-grey-50 border border-toss-grey-100 text-toss-grey-900 pl-10 pr-4 py-2.5 rounded-xl focus:outline-none focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/10 hover:border-toss-grey-200 disabled:bg-toss-grey-50 disabled:text-toss-grey-400 transition-all duration-200"
               />
             </div>
             <div className="flex gap-2">
-              <button className="px-4 py-2.5 bg-toss-blue hover:bg-blue-600 text-white rounded-xl text-sm font-medium transition-colors whitespace-nowrap shadow-sm shadow-blue-200">
+              <button className="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-300/50 active:scale-[0.98] text-white rounded-xl text-sm font-medium transition-all duration-200 whitespace-nowrap shadow-sm shadow-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 min-h-[44px]">
                 + 사용자 추가
               </button>
             </div>
@@ -109,19 +117,28 @@ const Admin: React.FC = () => {
 
           {/* Desktop Table View */}
           <div className="hidden md:block bg-white border border-toss-grey-100 rounded-3xl overflow-hidden shadow-sm">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="bg-toss-grey-50 border-b border-toss-grey-100">
-                  <th className="p-5 text-xs font-semibold text-toss-grey-500 uppercase">사용자</th>
-                  <th className="p-5 text-xs font-semibold text-toss-grey-500 uppercase">권한</th>
-                  <th className="p-5 text-xs font-semibold text-toss-grey-500 uppercase">상태</th>
-                  <th className="p-5 text-xs font-semibold text-toss-grey-500 uppercase">가입일</th>
-                  <th className="p-5 text-xs font-semibold text-toss-grey-500 uppercase text-right">관리</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-toss-grey-100">
-                {filteredUsers.map(user => (
-                  <tr key={user.id} className="hover:bg-toss-grey-50 transition-colors">
+            {filteredUsers.length === 0 ? (
+              <div className="text-center py-16">
+                <div className="w-16 h-16 bg-toss-grey-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="w-8 h-8 text-toss-grey-300" />
+                </div>
+                <h3 className="text-lg font-bold text-toss-grey-900 mb-2">검색 결과가 없습니다</h3>
+                <p className="text-sm text-toss-grey-500">다른 검색어를 시도해보세요</p>
+              </div>
+            ) : (
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-toss-grey-50 border-b border-toss-grey-100">
+                    <th className="p-5 text-xs font-semibold text-toss-grey-500 uppercase">사용자</th>
+                    <th className="p-5 text-xs font-semibold text-toss-grey-500 uppercase">권한</th>
+                    <th className="p-5 text-xs font-semibold text-toss-grey-500 uppercase">상태</th>
+                    <th className="p-5 text-xs font-semibold text-toss-grey-500 uppercase">가입일</th>
+                    <th className="p-5 text-xs font-semibold text-toss-grey-500 uppercase text-right">관리</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-toss-grey-100">
+                  {filteredUsers.map(user => (
+                  <tr key={user.id} className="hover:bg-toss-grey-50 transition-all duration-200 cursor-pointer group">
                     <td className="p-5">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-toss-grey-100 flex items-center justify-center text-sm font-bold text-toss-grey-600">
@@ -147,15 +164,26 @@ const Admin: React.FC = () => {
                       </button>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
 
           {/* Mobile Card View */}
           <div className="md:hidden grid grid-cols-1 gap-4">
+            {filteredUsers.length === 0 ? (
+              <div className="text-center py-16 bg-white border border-toss-grey-100 rounded-3xl">
+                <div className="w-16 h-16 bg-toss-grey-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Search className="w-8 h-8 text-toss-grey-300" />
+                </div>
+                <h3 className="text-lg font-bold text-toss-grey-900 mb-2">검색 결과가 없습니다</h3>
+                <p className="text-sm text-toss-grey-500">다른 검색어를 시도해보세요</p>
+              </div>
+            ) : (
+              <>
             {filteredUsers.map(user => (
-              <div key={user.id} className="bg-white border border-toss-grey-100 rounded-3xl p-5 shadow-sm">
+              <div key={user.id} className="bg-white border border-toss-grey-100 rounded-3xl p-5 shadow-sm hover:shadow-md hover:shadow-toss-grey-200/50 hover:border-toss-grey-200 transition-all duration-200 cursor-pointer active:scale-[0.99]">
                 <div className="flex justify-between items-start mb-4">
                   <div className="flex items-center gap-3">
                      <div className="w-12 h-12 rounded-full bg-toss-grey-100 flex items-center justify-center text-base font-bold text-toss-grey-600">
@@ -181,6 +209,8 @@ const Admin: React.FC = () => {
                 </div>
               </div>
             ))}
+              </>
+            )}
           </div>
         </div>
       )}

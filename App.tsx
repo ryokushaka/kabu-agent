@@ -56,7 +56,11 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 <span className="text-xs text-toss-grey-500">{user?.username === 'admin' ? '관리자' : '사용자'}</span>
              </div>
              <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-toss-grey-100 flex items-center justify-center border border-toss-grey-200">
-               <User className="w-5 h-5 text-toss-grey-600" />
+               <img 
+                src="/logo/gamja.png" 
+                alt="Kabu Agent Logo" 
+                className="w-10 h-10 object-cover"
+              />
              </div>
           </div>
         </header>

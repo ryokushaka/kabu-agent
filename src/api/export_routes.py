@@ -48,22 +48,35 @@ async def export_portfolio_excel():
                 currency="USD"
             ))
             
-        # 환율 정보가 없으므로 KRW는 임시로 USD * 1400 (또는 추후 환율 API 연동)
-        exchange_rate = 1430.0 # 임시 고정 환율
+        # 환율 정보는 balance에서 가져옴
         
         # 3. 리스크 분석 수행
         from src.services.analysis_service import perform_portfolio_analysis
         analysis_result = await perform_portfolio_analysis(balance)
         
+        # 일일 수익률 계산 (가중 평균)
+        weighted_daily_return = 0
+        if total_value > 0:
+            for pos in balance.positions:
+                weighted_daily_return += pos.daily_return * (pos.market_value / total_value)
+        
+        # MDD 추출
+        max_drawdown = 0.0
+        if analysis_result and "metrics" in analysis_result:
+            max_drawdown = analysis_result["metrics"].get("max_drawdown", 0.0)
+
         summary = PortfolioSummary(
             total_value_usd=balance.stock_value,
-            total_value_krw=balance.stock_value * exchange_rate,
+            total_value_krw=balance.stock_value * balance.exchange_rate,
             total_profit_loss=balance.total_profit_loss,
             total_return_rate=balance.total_return_percent,
-            cash_balance=balance.cash, # Fixed attribute name
+            cash_balance=balance.cash,
             holdings=holdings,
             sector_allocation=sector_allocation,
-            analysis=analysis_result
+            analysis=analysis_result,
+            daily_return=weighted_daily_return,
+            max_drawdown=max_drawdown,
+            exchange_rate=balance.exchange_rate
         )
         
         # 3. 엑셀 생성

@@ -27,6 +27,7 @@ class Position(BaseModel):
     weight: float
     sector: Optional[str] = None
     exchange: Optional[str] = "NASD"
+    daily_return: float = 0.0 # 일일 수익률 (%)
 
 
 class PortfolioBalance(BaseModel):
@@ -38,6 +39,7 @@ class PortfolioBalance(BaseModel):
     total_return_percent: float
     positions: List[Position]
     currency: str = "USD"
+    exchange_rate: float = 1430.0 # 환율 (KRW/USD)
 
 
 def _get_exchange_balance(exchange_code: str):
@@ -88,6 +90,7 @@ async def get_portfolio_balance():
             market_value = float(item.get("ovrs_stck_evlu_amt", 0))
             profit_loss = float(item.get("frcr_evlu_pfls_amt", 0))
             profit_loss_percent = float(item.get("evlu_pfls_rt", 0))
+            daily_return = float(item.get("prdy_ctrt", 0)) # 전일 대비율 (일일 수익률)
             
             # 총계 계산에 추가
             total_stock_value += market_value
@@ -104,7 +107,8 @@ async def get_portfolio_balance():
                 profit_loss_percent=profit_loss_percent,
                 weight=0,  # 나중에 계산
                 sector=None,
-                exchange=item.get("ovrs_excg_cd", "NASD") # 거래소 코드 추출
+                exchange=item.get("ovrs_excg_cd", "NASD"), # 거래소 코드 추출
+                daily_return=daily_return
             ))
         
         # 총 자산 및 비중 계산
@@ -112,6 +116,7 @@ async def get_portfolio_balance():
         cash = 0
         total_buy_amt = float(output2.get("frcr_pchs_amt1", 1))
         total_return_percent = float(output2.get("tot_pftrt", 0))
+        exchange_rate = float(output2.get("frcr_dncl_amt_2", 1430.0)) # 환율
         
         # 각 종목의 비중 계산
         for position in positions:
@@ -123,7 +128,8 @@ async def get_portfolio_balance():
             cash=cash,
             total_profit_loss=total_profit_loss,
             total_return_percent=total_return_percent,
-            positions=positions
+            positions=positions,
+            exchange_rate=exchange_rate
         )
         
         logger.info(f"Portfolio balance retrieved: {len(positions)} positions, ${total_stock_value:.2f}")

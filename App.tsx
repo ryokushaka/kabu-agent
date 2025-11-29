@@ -18,17 +18,17 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const getPageTitle = () => {
     switch (location.pathname) {
-      case '/': return 'Dashboard';
-      case '/portfolio': return 'Holdings';
-      case '/analysis': return 'Analytics';
-      case '/settings': return 'Settings';
-      case '/admin': return 'Admin Console';
-      default: return 'Dashboard';
+      case '/': return '홈';
+      case '/portfolio': return '내 주식';
+      case '/analysis': return '자산 분석';
+      case '/settings': return '설정';
+      case '/admin': return '관리자';
+      default: return '홈';
     }
   };
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans flex">
+    <div className="min-h-screen bg-toss-grey-100 text-toss-grey-900 font-sans flex">
       <Sidebar 
         onLogout={logout} 
         isAdmin={user?.username === 'admin'} 
@@ -39,31 +39,31 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       {/* Main Content Area */}
       <main className="flex-1 w-full md:ml-64 min-h-screen flex flex-col transition-all duration-300">
         {/* Header */}
-        <header className="h-16 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 px-4 md:px-8 flex items-center justify-between">
+        <header className="h-16 bg-white/80 backdrop-blur-md border-b border-toss-grey-200 sticky top-0 z-40 px-4 md:px-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button 
               onClick={() => setIsSidebarOpen(true)}
-              className="md:hidden p-2 -ml-2 hover:bg-slate-800 rounded-lg text-slate-400 transition-colors"
+              className="md:hidden p-2 -ml-2 hover:bg-toss-grey-100 rounded-lg text-toss-grey-700 transition-colors"
             >
               <Menu className="w-6 h-6" />
             </button>
-            <h2 className="text-xl font-bold text-white capitalize truncate">{getPageTitle()}</h2>
+            <h2 className="text-xl font-bold text-toss-grey-900">{getPageTitle()}</h2>
           </div>
 
           <div className="flex items-center gap-3 md:gap-4">
              <div className="hidden md:flex flex-col items-end mr-2">
-                <span className="text-sm font-semibold text-white">{user?.full_name || user?.username}</span>
-                <span className="text-xs text-slate-400">{user?.username === 'admin' ? 'Administrator' : 'User'}</span>
+                <span className="text-sm font-semibold text-toss-grey-800">{user?.full_name || user?.username}</span>
+                <span className="text-xs text-toss-grey-500">{user?.username === 'admin' ? '관리자' : '사용자'}</span>
              </div>
-             <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-slate-700 flex items-center justify-center border border-slate-600">
-               <User className="w-5 h-5 text-slate-300" />
+             <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-toss-grey-100 flex items-center justify-center border border-toss-grey-200">
+               <User className="w-5 h-5 text-toss-grey-600" />
              </div>
           </div>
         </header>
 
         {/* Content */}
         <div className="flex-1 p-4 md:p-8 overflow-y-auto">
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-5xl mx-auto">
             {children}
           </div>
         </div>
@@ -76,7 +76,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">Loading...</div>;
+    return <div className="min-h-screen bg-toss-grey-100 flex items-center justify-center text-toss-grey-900">로딩 중...</div>;
   }
 
   if (!isAuthenticated) {
@@ -90,7 +90,7 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div className="min-h-screen bg-slate-900 flex items-center justify-center text-white">Loading...</div>;
+    return <div className="min-h-screen bg-toss-grey-100 flex items-center justify-center text-toss-grey-900">로딩 중...</div>;
   }
 
   if (user?.username !== 'admin') {

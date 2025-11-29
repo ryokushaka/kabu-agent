@@ -8,7 +8,9 @@
       "Bash(git merge:*)",
       "Bash(git add:*)",
       "mcp__kis-open-api-kis-code-assistant-mcp__search_overseas_stock_api",
-      "mcp__kis-open-api-kis-code-assistant-mcp__read_source_code"
+      "mcp__kis-open-api-kis-code-assistant-mcp__read_source_code",
+      "Bash(curl:*)",
+      "Bash(python:*)"
     ],
     "deny": [],
     "ask": []

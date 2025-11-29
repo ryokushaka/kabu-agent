@@ -138,7 +138,7 @@ class UserApiToken(Base):
     
     # KIS API 관련 설정
     kis_app_key = Column(String(100))
-    kis_app_secret = Column(String(100))
+    kis_app_secret = Column(Text)
     kis_account_number = Column(String(20))
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())

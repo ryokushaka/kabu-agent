@@ -16,7 +16,9 @@ from src.utils import safe_int_convert
 import json
 import os
 
-TOKEN_CACHE_FILE = ".kis_token_cache.json"
+from src.database.connection import db_manager
+from src.database.models import User, UserApiToken
+from sqlalchemy.orm import Session
 
 
 logger = logging.getLogger(__name__)
@@ -44,8 +46,14 @@ class KISApiClient:
         self.base_url = get_api_base_url()
         self.access_token: Optional[str] = None
         self.token_expires_at: Optional[datetime] = None
+        self.app_key: Optional[str] = None
+        self.app_secret: Optional[str] = None
+        self.account_number: Optional[str] = None
         self._cached_headers = {}
         self._session = self._create_session()
+        
+        # Load credentials from DB immediately
+        self._load_credentials_from_db()
     
     def _create_session(self) -> requests.Session:
         """최적화된 세션 생성 (연결 풀링 및 재시도)"""
@@ -64,67 +72,102 @@ class KISApiClient:
         
         return session
 
-    def _load_token_from_cache(self) -> bool:
-        """캐시 파일에서 토큰 로드"""
-        if not os.path.exists(TOKEN_CACHE_FILE):
-            return False
-            
+    def _get_admin_token(self, session: Session) -> Optional[UserApiToken]:
+        """DB에서 관리자 토큰 엔트리 조회"""
+        return session.query(UserApiToken).join(User).filter(
+            User.username == 'admin',
+            UserApiToken.service == 'KIS'
+        ).first()
+
+    def _load_credentials_from_db(self):
+        """DB에서 API 자격증명 로드"""
         try:
-            with open(TOKEN_CACHE_FILE, 'r', encoding='utf-8') as f:
-                data = json.load(f)
-                
-            access_token = data.get('access_token')
-            expires_at_str = data.get('expires_at')
-            
-            if not access_token or not expires_at_str:
-                return False
-                
-            expires_at = datetime.fromisoformat(expires_at_str)
-            
-            # 유효기간 확인 (여유시간 1분)
-            if datetime.now() + timedelta(minutes=1) < expires_at:
-                self.access_token = access_token
-                self.token_expires_at = expires_at
-                logger.info("캐시된 KIS API 토큰 로드 성공")
-                return True
-                
+            with db_manager.get_session_context() as session:
+                token_entry = self._get_admin_token(session)
+                if token_entry:
+                    self.app_key = token_entry.kis_app_key
+                    self.app_secret = token_entry.kis_app_secret
+                    self.account_number = token_entry.kis_account_number
+                    logger.info("DB에서 KIS API 자격증명 로드 성공")
+                else:
+                    logger.warning("DB에 KIS API 토큰 설정이 없습니다.")
         except Exception as e:
-            logger.warning(f"토큰 캐시 로드 실패: {e}")
+            logger.error(f"자격증명 로드 실패: {e}")
+
+    def _load_token_from_db(self) -> bool:
+        """DB에서 토큰 로드"""
+        try:
+            with db_manager.get_session_context() as session:
+                token_entry = self._get_admin_token(session)
+                
+                if not token_entry or not token_entry.access_token:
+                    return False
+                
+                # 유효기간 확인 (여유시간 1분)
+                # DB의 expires_at은 timezone aware일 수 있음
+                expires_at = token_entry.expires_at
+                if expires_at.tzinfo:
+                    now = datetime.now(expires_at.tzinfo)
+                else:
+                    now = datetime.now()
+                
+                if now + timedelta(minutes=1) < expires_at:
+                    self.access_token = token_entry.access_token
+                    self.token_expires_at = expires_at
+                    
+                    # 자격증명도 갱신
+                    self.app_key = token_entry.kis_app_key
+                    self.app_secret = token_entry.kis_app_secret
+                    self.account_number = token_entry.kis_account_number
+                    
+                    logger.info("DB에서 캐시된 KIS API 토큰 로드 성공")
+                    return True
+                    
+        except Exception as e:
+            logger.warning(f"토큰 DB 로드 실패: {e}")
             
         return False
 
-    def _save_token_to_cache(self):
-        """토큰을 캐시 파일에 저장"""
+    def _save_token_to_db(self):
+        """토큰을 DB에 저장"""
         try:
             if not self.access_token or not self.token_expires_at:
                 return
                 
-            data = {
-                'access_token': self.access_token,
-                'expires_at': self.token_expires_at.isoformat()
-            }
-            
-            with open(TOKEN_CACHE_FILE, 'w', encoding='utf-8') as f:
-                json.dump(data, f, indent=2)
+            with db_manager.get_session_context() as session:
+                token_entry = self._get_admin_token(session)
+                if token_entry:
+                    token_entry.access_token = self.access_token
+                    token_entry.expires_at = self.token_expires_at
+                    # session.commit() is handled by context manager
+                    logger.info("KIS API 토큰 DB 저장 성공")
+                else:
+                    logger.warning("토큰을 저장할 DB 엔트리가 없습니다.")
                 
         except Exception as e:
-            logger.warning(f"토큰 캐시 저장 실패: {e}")
+            logger.warning(f"토큰 DB 저장 실패: {e}")
         
     def authenticate(self) -> bool:
         """API 인증 토큰 획득"""
-        # 캐시된 토큰 시도
-        if self._load_token_from_cache():
+        # DB 캐시된 토큰 시도
+        if self._load_token_from_db():
             return True
 
         try:
+            # 자격증명 확인
+            if not self.app_key or not self.app_secret:
+                self._load_credentials_from_db()
+                if not self.app_key or not self.app_secret:
+                    raise ValueError("KIS API 자격증명이 없습니다 (DB/Env 확인 필요)")
+
             url = f"{self.base_url}/oauth2/tokenP"
             headers = {
                 "Content-Type": "application/json"
             }
             data = {
                 "grant_type": "client_credentials",
-                "appkey": settings.KIS_APP_KEY,
-                "appsecret": settings.KIS_APP_SECRET
+                "appkey": self.app_key,
+                "appsecret": self.app_secret
             }
             
             response = self._session.post(url, headers=headers, json=data)
@@ -139,8 +182,8 @@ class KISApiClient:
                 self.token_expires_at = datetime.now() + timedelta(seconds=expires_in)
 
                 
-                # 캐시 저장
-                self._save_token_to_cache()
+                # DB 저장
+                self._save_token_to_db()
                 
                 logger.info("KIS API 인증 성공")
                 return True
@@ -156,8 +199,15 @@ class KISApiClient:
         """토큰 유효성 확인 (만료 5분 전에 갱신)"""
         if not self.access_token or not self.token_expires_at:
             return False
+            
+        # Handle timezone awareness
+        if self.token_expires_at.tzinfo:
+            now = datetime.now(self.token_expires_at.tzinfo)
+        else:
+            now = datetime.now()
+            
         # 토큰이 만료되기 5분 전에 미리 갱신하도록 함
-        return datetime.now() < (self.token_expires_at - timedelta(minutes=5))
+        return now < (self.token_expires_at - timedelta(minutes=5))
     
     def _get_headers(self, tr_id: str) -> Dict[str, str]:
         """API 호출용 헤더 생성 (캐시 최적화)"""
@@ -165,9 +215,15 @@ class KISApiClient:
         if not self._is_token_valid() or not self._cached_headers:
             if not self.authenticate():
                 raise Exception("인증 실패")
-            # 기본 헤더 캐시 업데이트
-            self._cached_headers = get_kis_headers()
-            self._cached_headers["authorization"] = f"Bearer {self.access_token}"
+            
+            # 헤더 생성 (settings.get_kis_headers 대신 직접 생성)
+            self._cached_headers = {
+                "Content-Type": "application/json",
+                "authorization": f"Bearer {self.access_token}",
+                "appkey": self.app_key,
+                "appsecret": self.app_secret,
+                "tr_id": ""
+            }
         
         # TR ID만 동적으로 설정
         headers = self._cached_headers.copy()
@@ -178,8 +234,10 @@ class KISApiClient:
         """해외주식 잔고 조회 (계좌번호 필수)"""
         try:
             # 계좌번호 검증 및 설정
-            if not settings.KIS_ACCOUNT_NUMBER:
-                raise ValueError("계좌번호가 설정되지 않았습니다.")
+            if not self.account_number:
+                self._load_credentials_from_db()
+                if not self.account_number:
+                    raise ValueError("계좌번호가 설정되지 않았습니다.")
             
             url = f"{self.base_url}/uapi/overseas-stock/v1/trading/inquire-balance"
             # TR_ID 설정 (실전/모의투자 구분)
@@ -187,8 +245,8 @@ class KISApiClient:
             headers = self._get_headers(tr_id)  # 해외주식 잔고조회
             
             # 계좌번호 처리
-            cano = settings.KIS_ACCOUNT_NUMBER[:8]
-            acnt_prdt_cd = settings.KIS_ACCOUNT_NUMBER[8:]
+            cano = self.account_number[:8]
+            acnt_prdt_cd = self.account_number[8:]
             
             params = {
                 "CANO": cano,
@@ -270,8 +328,8 @@ class KISApiClient:
             headers = self._get_headers("JTTT3018R")  # 해외주식 거래내역조회
             
             params = {
-                "CANO": settings.KIS_ACCOUNT_NUMBER[:8],  # 계좌번호 앞 8자리
-                "ACNT_PRDT_CD": settings.KIS_ACCOUNT_NUMBER[8:],  # 계좌번호 뒤 2자리
+                "CANO": self.account_number[:8],  # 계좌번호 앞 8자리
+                "ACNT_PRDT_CD": self.account_number[8:],  # 계좌번호 뒤 2자리
                 "OVRS_EXCG_CD": exchange,  # 해외거래소코드
                 "SORT_SQN": "DS",          # 정렬순서 (DS: 내림차순)
                 "ORD_DT": start_date,      # 주문일자 (YYYYMMDD)
@@ -299,8 +357,8 @@ class KISApiClient:
             headers = self._get_headers("JTTT3014R")  # 해외주식 일별주문체결조회
             
             params = {
-                "CANO": settings.KIS_ACCOUNT_NUMBER[:8],  # 계좌번호 앞 8자리
-                "ACNT_PRDT_CD": settings.KIS_ACCOUNT_NUMBER[8:],  # 계좌번호 뒤 2자리
+                "CANO": self.account_number[:8],  # 계좌번호 앞 8자리
+                "ACNT_PRDT_CD": self.account_number[8:],  # 계좌번호 뒤 2자리
                 "OVRS_EXCG_CD": exchange,  # 해외거래소코드
                 "TR_CRCY_CD": "USD",       # 거래통화코드
                 "ORD_DT": date,            # 주문일자 (YYYYMMDD)

@@ -4,6 +4,7 @@
 from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
+from uuid import UUID
 
 
 class UserRegister(BaseModel):
@@ -22,7 +23,7 @@ class UserLogin(BaseModel):
 
 class UserResponse(BaseModel):
     """사용자 응답 스키마"""
-    id: str
+    id: UUID
     username: str
     email: str
     full_name: Optional[str]
@@ -58,7 +59,7 @@ class UserApiTokenCreate(BaseModel):
 
 class UserApiTokenResponse(BaseModel):
     """사용자 API 토큰 응답 스키마"""
-    id: str
+    id: UUID
     service: str
     kis_account_number: str
     expires_at: datetime

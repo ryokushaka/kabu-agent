@@ -4,17 +4,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from datetime import timedelta
 from typing import List
 
-from src.auth import (
-    authenticate_user,
-    create_access_token,
-    get_current_active_user,
-    fake_users_db,
-    ACCESS_TOKEN_EXPIRE_MINUTES,
-    Token
-)
+from src.api import auth_routes, portfolio_routes, analysis_routes, ai_routes, exchange_routes
 from src.models import User, PortfolioSummary, MarketNews
 from src.kis_api import kis_client
 from src.utils import setup_logging, setup_project_path
+from src.auth.dependencies import get_current_active_user
 
 # Setup logging and path
 setup_project_path()
@@ -37,20 +31,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.post("/token", response_model=Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect username or password",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
+# Include Routers
+app.include_router(auth_routes.router)
+# app.include_router(portfolio_routes.router) # To be implemented/enabled
+# app.include_router(analysis_routes.router) # To be implemented/enabled
+# app.include_router(ai_routes.router) # To be implemented/enabled
+# app.include_router(exchange_routes.router) # To be implemented/enabled
 
 @app.get("/users/me", response_model=User)
 async def read_users_me(current_user: User = Depends(get_current_active_user)):

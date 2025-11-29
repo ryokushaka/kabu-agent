@@ -128,3 +128,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# KIS Token Cache
+.kis_token_cache.json

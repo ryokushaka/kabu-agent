@@ -87,8 +87,8 @@ const Dashboard: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <RefreshCw className="animate-spin h-12 w-12 text-blue-500 mx-auto mb-4" />
-          <p className="text-slate-400">Loading portfolio data...</p>
+          <RefreshCw className="animate-spin h-12 w-12 text-toss-blue mx-auto mb-4" />
+          <p className="text-toss-grey-500">자산 정보를 불러오는 중...</p>
         </div>
       </div>
     );
@@ -98,13 +98,13 @@ const Dashboard: React.FC = () => {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <div className="bg-rose-950 border border-rose-900 rounded-xl p-6 max-w-md">
-            <p className="text-rose-400 mb-4">❌ {error}</p>
+          <div className="bg-red-50 border border-red-100 rounded-2xl p-6 max-w-md">
+            <p className="text-toss-red mb-4 font-medium">❌ {error}</p>
             <button
               onClick={fetchAllData}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              className="px-4 py-2 bg-toss-blue hover:bg-blue-600 text-white rounded-xl transition-colors font-medium"
             >
-              Retry
+              다시 시도
             </button>
           </div>
         </div>
@@ -120,99 +120,96 @@ const Dashboard: React.FC = () => {
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Refresh Button */}
-      <div className="flex justify-end">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-toss-grey-900">내 자산</h2>
         <button
           onClick={fetchAllData}
           disabled={refreshing}
-          className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg transition-colors disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-toss-grey-50 border border-toss-grey-200 text-toss-grey-700 rounded-xl transition-colors disabled:opacity-50 shadow-sm"
         >
           <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-          Refresh
+          <span className="text-sm font-medium">새로고침</span>
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Total Assets Card */}
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 md:p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
-            <Wallet size={64} className="text-blue-500" />
+        <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <p className="text-toss-grey-600 text-sm font-medium mb-1">총 자산 (USD)</p>
+              <h2 className="text-3xl font-bold text-toss-grey-900 tracking-tight">
+                {formatCurrency(summary.total_assets)}
+              </h2>
+            </div>
+            <div className="bg-toss-blue/10 p-3 rounded-2xl">
+              <Wallet size={24} className="text-toss-blue" />
+            </div>
           </div>
-          <p className="text-slate-400 text-sm font-medium mb-1">Total Assets (USD)</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
-            {formatCurrency(summary.total_assets)}
-          </h2>
-          <p className="text-slate-500 text-sm">{summary.positions_count} positions</p>
+          <div className="flex items-center gap-2">
+             <span className={`text-sm font-semibold ${isProfit ? 'text-toss-red' : 'text-toss-blue'}`}>
+                {isProfit ? '+' : ''}{formatCurrency(summary.total_profit_loss)} ({formatPercent(summary.total_return_percent)})
+             </span>
+             <span className="text-toss-grey-400 text-sm">전체 수익</span>
+          </div>
         </div>
 
         {/* Daily P/L Card */}
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 md:p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
-            {dailyIsProfit ? <TrendingUp size={64} className="text-emerald-500" /> : <TrendingDown size={64} className="text-rose-500" />}
+        <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <p className="text-toss-grey-600 text-sm font-medium mb-1">일일 손익</p>
+              <h2 className={`text-3xl font-bold tracking-tight ${dailyIsProfit ? 'text-toss-red' : 'text-toss-blue'}`}>
+                {summary.total_profit_loss > 0 ? '+' : ''}{formatCurrency(summary.total_profit_loss)}
+              </h2>
+            </div>
+            <div className={`p-3 rounded-2xl ${dailyIsProfit ? 'bg-red-50' : 'bg-blue-50'}`}>
+              {dailyIsProfit ? <TrendingUp size={24} className="text-toss-red" /> : <TrendingDown size={24} className="text-toss-blue" />}
+            </div>
           </div>
-          <p className="text-slate-400 text-sm font-medium mb-1">Daily Profit/Loss</p>
-          <h2 className={`text-2xl md:text-3xl font-bold mb-2 ${dailyIsProfit ? 'text-emerald-400' : 'text-rose-400'}`}>
-            {summary.total_profit_loss > 0 ? '+' : ''}{formatCurrency(summary.total_profit_loss)}
-          </h2>
-          <div className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold ${
-            dailyIsProfit ? 'bg-emerald-950 text-emerald-400' : 'bg-rose-950 text-rose-400'
-          }`}>
-            {formatPercent(summary.total_return_percent)} Today
+          <div className="flex items-center gap-2">
+             <span className={`px-2 py-0.5 rounded-md text-xs font-bold ${
+                dailyIsProfit ? 'bg-red-100 text-toss-red' : 'bg-blue-100 text-toss-blue'
+             }`}>
+                {formatPercent(summary.total_return_percent)}
+             </span>
+             <span className="text-toss-grey-400 text-sm">오늘 변동</span>
           </div>
-        </div>
-
-        {/* Total Return Card */}
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 md:p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
-            <Activity size={64} className="text-violet-500" />
-          </div>
-          <p className="text-slate-400 text-sm font-medium mb-1">Total Return</p>
-          <h2 className={`text-2xl md:text-3xl font-bold mb-2 ${isProfit ? 'text-emerald-400' : 'text-rose-400'}`}>
-            {summary.total_profit_loss > 0 ? '+' : ''}{formatCurrency(summary.total_profit_loss)}
-          </h2>
-          <p className={`text-sm ${isProfit ? 'text-emerald-500' : 'text-rose-500'}`}>
-            {formatPercent(summary.total_return_percent)} All Time
-          </p>
-        </div>
-
-        {/* Cash Balance */}
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 md:p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
-            <DollarSign size={64} className="text-amber-500" />
-          </div>
-          <p className="text-slate-400 text-sm font-medium mb-1">Cash Balance</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
-            {formatCurrency(summary.cash)}
-          </h2>
-          <p className="text-slate-500 text-sm">Available</p>
         </div>
 
         {/* Exchange Rate Card */}
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-4 md:p-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-4 opacity-10">
-            <ArrowLeftRight size={64} className="text-cyan-500" />
+        <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <p className="text-toss-grey-600 text-sm font-medium mb-1">환율 (USD/KRW)</p>
+              <h2 className="text-3xl font-bold text-toss-grey-900 tracking-tight">
+                ₩{exchangeRate.toLocaleString()}
+              </h2>
+            </div>
+            <div className="bg-toss-grey-100 p-3 rounded-2xl">
+              <ArrowLeftRight size={24} className="text-toss-grey-600" />
+            </div>
           </div>
-          <p className="text-slate-400 text-sm font-medium mb-1">USD to KRW</p>
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">
-            ₩{exchangeRate.toLocaleString()}
-          </h2>
-          <p className="text-slate-500 text-sm">Exchange Rate</p>
+          <div className="flex items-center gap-2">
+             <span className="text-toss-grey-500 text-sm">실시간 고시 환율</span>
+          </div>
         </div>
       </div>
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-3 bg-slate-800 border border-slate-700 rounded-xl p-4 md:p-6">
+        <div className="lg:col-span-3 bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-            <h3 className="text-lg font-semibold text-white">Asset Growth Trend</h3>
-            <div className="flex gap-2">
+            <h3 className="text-lg font-bold text-toss-grey-900">자산 추이</h3>
+            <div className="flex gap-1 bg-toss-grey-100 p-1 rounded-xl">
               {(['1M', '3M', '1Y', 'ALL'] as const).map((period) => (
                 <button 
                   key={period} 
                   onClick={() => setSelectedPeriod(period)}
-                  className={`px-3 py-1 rounded text-xs font-medium transition-colors ${
+                  className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
                     selectedPeriod === period 
-                      ? 'bg-blue-600 text-white' 
-                      : 'bg-slate-700 text-slate-400 hover:bg-slate-600 hover:text-white'
+                      ? 'bg-white text-toss-grey-900 shadow-sm' 
+                      : 'text-toss-grey-500 hover:text-toss-grey-900'
                   }`}
                 >
                   {period}
@@ -220,48 +217,54 @@ const Dashboard: React.FC = () => {
               ))}
             </div>
           </div>
-          <div className="h-[250px] md:h-[300px] w-full relative">
+          <div className="h-[300px] w-full relative">
             {historyLoading && (
-              <div className="absolute inset-0 flex items-center justify-center bg-slate-800/50 z-10">
-                <RefreshCw className="animate-spin h-8 w-8 text-blue-500" />
+              <div className="absolute inset-0 flex items-center justify-center bg-white/60 backdrop-blur-sm z-10 rounded-2xl">
+                <RefreshCw className="animate-spin h-8 w-8 text-toss-blue" />
               </div>
             )}
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={history}>
                 <defs>
                   <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#3182F6" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#3182F6" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#E5E8EB" vertical={false} />
                 <XAxis 
                   dataKey="date" 
-                  stroke="#64748b"
-                  style={{ fontSize: '12px' }}
-                  tickFormatter={(value) => {
-                    // Show fewer ticks on mobile or for long periods
-                    return value.substring(5); // MM-DD
-                  }}
+                  stroke="#8B95A1"
+                  style={{ fontSize: '12px', fontFamily: 'Pretendard' }}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value) => value.substring(5)}
+                  dy={10}
                 />
                 <YAxis 
-                  stroke="#64748b"
-                  style={{ fontSize: '12px' }}
+                  stroke="#8B95A1"
+                  style={{ fontSize: '12px', fontFamily: 'Pretendard' }}
+                  tickLine={false}
+                  axisLine={false}
                   tickFormatter={(value) => `$${value.toLocaleString()}`}
+                  dx={-10}
                 />
                 <Tooltip 
                   contentStyle={{ 
-                    backgroundColor: '#1e293b', 
-                    border: '1px solid #475569',
-                    borderRadius: '8px'
+                    backgroundColor: '#FFFFFF', 
+                    border: '1px solid #E5E8EB',
+                    borderRadius: '12px',
+                    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+                    fontFamily: 'Pretendard'
                   }}
-                  labelStyle={{ color: '#e2e8f0' }}
+                  itemStyle={{ color: '#3182F6', fontWeight: 600 }}
+                  labelStyle={{ color: '#4E5968', marginBottom: '4px' }}
                 />
                 <Area 
                   type="monotone" 
                   dataKey="value" 
-                  stroke="#3b82f6" 
-                  strokeWidth={2}
+                  stroke="#3182F6" 
+                  strokeWidth={3}
                   fill="url(#colorValue)" 
                 />
               </AreaChart>

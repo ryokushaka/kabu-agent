@@ -9,105 +9,105 @@ const Settings: React.FC = () => {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Settings saved securely (Mock).');
+    alert('설정이 안전하게 저장되었습니다 (Mock).');
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold text-white">Settings</h2>
+    <div className="space-y-6 max-w-4xl mx-auto animate-fade-in">
+      <h2 className="text-2xl font-bold text-toss-grey-900">설정</h2>
 
       {/* Account Integration Card */}
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
+      <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm">
         <div className="flex items-center gap-3 mb-6">
-          <div className="bg-blue-600/20 p-2 rounded-lg">
-            <Key className="w-6 h-6 text-blue-500" />
+          <div className="bg-blue-50 p-2 rounded-xl">
+            <Key className="w-6 h-6 text-toss-blue" />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-white">KIS API Configuration</h3>
-            <p className="text-sm text-slate-400">Manage your Korea Investment Securities API keys.</p>
+            <h3 className="text-lg font-bold text-toss-grey-900">KIS API 설정</h3>
+            <p className="text-sm text-toss-grey-500">한국투자증권 API 키를 관리합니다.</p>
           </div>
         </div>
 
         <form onSubmit={handleSave} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">Account Number</label>
+            <label className="block text-sm font-medium text-toss-grey-700 mb-2">계좌번호</label>
             <input
               type="text"
               value={accountNumber}
               onChange={(e) => setAccountNumber(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
+              className="w-full bg-white border border-toss-grey-200 text-toss-grey-900 rounded-xl px-4 py-3 focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/10 outline-none transition-all"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">App Key</label>
+            <label className="block text-sm font-medium text-toss-grey-700 mb-2">App Key</label>
             <input
               type="password"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              className="w-full bg-slate-900 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all font-mono"
+              className="w-full bg-white border border-toss-grey-200 text-toss-grey-900 rounded-xl px-4 py-3 focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/10 outline-none transition-all font-mono"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-slate-300 mb-2">App Secret</label>
+            <label className="block text-sm font-medium text-toss-grey-700 mb-2">App Secret</label>
             <div className="relative">
               <input
                 type={showSecret ? "text" : "password"}
                 value={apiSecret}
                 onChange={(e) => setApiSecret(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 text-white rounded-lg px-4 py-2.5 pr-12 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all font-mono"
+                className="w-full bg-white border border-toss-grey-200 text-toss-grey-900 rounded-xl px-4 py-3 pr-12 focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/10 outline-none transition-all font-mono"
               />
               <button
                 type="button"
                 onClick={() => setShowSecret(!showSecret)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-toss-grey-400 hover:text-toss-grey-600"
               >
                 {showSecret ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
 
-          <div className="bg-blue-900/20 border border-blue-900/50 rounded-lg p-4 flex gap-3 items-start">
-            <AlertCircle className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-            <p className="text-sm text-blue-200">
-              Your API keys are encrypted using AES-256 before being stored. We never share your keys with third parties.
+          <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 flex gap-3 items-start">
+            <AlertCircle className="w-5 h-5 text-toss-blue shrink-0 mt-0.5" />
+            <p className="text-sm text-toss-grey-700">
+              API 키는 저장 전 AES-256으로 암호화됩니다. 키는 절대 외부와 공유되지 않습니다.
             </p>
           </div>
 
           <div className="pt-2 flex items-center justify-end gap-3">
              <button
               type="button"
-              className="px-4 py-2 text-slate-400 hover:text-white transition-colors text-sm font-medium flex items-center gap-2"
+              className="px-4 py-2.5 text-toss-grey-500 hover:text-toss-grey-900 transition-colors text-sm font-medium flex items-center gap-2"
             >
-              <RefreshCw size={16} /> Test Connection
+              <RefreshCw size={16} /> 연결 테스트
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+              className="px-6 py-2.5 bg-toss-blue hover:bg-blue-600 text-white rounded-xl font-medium transition-colors flex items-center gap-2 shadow-sm shadow-blue-200"
             >
-              <Save size={18} /> Save Changes
+              <Save size={18} /> 변경사항 저장
             </button>
           </div>
         </form>
       </div>
 
       {/* Preferences */}
-      <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-        <h3 className="text-lg font-semibold text-white mb-4">Display Preferences</h3>
-        <div className="flex items-center justify-between py-3 border-b border-slate-700/50">
-          <span className="text-slate-300">Base Currency</span>
-          <select className="bg-slate-900 border border-slate-700 text-slate-200 rounded px-3 py-1 text-sm outline-none">
+      <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm">
+        <h3 className="text-lg font-bold text-toss-grey-900 mb-4">화면 설정</h3>
+        <div className="flex items-center justify-between py-3 border-b border-toss-grey-100">
+          <span className="text-toss-grey-700 font-medium">기본 통화</span>
+          <select className="bg-white border border-toss-grey-200 text-toss-grey-900 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-toss-blue">
             <option>USD ($)</option>
             <option>KRW (₩)</option>
           </select>
         </div>
         <div className="flex items-center justify-between py-3">
-          <span className="text-slate-300">Refresh Interval</span>
-           <select className="bg-slate-900 border border-slate-700 text-slate-200 rounded px-3 py-1 text-sm outline-none">
-            <option>Realtime</option>
-            <option>1 Minute</option>
-            <option>5 Minutes</option>
+          <span className="text-toss-grey-700 font-medium">새로고침 주기</span>
+           <select className="bg-white border border-toss-grey-200 text-toss-grey-900 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-toss-blue">
+            <option>실시간</option>
+            <option>1분</option>
+            <option>5분</option>
           </select>
         </div>
       </div>

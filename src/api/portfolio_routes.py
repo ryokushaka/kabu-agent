@@ -26,6 +26,7 @@ class Position(BaseModel):
     profit_loss_percent: float
     weight: float
     sector: Optional[str] = None
+    exchange: Optional[str] = "NASD"
 
 
 class PortfolioBalance(BaseModel):
@@ -102,7 +103,8 @@ async def get_portfolio_balance():
                 profit_loss=profit_loss,
                 profit_loss_percent=profit_loss_percent,
                 weight=0,  # 나중에 계산
-                sector=None
+                sector=None,
+                exchange=item.get("ovrs_excg_cd", "NASD") # 거래소 코드 추출
             ))
         
         # 총 자산 및 비중 계산

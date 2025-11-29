@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
-import { RefreshCw } from 'lucide-react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from 'recharts';
+import { RefreshCw, TrendingUp, Activity, AlertTriangle, BarChart2 } from 'lucide-react';
 import { formatCurrency } from '../services/dataService';
-import { getSectorAnalysis, getReturnsAnalysis, SectorAllocation, ReturnAnalysis } from '../services/api';
+import { getSectorAnalysis, getReturnsAnalysis, getPortfolioAnalysis, SectorAllocation, ReturnAnalysis, AnalysisData } from '../services/api';
 
 const Analysis: React.FC = () => {
   const [sectorData, setSectorData] = useState<SectorAllocation[]>([]);
   const [returnsData, setReturnsData] = useState<ReturnAnalysis | null>(null);
+  const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,12 +15,14 @@ const Analysis: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      const [sectors, returns] = await Promise.all([
+      const [sectors, returns, analysis] = await Promise.all([
         getSectorAnalysis(),
-        getReturnsAnalysis()
+        getReturnsAnalysis(),
+        getPortfolioAnalysis()
       ]);
       setSectorData(sectors.sectors);
       setReturnsData(returns);
+      setAnalysisData(analysis);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch data');
     } finally {
@@ -32,12 +35,7 @@ const Analysis: React.FC = () => {
   }, []);
 
   const SECTOR_COLORS = [
-    '#3b82f6', // blue
-    '#10b981', // emerald  
-    '#f59e0b', // amber
-    '#ef4444', // red
-    '#8b5cf6', // violet
-    '#ec4899', // pink
+    '#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899',
   ];
 
   const chartData = sectorData.map((sector, index) => ({
@@ -53,7 +51,7 @@ const Analysis: React.FC = () => {
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
           <RefreshCw className="animate-spin h-12 w-12 text-blue-500 mx-auto mb-4" />
-          <p className="text-slate-400">Loading analysis...</p>
+          <p className="text-slate-400">Loading premium analysis...</p>
         </div>
       </div>
     );
@@ -80,7 +78,10 @@ const Analysis: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-white">Portfolio Analysis</h2>
+        <div>
+            <h2 className="text-2xl font-bold text-white">Premium Portfolio Analysis</h2>
+            <p className="text-slate-400 text-sm">Advanced risk metrics and benchmark comparison</p>
+        </div>
         <button
           onClick={fetchData}
           className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 rounded-lg transition-colors"
@@ -90,7 +91,87 @@ const Analysis: React.FC = () => {
         </button>
       </div>
 
+      {/* Risk Metrics Cards */}
+      {analysisData && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-slate-800 border border-slate-700 rounded-xl p-4">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-blue-500/10 rounded-lg">
+                <Activity className="w-5 h-5 text-blue-400" />
+              </div>
+              <span className="text-slate-400 text-sm">Volatility (Risk)</span>
+            </div>
+            <p className="text-2xl font-bold text-white">
+              {(analysisData.metrics.volatility * 100).toFixed(2)}%
+            </p>
+            <p className="text-xs text-slate-500 mt-1">Annualized Std Dev</p>
+          </div>
+
+          <div className="bg-slate-800 border border-slate-700 rounded-xl p-4">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-emerald-500/10 rounded-lg">
+                <TrendingUp className="w-5 h-5 text-emerald-400" />
+              </div>
+              <span className="text-slate-400 text-sm">Beta (vs SPY)</span>
+            </div>
+            <p className="text-2xl font-bold text-white">
+              {analysisData.metrics.beta.toFixed(2)}
+            </p>
+            <p className="text-xs text-slate-500 mt-1">Market Sensitivity</p>
+          </div>
+
+          <div className="bg-slate-800 border border-slate-700 rounded-xl p-4">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-amber-500/10 rounded-lg">
+                <BarChart2 className="w-5 h-5 text-amber-400" />
+              </div>
+              <span className="text-slate-400 text-sm">Sharpe Ratio</span>
+            </div>
+            <p className="text-2xl font-bold text-white">
+              {analysisData.metrics.sharpe_ratio.toFixed(2)}
+            </p>
+            <p className="text-xs text-slate-500 mt-1">Risk-Adjusted Return</p>
+          </div>
+
+          <div className="bg-slate-800 border border-slate-700 rounded-xl p-4">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="p-2 bg-rose-500/10 rounded-lg">
+                <AlertTriangle className="w-5 h-5 text-rose-400" />
+              </div>
+              <span className="text-slate-400 text-sm">Max Drawdown</span>
+            </div>
+            <p className="text-2xl font-bold text-rose-400">
+              {(analysisData.metrics.max_drawdown * 100).toFixed(2)}%
+            </p>
+            <p className="text-xs text-slate-500 mt-1">Peak to Trough</p>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Benchmark Comparison Chart */}
+        {analysisData && (
+            <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 lg:col-span-2">
+                <h3 className="text-lg font-semibold text-white mb-6">Performance vs S&P 500</h3>
+                <div className="h-[300px] w-full">
+                    <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={analysisData.chart_data}>
+                            <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                            <XAxis dataKey="date" stroke="#94a3b8" tick={{fontSize: 12}} />
+                            <YAxis stroke="#94a3b8" tick={{fontSize: 12}} unit="%" />
+                            <Tooltip 
+                                contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155', color: '#f8fafc' }}
+                                itemStyle={{ color: '#e2e8f0' }}
+                            />
+                            <Legend />
+                            <Line type="monotone" dataKey="portfolio" name="Portfolio" stroke="#3b82f6" strokeWidth={2} dot={false} />
+                            <Line type="monotone" dataKey="benchmark" name="S&P 500" stroke="#94a3b8" strokeWidth={2} strokeDasharray="5 5" dot={false} />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
+        )}
+
         {/* Sector Allocation */}
         <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
           <h3 className="text-lg font-semibold text-white mb-6">Sector Allocation</h3>

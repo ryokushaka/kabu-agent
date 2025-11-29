@@ -76,6 +76,24 @@ export interface ExchangeRate {
   source: string;
 }
 
+export interface RiskMetrics {
+  volatility: number;
+  beta: number;
+  sharpe_ratio: number;
+  max_drawdown: number;
+}
+
+export interface ChartData {
+  date: string;
+  portfolio: number;
+  benchmark: number;
+}
+
+export interface AnalysisData {
+  metrics: RiskMetrics;
+  chart_data: ChartData[];
+}
+
 // API Client Class
 class ApiClient {
   private baseUrl: string;
@@ -113,6 +131,10 @@ class ApiClient {
     return this.request<ReturnAnalysis>('/api/analysis/returns');
   }
 
+  async getPortfolioAnalysis(): Promise<AnalysisData> {
+    return this.request<AnalysisData>('/api/analysis/portfolio');
+  }
+
   async getPortfolioHistory(days: number = 30): Promise<HistoryData[]> {
     return this.request<HistoryData[]>(`/api/portfolio/history?days=${days}`);
   }
@@ -135,6 +157,7 @@ export const getPortfolioBalance = () => apiClient.getPortfolioBalance();
 export const getPortfolioSummary = () => apiClient.getPortfolioSummary();
 export const getSectorAnalysis = () => apiClient.getSectorAnalysis();
 export const getReturnsAnalysis = () => apiClient.getReturnsAnalysis();
+export const getPortfolioAnalysis = () => apiClient.getPortfolioAnalysis();
 export const getPortfolioHistory = (days?: number) => apiClient.getPortfolioHistory(days);
 export const getExchangeRate = (baseCurrency?: string, targetCurrency?: string) => apiClient.getExchangeRate(baseCurrency, targetCurrency);
 export const getMajorExchangeRates = () => apiClient.getMajorExchangeRates();

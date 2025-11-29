@@ -43,8 +43,13 @@ def write_dashboard_sheet(wb: Workbook, data: PortfolioSummary):
     metrics = [
         ("총 자산 (USD)", f"${data.total_value_usd:,.2f}"),
         ("총 자산 (KRW)", f"₩{data.total_value_krw:,.0f}"),
+        ("환율 (USD/KRW)", f"₩{data.exchange_rate:,.2f}"),
         ("총 평가 손익", f"${data.total_profit_loss:,.2f}"),
         ("총 수익률", f"{data.total_return_rate:.2f}%"),
+        ("일일 수익률", f"{data.daily_return:.2f}%"),
+        ("월간 수익률", "N/A (History Required)"),
+        ("연간 수익률", "N/A (History Required)"),
+        ("최대 낙폭 (MDD)", f"{data.max_drawdown*100:.2f}%"),
         ("보유 종목 수", f"{len(data.holdings)} 개")
     ]
 

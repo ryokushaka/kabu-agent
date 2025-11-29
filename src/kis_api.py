@@ -476,7 +476,10 @@ class KISApiClient:
         """해외주식 상품기본정보 조회 (섹터 정보 등)"""
         try:
             url = f"{self.base_url}/uapi/overseas-price/v1/quotations/search-info"
-            headers = self._get_headers("HHDFS76240000")  # 상품기본정보
+            # 실전: CTPF1702R, 모의: VTPF1702R (확인 필요, 보통 CTPF1702R)
+            # 하지만 모의투자에서는 지원 안 할 수도 있음. 일단 CTPF1702R 시도.
+            tr_id = "CTPF1702R" if "openapi.koreainvestment.com" in self.base_url else "CTPF1702R" 
+            headers = self._get_headers(tr_id)
             
             params = {
                 "PRDT_TYPE_CD": "512", # 상품유형코드 (512: 미국나스닥/뉴욕/아멕스)
@@ -487,7 +490,7 @@ class KISApiClient:
             response.raise_for_status()
             
             result = response.json()
-            logger.info(f"{symbol} 상품기본정보 조회 성공")
+            logger.info(f"{symbol} 상품기본정보 조회 성공. Result: {result}")
             return result
             
         except Exception as e:
@@ -571,16 +574,30 @@ class KISApiClient:
                 details["low52"] = float(output.get("low_52", 0.0))
             
             # 2. 상품기본정보 조회 (섹터)
-            # KIS API 상품정보에서 섹터 정보가 명시적이지 않을 수 있음.
-            # 업종분류코드(IDX_ID) 등을 확인해야 함.
-            # 여기서는 API 호출 구조만 잡아두고, 실제 데이터 필드는 응답 확인 후 매핑 필요.
-            product_info = self.get_overseas_product_info(symbol)
-            if product_info.get("rt_cd") == "0":
-                output = product_info.get("output", {})
-                # 예시: 업종명 필드가 있다면 매핑
-                # details["sector"] = output.get("std_idst_clsf_cd_name", "Unknown") 
-                pass
-
+            # KIS API에서 섹터 정보를 제공하지 않으므로, 주요 종목에 대한 정적 매핑 사용
+            # 추후 별도 데이터 제공업체(Yahoo Finance 등) 연동 고려
+            sector_map = {
+                "NVDA": "Technology",
+                "AAPL": "Technology",
+                "MSFT": "Technology",
+                "META": "Communication Services",
+                "GOOGL": "Communication Services",
+                "AMZN": "Consumer Cyclical",
+                "TSLA": "Consumer Cyclical",
+                "SPY": "ETF (Equity)",
+                "QQQ": "ETF (Equity)",
+                "SGOV": "ETF (Bond)",
+                "TLT": "ETF (Bond)",
+                "O": "Real Estate",
+                "JPM": "Financial Services",
+                "JNJ": "Healthcare"
+            }
+            
+            details["sector"] = sector_map.get(symbol, "Unknown")
+            
+            # API 호출은 유지하되 로깅은 제거 (필요 시 부가 정보 활용)
+            # product_info = self.get_overseas_product_info(symbol)
+            
         except Exception as e:
             logger.error(f"{symbol} 상세 정보 조회 중 오류: {e}")
             

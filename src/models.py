@@ -41,6 +41,9 @@ class PortfolioSummary(BaseModel):
     holdings: List[Holding]
     sector_allocation: Optional[dict] = {}
     analysis: Optional[dict] = None # Risk metrics and chart data
+    daily_return: Optional[float] = 0.0
+    max_drawdown: Optional[float] = 0.0
+    exchange_rate: Optional[float] = 1350.0 # Default fallback
 
 class MarketNews(BaseModel):
     title: str

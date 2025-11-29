@@ -41,19 +41,19 @@
 
 #### 월간 수익률(%)
 - **문제점**: [Question] KIS API에서 월간 수익률을 직접 계산할 수 있는 API가 있나요? `inquire_period_profit`로 월 단위 수익률 계산이 정확히 가능한지 확인이 필요합니다.
-- [Answer]: 
+- [Answer]: `/uapi/overseas-stock/v1/trading/inquire-period-profit` API를 통해 기간손익을 조회할 수 있지 않을까? `INQR_STRT_DT`, `INQR_END_DT`를 통해 특정 기간의 수익률을 조회할 수 있을 것이라 생각하지만, 분석이 필요해.
 
 #### 연간 수익률(%)
 - **문제점**: [Question] KIS API에서 연간 수익률을 직접 계산할 수 있는 API가 있나요? 1년 이상의 장기 수익률 데이터를 정확히 제공하는지 확인이 필요합니다.
-- [Answer]: 
+- [Answer]: `/uapi/overseas-stock/v1/trading/inquire-period-profit` API를 통해 기간손익을 조회할 수 있지 않을까? `INQR_STRT_DT`, `INQR_END_DT`를 통해 특정 기간의 수익률을 조회할 수 있을 것이라 생각하지만, 분석이 필요해.
 
 #### 최대 낙폭(MDD %)
 - **문제점**: [Question] KIS API에서 최대 낙폭(Maximum Drawdown)을 계산할 수 있는 충분한 과거 자산 데이터를 제공하나요? 일별 포트폴리오 가치 변화를 추적할 수 있는 API가 있는지 확인이 필요합니다.
-- [Answer]: 
+- [Answer]: KIS API에서 최대 낙폭(Maximum Drawdown)을 계산할 수 있는 충분한 과거 자산 데이터를 제공하지 않음. 일별 포트폴리오 가치 변화를 추적할 수 있는 API가 있는지 확인이 필요합니다.
 
 #### 누적 수익률(%)
 - **문제점**: [Question] KIS API에서 계좌 개설 시점부터의 누적 수익률을 계산할 수 있나요? 투자 원금과 현재 총자산을 비교할 수 있는 데이터가 제공되는지 확인이 필요합니다.
-- [Answer]: 
+- [Answer]: KIS API에서 계좌 개설 시점부터의 누적 수익률을 계산할 수 있는 API가 없음. 계산할 수 있는 API가 있는지 확인이 필요합니다.
 
 ## 주요 API 상세 정보
 

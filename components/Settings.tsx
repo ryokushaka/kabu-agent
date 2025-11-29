@@ -30,38 +30,45 @@ const Settings: React.FC = () => {
 
         <form onSubmit={handleSave} className="space-y-5">
           <div>
-            <label className="block text-sm font-medium text-toss-grey-700 mb-2">계좌번호</label>
+            <label htmlFor="account-number" className="block text-sm font-medium text-toss-grey-700 mb-2">계좌번호</label>
             <input
+              id="account-number"
               type="text"
               value={accountNumber}
               onChange={(e) => setAccountNumber(e.target.value)}
-              className="w-full bg-white border border-toss-grey-200 text-toss-grey-900 rounded-xl px-4 py-3 focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/10 outline-none transition-all"
+              className="w-full bg-white border border-toss-grey-200 text-toss-grey-900 rounded-xl px-4 py-3 focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/10 hover:border-toss-grey-300 disabled:bg-toss-grey-50 disabled:text-toss-grey-400 outline-none transition-all duration-200"
+              placeholder="12345678-01"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-toss-grey-700 mb-2">App Key</label>
+            <label htmlFor="app-key" className="block text-sm font-medium text-toss-grey-700 mb-2">App Key</label>
             <input
+              id="app-key"
               type="password"
               value={apiKey}
               onChange={(e) => setApiKey(e.target.value)}
-              className="w-full bg-white border border-toss-grey-200 text-toss-grey-900 rounded-xl px-4 py-3 focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/10 outline-none transition-all font-mono"
+              className="w-full bg-white border border-toss-grey-200 text-toss-grey-900 rounded-xl px-4 py-3 focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/10 hover:border-toss-grey-300 disabled:bg-toss-grey-50 disabled:text-toss-grey-400 outline-none transition-all duration-200 font-mono"
+              placeholder="************************"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-toss-grey-700 mb-2">App Secret</label>
+            <label htmlFor="app-secret" className="block text-sm font-medium text-toss-grey-700 mb-2">App Secret</label>
             <div className="relative">
               <input
+                id="app-secret"
                 type={showSecret ? "text" : "password"}
                 value={apiSecret}
                 onChange={(e) => setApiSecret(e.target.value)}
-                className="w-full bg-white border border-toss-grey-200 text-toss-grey-900 rounded-xl px-4 py-3 pr-12 focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/10 outline-none transition-all font-mono"
+                className="w-full bg-white border border-toss-grey-200 text-toss-grey-900 rounded-xl px-4 py-3 pr-12 focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/10 hover:border-toss-grey-300 disabled:bg-toss-grey-50 disabled:text-toss-grey-400 outline-none transition-all duration-200 font-mono"
+                placeholder="************************************************"
               />
               <button
                 type="button"
                 onClick={() => setShowSecret(!showSecret)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-toss-grey-400 hover:text-toss-grey-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-toss-grey-400 hover:text-toss-grey-600 transition-colors p-1 rounded-lg hover:bg-toss-grey-50 focus:outline-none focus:ring-2 focus:ring-toss-blue/10"
+                aria-label={showSecret ? "비밀번호 숨기기" : "비밀번호 보기"}
               >
                 {showSecret ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
@@ -78,13 +85,13 @@ const Settings: React.FC = () => {
           <div className="pt-2 flex items-center justify-end gap-3">
              <button
               type="button"
-              className="px-4 py-2.5 text-toss-grey-500 hover:text-toss-grey-900 transition-colors text-sm font-medium flex items-center gap-2"
+              className="px-4 py-2.5 bg-white border border-toss-grey-200 text-toss-grey-700 hover:bg-toss-grey-50 hover:border-toss-grey-300 active:scale-[0.98] transition-all duration-200 text-sm font-medium flex items-center gap-2 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-toss-grey-300 focus:ring-offset-2 min-h-[44px]"
             >
               <RefreshCw size={16} /> 연결 테스트
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 bg-toss-blue hover:bg-blue-600 text-white rounded-xl font-medium transition-colors flex items-center gap-2 shadow-sm shadow-blue-200"
+              className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-300/50 active:scale-[0.98] text-white rounded-xl font-medium transition-all duration-200 flex items-center gap-2 shadow-sm shadow-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 min-h-[44px]"
             >
               <Save size={18} /> 변경사항 저장
             </button>
@@ -96,15 +103,15 @@ const Settings: React.FC = () => {
       <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm">
         <h3 className="text-lg font-bold text-toss-grey-900 mb-4">화면 설정</h3>
         <div className="flex items-center justify-between py-3 border-b border-toss-grey-100">
-          <span className="text-toss-grey-700 font-medium">기본 통화</span>
-          <select className="bg-white border border-toss-grey-200 text-toss-grey-900 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-toss-blue">
+          <label htmlFor="currency" className="text-toss-grey-700 font-medium">기본 통화</label>
+          <select id="currency" className="bg-white border border-toss-grey-200 text-toss-grey-900 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/10 hover:border-toss-grey-300 transition-all duration-200 cursor-pointer">
             <option>USD ($)</option>
             <option>KRW (₩)</option>
           </select>
         </div>
         <div className="flex items-center justify-between py-3">
-          <span className="text-toss-grey-700 font-medium">새로고침 주기</span>
-           <select className="bg-white border border-toss-grey-200 text-toss-grey-900 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-toss-blue">
+          <label htmlFor="refresh-interval" className="text-toss-grey-700 font-medium">새로고침 주기</label>
+           <select id="refresh-interval" className="bg-white border border-toss-grey-200 text-toss-grey-900 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/10 hover:border-toss-grey-300 transition-all duration-200 cursor-pointer">
             <option>실시간</option>
             <option>1분</option>
             <option>5분</option>

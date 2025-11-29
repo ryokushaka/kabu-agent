@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  DollarSign, 
-  TrendingUp, 
-  TrendingDown, 
-  Wallet, 
-  Activity,
+import {
+  TrendingUp,
+  TrendingDown,
+  Wallet,
   RefreshCw,
   ArrowLeftRight
 } from 'lucide-react';
@@ -85,10 +83,42 @@ const Dashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <div className="text-center">
-          <RefreshCw className="animate-spin h-12 w-12 text-toss-blue mx-auto mb-4" />
-          <p className="text-toss-grey-500">자산 정보를 불러오는 중...</p>
+      <div className="space-y-6 animate-fade-in">
+        {/* Skeleton for Summary Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-10 h-10 bg-toss-grey-100 rounded-xl animate-pulse"></div>
+                <div className="w-16 h-4 bg-toss-grey-100 rounded animate-pulse"></div>
+              </div>
+              <div className="space-y-2">
+                <div className="w-32 h-8 bg-toss-grey-100 rounded animate-pulse"></div>
+                <div className="w-24 h-4 bg-toss-grey-100 rounded animate-pulse"></div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Skeleton for Chart */}
+        <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm">
+          <div className="flex justify-between items-center mb-6">
+            <div className="w-32 h-6 bg-toss-grey-100 rounded animate-pulse"></div>
+            <div className="flex gap-2">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="w-12 h-8 bg-toss-grey-100 rounded-lg animate-pulse"></div>
+              ))}
+            </div>
+          </div>
+          <div className="h-64 bg-toss-grey-50 rounded-xl animate-pulse"></div>
+        </div>
+
+        {/* Loading indicator */}
+        <div className="text-center py-4">
+          <div className="inline-flex items-center gap-2 text-toss-grey-500 text-sm">
+            <div className="w-4 h-4 border-2 border-toss-blue border-t-transparent rounded-full animate-spin"></div>
+            <span>실시간 데이터를 불러오는 중...</span>
+          </div>
         </div>
       </div>
     );
@@ -96,16 +126,26 @@ const Dashboard: React.FC = () => {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center h-96">
+      <div className="flex items-center justify-center h-96 animate-fade-in">
         <div className="text-center">
-          <div className="bg-red-50 border border-red-100 rounded-2xl p-6 max-w-md">
-            <p className="text-toss-red mb-4 font-medium">❌ {error}</p>
-            <button
-              onClick={fetchAllData}
-              className="px-4 py-2 bg-toss-blue hover:bg-blue-600 text-white rounded-xl transition-colors font-medium"
-            >
-              다시 시도
-            </button>
+          <div className="bg-red-50 border border-red-100 rounded-3xl p-8 max-w-md shadow-sm">
+            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl">⚠️</span>
+            </div>
+            <h3 className="text-lg font-bold text-toss-grey-900 mb-2">자산 정보를 불러올 수 없습니다</h3>
+            <p className="text-toss-red mb-6 text-sm">{error}</p>
+            <div className="space-y-2">
+              <button
+                onClick={fetchAllData}
+                className="w-full px-6 py-2.5 bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-300/50 active:scale-[0.98] text-white rounded-xl transition-all duration-200 font-medium shadow-sm shadow-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 min-h-[44px] inline-flex items-center justify-center gap-2"
+              >
+                <RefreshCw size={16} />
+                다시 시도
+              </button>
+              <p className="text-xs text-toss-grey-500 mt-3">
+                문제가 계속되면 KIS API 연동 상태를 확인해주세요
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -119,35 +159,52 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      {/* Refresh Button */}
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-toss-grey-900">내 자산</h2>
+      {/* Header with Refresh */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-toss-grey-900">내 자산</h2>
+          <p className="text-sm text-toss-grey-500 mt-1">
+            {refreshing ? (
+              <span className="inline-flex items-center gap-1.5 text-toss-blue">
+                <div className="w-1.5 h-1.5 bg-toss-blue rounded-full animate-pulse"></div>
+                실시간 데이터 갱신 중...
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5">
+                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
+                최신 데이터
+              </span>
+            )}
+          </p>
+        </div>
         <button
           onClick={fetchAllData}
           disabled={refreshing}
-          className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-toss-grey-50 border border-toss-grey-200 text-toss-grey-700 rounded-xl transition-colors disabled:opacity-50 shadow-sm"
+          className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white hover:bg-toss-grey-50 border border-toss-grey-200 text-toss-grey-700 rounded-xl active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm focus:outline-none focus:ring-2 focus:ring-toss-grey-300 focus:ring-offset-2 min-h-[44px]"
         >
           <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-          <span className="text-sm font-medium">새로고침</span>
+          <span className="text-sm font-medium">{refreshing ? '갱신 중...' : '새로고침'}</span>
         </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Total Assets Card */}
-        <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+        <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm hover:shadow-md hover:shadow-toss-grey-200/50 hover:border-toss-grey-200 transition-all duration-200 cursor-pointer group relative overflow-hidden">
           <div className="flex justify-between items-start mb-4">
             <div>
               <p className="text-toss-grey-600 text-sm font-medium mb-1">총 자산 (USD)</p>
               <h2 className="text-3xl font-bold text-toss-grey-900 tracking-tight">
                 {formatCurrency(summary.total_assets)}
               </h2>
+              <p className="text-xs text-toss-grey-400 mt-1">≈ ₩{(summary.total_assets * exchangeRate).toLocaleString('ko-KR', { maximumFractionDigits: 0 })}</p>
             </div>
-            <div className="bg-toss-blue/10 p-3 rounded-2xl">
+            <div className="bg-toss-blue/10 p-3 rounded-2xl group-hover:bg-toss-blue/20 transition-colors">
               <Wallet size={24} className="text-toss-blue" />
             </div>
           </div>
           <div className="flex items-center gap-2">
-             <span className={`text-sm font-semibold ${isProfit ? 'text-toss-red' : 'text-toss-blue'}`}>
+             <span className={`inline-flex items-center gap-1 text-sm font-semibold ${isProfit ? 'text-toss-red' : 'text-toss-blue'}`}>
+                {isProfit ? '▲' : '▼'}
                 {isProfit ? '+' : ''}{formatCurrency(summary.total_profit_loss)} ({formatPercent(summary.total_return_percent)})
              </span>
              <span className="text-toss-grey-400 text-sm">전체 수익</span>
@@ -155,22 +212,25 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Daily P/L Card */}
-        <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+        <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm hover:shadow-md hover:shadow-toss-grey-200/50 hover:border-toss-grey-200 transition-all duration-200 cursor-pointer group relative overflow-hidden">
           <div className="flex justify-between items-start mb-4">
             <div>
               <p className="text-toss-grey-600 text-sm font-medium mb-1">일일 손익</p>
               <h2 className={`text-3xl font-bold tracking-tight ${dailyIsProfit ? 'text-toss-red' : 'text-toss-blue'}`}>
-                {summary.total_profit_loss > 0 ? '+' : ''}{formatCurrency(summary.total_profit_loss)}
+                {dailyIsProfit ? '+' : ''}{formatCurrency(summary.total_profit_loss)}
               </h2>
             </div>
-            <div className={`p-3 rounded-2xl ${dailyIsProfit ? 'bg-red-50' : 'bg-blue-50'}`}>
+            <div className={`p-3 rounded-2xl transition-colors ${dailyIsProfit ? 'bg-red-50 group-hover:bg-red-100' : 'bg-blue-50 group-hover:bg-blue-100'}`}>
               {dailyIsProfit ? <TrendingUp size={24} className="text-toss-red" /> : <TrendingDown size={24} className="text-toss-blue" />}
             </div>
           </div>
           <div className="flex items-center gap-2">
-             <span className={`px-2 py-0.5 rounded-md text-xs font-bold ${
-                dailyIsProfit ? 'bg-red-100 text-toss-red' : 'bg-blue-100 text-toss-blue'
+             <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold border shadow-sm ${
+                dailyIsProfit
+                  ? 'bg-red-50 text-toss-red border-red-100 shadow-red-100'
+                  : 'bg-blue-50 text-toss-blue border-blue-100 shadow-blue-100'
              }`}>
+                {dailyIsProfit ? '▲' : '▼'}
                 {formatPercent(summary.total_return_percent)}
              </span>
              <span className="text-toss-grey-400 text-sm">오늘 변동</span>
@@ -178,7 +238,7 @@ const Dashboard: React.FC = () => {
         </div>
 
         {/* Exchange Rate Card */}
-        <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm relative overflow-hidden group hover:shadow-md transition-shadow">
+        <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm hover:shadow-md hover:shadow-toss-grey-200/50 hover:border-toss-grey-200 transition-all duration-200 cursor-pointer group relative overflow-hidden">
           <div className="flex justify-between items-start mb-4">
             <div>
               <p className="text-toss-grey-600 text-sm font-medium mb-1">환율 (USD/KRW)</p>
@@ -186,7 +246,7 @@ const Dashboard: React.FC = () => {
                 ₩{exchangeRate.toLocaleString()}
               </h2>
             </div>
-            <div className="bg-toss-grey-100 p-3 rounded-2xl">
+            <div className="bg-toss-grey-100 p-3 rounded-2xl group-hover:bg-toss-grey-200 transition-colors">
               <ArrowLeftRight size={24} className="text-toss-grey-600" />
             </div>
           </div>
@@ -208,8 +268,8 @@ const Dashboard: React.FC = () => {
                   onClick={() => setSelectedPeriod(period)}
                   className={`px-4 py-1.5 rounded-lg text-sm font-medium transition-all ${
                     selectedPeriod === period 
-                      ? 'bg-white text-toss-grey-900 shadow-sm' 
-                      : 'text-toss-grey-500 hover:text-toss-grey-900'
+                      ? 'bg-white text-toss-blue font-bold shadow-sm ring-1 ring-toss-blue/20' 
+                      : 'text-toss-grey-500 hover:text-toss-grey-900 hover:bg-white/50'
                   }`}
                 >
                   {period}

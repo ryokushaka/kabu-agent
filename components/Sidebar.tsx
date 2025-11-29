@@ -6,8 +6,7 @@ import {
   TrendingUp, 
   Settings, 
   LogOut, 
-  ShieldCheck, 
-  Globe,
+  ShieldCheck,
   X
 } from 'lucide-react';
 
@@ -48,12 +47,12 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, isAdmin, isOpen, onClose })
       >
         <div className="p-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="bg-toss-blue p-2 rounded-xl shadow-sm">
-              <Globe className="w-6 h-6 text-white" />
+            <div className="rounded-xl shadow-sm overflow-hidden">
+              <TrendingUp className="text-blue w-8 h-8" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-toss-grey-900 leading-tight">해외주식</h1>
-              <p className="text-xs text-toss-grey-500 font-medium tracking-wider">PORTFOLIO</p>
+              <h1 className="text-lg font-bold text-toss-grey-900 leading-tight">Kabu Agent</h1>
+              <p className="text-xs text-toss-grey-500 font-medium tracking-wider">안전하고 편리한 자산 관리</p>
             </div>
           </div>
           {/* Mobile Close Button */}
@@ -78,11 +77,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, isAdmin, isOpen, onClose })
                 }}
                 className={`flex items-center gap-3 px-4 py-3.5 rounded-xl transition-all duration-200 group ${
                   isActive 
-                    ? 'bg-toss-blue/10 text-toss-blue font-semibold' 
-                    : 'text-toss-grey-600 hover:bg-toss-grey-100 hover:text-toss-grey-900'
+                    ? 'bg-blue-600 text-white font-bold shadow-md shadow-blue-200 hover:bg-blue-700' 
+                    : 'text-toss-grey-600 hover:bg-toss-grey-100 hover:text-toss-grey-900 hover:ring-1 hover:ring-toss-grey-200'
                 }`}
               >
-                <item.icon className={`w-5 h-5 ${isActive ? 'text-toss-blue' : 'text-toss-grey-400 group-hover:text-toss-grey-600'}`} />
+                <item.icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-toss-grey-400 group-hover:text-toss-grey-600'}`} />
                 <span className="text-[15px]">{item.label}</span>
               </NavLink>
             );

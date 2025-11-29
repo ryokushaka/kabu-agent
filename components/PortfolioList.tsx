@@ -109,13 +109,15 @@ const PortfolioList: React.FC = () => {
           >
             <RefreshCw size={16} />
           </button>
-          <button
-            onClick={handleExport}
+          <a
+            href="http://localhost:8000/api/export/excel"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium whitespace-nowrap"
           >
             <Download size={16} />
             <span className="hidden sm:inline">Excel</span>
-          </button>
+          </a>
         </div>
       </div>
 

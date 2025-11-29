@@ -3,15 +3,34 @@ KIS Open API 클라이언트
 """
 import logging
 import requests
+import json
+import os
 from datetime import datetime, timedelta
 from typing import Dict, Optional
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
+from urllib3.poolmanager import PoolManager
+import ssl
 from config.settings import settings, get_kis_headers, get_api_base_url
 from src.utils import safe_int_convert
 
 
 logger = logging.getLogger(__name__)
+
+
+class TLS12Adapter(HTTPAdapter):
+    """TLS 1.2를 강제하는 HTTP Adapter"""
+    def init_poolmanager(self, connections, maxsize, block=False, **pool_kwargs):
+        ctx = ssl.create_default_context()
+        ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+        ctx.maximum_version = ssl.TLSVersion.TLSv1_2
+        self.poolmanager = PoolManager(
+            num_pools=connections,
+            maxsize=maxsize,
+            block=block,
+            ssl_context=ctx,
+            **pool_kwargs
+        )
 
 
 class KISApiClient:
@@ -35,7 +54,7 @@ class KISApiClient:
             status_forcelist=[429, 500, 502, 503, 504]
         )
         
-        adapter = HTTPAdapter(max_retries=retry_strategy, pool_maxsize=10)
+        adapter = TLS12Adapter(max_retries=retry_strategy, pool_maxsize=10)
         session.mount("http://", adapter)
         session.mount("https://", adapter)
         
@@ -76,10 +95,11 @@ class KISApiClient:
             return False
     
     def _is_token_valid(self) -> bool:
-        """토큰 유효성 확인"""
+        """토큰 유효성 확인 (만료 5분 전에 갱신)"""
         if not self.access_token or not self.token_expires_at:
             return False
-        return datetime.now() < self.token_expires_at
+        # 토큰이 만료되기 5분 전에 미리 갱신하도록 함
+        return datetime.now() < (self.token_expires_at - timedelta(minutes=5))
     
     def _get_headers(self, tr_id: str) -> Dict[str, str]:
         """API 호출용 헤더 생성 (캐시 최적화)"""
@@ -99,16 +119,22 @@ class KISApiClient:
     def get_overseas_balance(self) -> Dict:
         """해외주식 잔고 조회 (계좌번호 필수)"""
         try:
-            # 계좌번호 검증
-            if not settings.KIS_ACCOUNT_NUMBER or len(settings.KIS_ACCOUNT_NUMBER) < 10:
-                raise ValueError("유효한 계좌번호가 필요합니다. (10자리)")
+            # 계좌번호 검증 및 설정
+            if not settings.KIS_ACCOUNT_NUMBER:
+                raise ValueError("계좌번호가 설정되지 않았습니다.")
             
             url = f"{self.base_url}/uapi/overseas-stock/v1/trading/inquire-balance"
-            headers = self._get_headers("JTTT3012R")  # 해외주식 잔고조회
+            # TR_ID 설정 (실전/모의투자 구분)
+            tr_id = "VTTS3012R" if settings.TRADING_ENV == "virtual" else "TTTS3012R"
+            headers = self._get_headers(tr_id)  # 해외주식 잔고조회
+            
+            # 계좌번호 처리
+            cano = settings.KIS_ACCOUNT_NUMBER[:8]
+            acnt_prdt_cd = settings.KIS_ACCOUNT_NUMBER[8:]
             
             params = {
-                "CANO": settings.KIS_ACCOUNT_NUMBER[:8],  # 계좌번호 앞 8자리
-                "ACNT_PRDT_CD": settings.KIS_ACCOUNT_NUMBER[8:],  # 계좌번호 뒤 2자리
+                "CANO": cano,
+                "ACNT_PRDT_CD": acnt_prdt_cd,
                 "OVRS_EXCG_CD": "NASD",  # 해외거래소코드 (NASD: 나스닥)
                 "TR_CRCY_CD": "USD",     # 거래통화코드
                 "CTX_AREA_FK200": "",    # 연속조회검색조건
@@ -283,6 +309,31 @@ class KISApiClient:
         except Exception as e:
             logger.error(f"해외지수 현재가 조회 실패: {e}")
             raise
+    
+    def get_overseas_stock_rights(self, symbol: str, country: str = "US") -> Dict:
+        """해외주식 권리종합 조회 (섹터 정보 포함)"""
+        try:
+            url = f"{self.base_url}/uapi/overseas-price/v1/quotations/rights-by-ice"
+            headers = self._get_headers("HHDFS78330900")  # 해외주식 권리종합
+            
+            params = {
+                "NCOD": country,    # 국가코드 (US: 미국, JP: 일본, HK: 홍콩 등)
+                "SYMB": symbol,     # 종목코드
+                "ST_YMD": "",       # 시작일자 (공백 시 3개월 전)
+                "ED_YMD": ""        # 종료일자 (공백 시 3개월 후)
+            }
+            
+            response = self._session.get(url, headers=headers, params=params)
+            response.raise_for_status()
+            
+            result = response.json()
+            logger.info(f"{symbol} 권리정보 조회 성공")
+            return result
+            
+        except Exception as e:
+            logger.error(f"{symbol} 권리정보 조회 실패: {e}")
+            # 실패 시 빈 결과 반환
+            return {"rt_cd": "1", "msg1": "조회 실패", "output1": []}
 
 
 # 글로벌 클라이언트 인스턴스

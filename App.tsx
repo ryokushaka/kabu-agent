@@ -15,6 +15,8 @@ const LoginScreen: React.FC<{ onLogin: () => void }> = ({ onLogin }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Save login state to localStorage
+    localStorage.setItem('isAuthenticated', 'true');
     onLogin();
   };
 
@@ -128,13 +130,18 @@ const AppLayout: React.FC<{ children: React.ReactNode; onLogout: () => void }> =
 };
 
 const App: React.FC = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  // Check localStorage for existing authentication
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem('isAuthenticated') === 'true';
+  });
 
   const handleLogin = () => {
+    localStorage.setItem('isAuthenticated', 'true');
     setIsAuthenticated(true);
   };
 
   const handleLogout = () => {
+    localStorage.removeItem('isAuthenticated');
     setIsAuthenticated(false);
   };
 

@@ -9,6 +9,10 @@ from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from config.settings import settings, get_kis_headers, get_api_base_url
 from src.utils import safe_int_convert
+import json
+import os
+
+TOKEN_CACHE_FILE = ".kis_token_cache.json"
 
 
 logger = logging.getLogger(__name__)
@@ -40,9 +44,59 @@ class KISApiClient:
         session.mount("https://", adapter)
         
         return session
+
+    def _load_token_from_cache(self) -> bool:
+        """캐시 파일에서 토큰 로드"""
+        if not os.path.exists(TOKEN_CACHE_FILE):
+            return False
+            
+        try:
+            with open(TOKEN_CACHE_FILE, 'r', encoding='utf-8') as f:
+                data = json.load(f)
+                
+            access_token = data.get('access_token')
+            expires_at_str = data.get('expires_at')
+            
+            if not access_token or not expires_at_str:
+                return False
+                
+            expires_at = datetime.fromisoformat(expires_at_str)
+            
+            # 유효기간 확인 (여유시간 1분)
+            if datetime.now() + timedelta(minutes=1) < expires_at:
+                self.access_token = access_token
+                self.token_expires_at = expires_at
+                logger.info("캐시된 KIS API 토큰 로드 성공")
+                return True
+                
+        except Exception as e:
+            logger.warning(f"토큰 캐시 로드 실패: {e}")
+            
+        return False
+
+    def _save_token_to_cache(self):
+        """토큰을 캐시 파일에 저장"""
+        try:
+            if not self.access_token or not self.token_expires_at:
+                return
+                
+            data = {
+                'access_token': self.access_token,
+                'expires_at': self.token_expires_at.isoformat()
+            }
+            
+            with open(TOKEN_CACHE_FILE, 'w', encoding='utf-8') as f:
+                json.dump(data, f, indent=2)
+                
+        except Exception as e:
+            logger.warning(f"토큰 캐시 저장 실패: {e}")
         
     def authenticate(self) -> bool:
         """API 인증 토큰 획득"""
+        # 캐시된 토큰 시도
+        if self._load_token_from_cache():
+            return True
+
         try:
             url = f"{self.base_url}/oauth2/tokenP"
             headers = {
@@ -64,6 +118,10 @@ class KISApiClient:
                 # 토큰 만료시간 설정 (보통 24시간)
                 expires_in = safe_int_convert(str(result.get("expires_in", 86400)))
                 self.token_expires_at = datetime.now() + timedelta(seconds=expires_in)
+
+                
+                # 캐시 저장
+                self._save_token_to_cache()
                 
                 logger.info("KIS API 인증 성공")
                 return True

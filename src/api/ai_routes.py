@@ -21,6 +21,13 @@ ai_service = GeminiService()
 class AIAnalysisResponse(BaseModel):
     analysis: str
 
+class NewsRequest(BaseModel):
+    query: str = "미국 주식 시장"
+
+class NewsResponse(BaseModel):
+    summary: str
+    sources: List[Dict[str, str]]
+
 @router.post("/analyze", response_model=AIAnalysisResponse)
 async def analyze_portfolio(
     current_user: User = Depends(get_current_active_user)
@@ -51,6 +58,36 @@ async def analyze_portfolio(
 
     except Exception as e:
         logger.error(f"Error in analyze_portfolio: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/news", response_model=NewsResponse)
+async def news_briefing(
+    request: NewsRequest,
+    current_user: User = Depends(get_current_active_user)
+):
+    """
+    AI 뉴스 브리핑 생성
+    """
+    try:
+        # 1. 뉴스 검색
+        news_items = await ai_service.search_news(request.query)
+        
+        # 2. 뉴스 요약 (Gemini)
+        summary = await ai_service.summarize_news(news_items)
+        
+        # 3. 소스 정리
+        sources = []
+        for item in news_items:
+            sources.append({
+                "title": item.get("title", ""),
+                "link": item.get("url", "") or item.get("link", ""),
+                "source": item.get("source", "")
+            })
+            
+        return NewsResponse(summary=summary, sources=sources)
+        
+    except Exception as e:
+        logger.error(f"Error in news_briefing: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 def _process_balance_data(balance_data: Dict) -> Dict[str, Any]:

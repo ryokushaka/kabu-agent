@@ -15,3 +15,4 @@ python-multipart==0.0.17
 
 # AI (Google Gemini)
 google-generativeai>=0.3.0
+duckduckgo-search>=6.0.0

@@ -60,6 +60,8 @@ services:
       KIS_ACCOUNT_NUMBER: ${KIS_ACCOUNT_NUMBER}
       KIS_IS_LIVE: ${KIS_IS_LIVE:-false}
       TRADING_ENV: ${TRADING_ENV}
+      # AI API
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
       # App settings
       ENVIRONMENT: production
     volumes:

@@ -65,6 +65,7 @@ services:
       # App settings
       ENVIRONMENT: production
     volumes:
+      - ./src:/app/src
       - ./logs:/app/logs
       - ./data:/app/data
     ports:

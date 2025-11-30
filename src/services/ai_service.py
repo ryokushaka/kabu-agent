@@ -1,7 +1,10 @@
 import google.generativeai as genai
 import os
 import logging
-from typing import Dict, Any
+import json
+import hashlib
+from typing import Dict, Any, List
+from src.cache.redis_client import redis_cache as redis_client
 
 logger = logging.getLogger(__name__)
 
@@ -18,6 +21,17 @@ class GeminiService:
     async def analyze_portfolio(self, portfolio_data: Dict[str, Any]) -> str:
         if not self.api_key:
             return "### Error\n\nGemini API key is not configured. Please check your server settings."
+
+        # Generate cache key based on portfolio data hash
+        data_str = json.dumps(portfolio_data, sort_keys=True)
+        data_hash = hashlib.md5(data_str.encode()).hexdigest()
+        cache_key = f"ai:analysis:{data_hash}"
+
+        # Check cache
+        cached_analysis = redis_client.get(cache_key)
+        if cached_analysis:
+            logger.info("Returning cached portfolio analysis")
+            return cached_analysis
 
         prompt = self._construct_prompt(portfolio_data)
         
@@ -36,6 +50,8 @@ class GeminiService:
             )
             
             if response.text:
+                # Cache result for 24 hours (analysis doesn't change unless portfolio changes)
+                redis_client.set(cache_key, response.text, expire=86400)
                 return response.text
             else:
                 return "### Error\n\nNo response generated from Gemini."
@@ -90,8 +106,16 @@ class GeminiService:
 
     async def search_news(self, query: str) -> list:
         """
-        DuckDuckGo를 사용하여 뉴스 검색
+        DuckDuckGo를 사용하여 뉴스 검색 (캐싱 적용)
         """
+        # Cache key for news search
+        cache_key = f"ai:news_search:{query}"
+        cached_results = redis_client.get(cache_key)
+        
+        if cached_results:
+            logger.info(f"Returning cached news search for: {query}")
+            return cached_results
+
         try:
             from duckduckgo_search import DDGS
             
@@ -109,8 +133,13 @@ class GeminiService:
                     news_gen_global = ddgs.news(keywords=query, region="us-en", safesearch="off", timelimit="d", max_results=5)
                     for r in news_gen_global:
                         results.append(r)
-                        
-            return results[:8] # 최대 8개 반환
+            
+            final_results = results[:8] # 최대 8개 반환
+            
+            # Cache results for 1 hour
+            redis_client.set(cache_key, json.dumps(final_results), expire=3600)
+            
+            return final_results
             
         except Exception as e:
             logger.error(f"Error searching news: {e}")
@@ -118,10 +147,20 @@ class GeminiService:
 
     async def summarize_news(self, news_items: list) -> str:
         """
-        뉴스 항목들을 Gemini를 사용하여 한국어로 요약
+        뉴스 항목들을 Gemini를 사용하여 한국어로 요약 (캐싱 적용)
         """
         if not self.api_key or not news_items:
             return "뉴스 정보를 가져올 수 없습니다."
+
+        # Create a hash of the news items to use as cache key
+        news_str = json.dumps(news_items, sort_keys=True)
+        news_hash = hashlib.md5(news_str.encode()).hexdigest()
+        cache_key = f"ai:news_summary:{news_hash}"
+
+        cached_summary = redis_client.get(cache_key)
+        if cached_summary:
+            logger.info("Returning cached news summary")
+            return cached_summary
 
         # 뉴스 데이터 텍스트화
         news_text = ""
@@ -150,15 +189,20 @@ class GeminiService:
         ### 📰 주요 시장 뉴스
         
         1. **[Title in Korean]**
-           - 요약 내용...
-           - *출처: Bloomberg*
-           
+        - 요약 내용...
+        - *출처: Bloomberg*
+        
         2. ...
         """
         
         try:
             response = await self.model.generate_content_async(prompt)
-            return response.text if response.text else "뉴스 요약 생성 실패"
+            if response.text:
+                # Cache summary for 2 hours
+                redis_client.set(cache_key, response.text, expire=7200)
+                return response.text
+            else:
+                return "뉴스 요약 생성 실패"
         except Exception as e:
             logger.error(f"Error summarizing news: {e}")
             return f"뉴스 요약 중 오류 발생: {str(e)}"

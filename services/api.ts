@@ -102,8 +102,18 @@ class ApiClient {
     this.baseUrl = baseUrl;
   }
 
-  private async request<T>(endpoint: string): Promise<T> {
-    const response = await fetch(`${this.baseUrl}${endpoint}`);
+  private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+    const token = localStorage.getItem('access_token');
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options?.headers,
+    };
+
+    const response = await fetch(`${this.baseUrl}${endpoint}`, {
+      ...options,
+      headers,
+    });
     
     if (!response.ok) {
       const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
@@ -139,6 +149,12 @@ class ApiClient {
     return this.request<HistoryData[]>(`/api/portfolio/history?days=${days}`);
   }
 
+  async getAIAnalysis(): Promise<{ analysis: string }> {
+    return this.request<{ analysis: string }>('/api/ai/analyze', {
+      method: 'POST',
+    });
+  }
+
   // Exchange Rate APIs
   async getExchangeRate(baseCurrency: string = 'USD', targetCurrency: string = 'KRW'): Promise<ExchangeRate> {
     return this.request<ExchangeRate>(`/api/exchange/rate/${baseCurrency}/${targetCurrency}`);
@@ -159,5 +175,6 @@ export const getSectorAnalysis = () => apiClient.getSectorAnalysis();
 export const getReturnsAnalysis = () => apiClient.getReturnsAnalysis();
 export const getPortfolioAnalysis = () => apiClient.getPortfolioAnalysis();
 export const getPortfolioHistory = (days?: number) => apiClient.getPortfolioHistory(days);
+export const getAIAnalysis = () => apiClient.getAIAnalysis();
 export const getExchangeRate = (baseCurrency?: string, targetCurrency?: string) => apiClient.getExchangeRate(baseCurrency, targetCurrency);
 export const getMajorExchangeRates = () => apiClient.getMajorExchangeRates();

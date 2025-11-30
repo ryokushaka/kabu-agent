@@ -3,6 +3,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, LineChart, Line, XAx
 import { RefreshCw, TrendingUp, Activity, AlertTriangle, BarChart2 } from 'lucide-react';
 import { formatCurrency } from '../services/dataService';
 import { getSectorAnalysis, getReturnsAnalysis, getPortfolioAnalysis, SectorAllocation, ReturnAnalysis, AnalysisData } from '../services/api';
+import AIAnalysis from './AIAnalysis';
 
 const Analysis: React.FC = () => {
   const [sectorData, setSectorData] = useState<SectorAllocation[]>([]);
@@ -147,6 +148,9 @@ const Analysis: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* AI Analysis Section */}
+      <AIAnalysis />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Benchmark Comparison Chart */}

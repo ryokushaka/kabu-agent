@@ -155,6 +155,13 @@ class ApiClient {
     });
   }
 
+  async getAINews(query: string = "미국 주식 시장"): Promise<{ summary: string; sources: { title: string; link: string; source: string }[] }> {
+    return this.request<{ summary: string; sources: { title: string; link: string; source: string }[] }>('/api/ai/news', {
+      method: 'POST',
+      body: JSON.stringify({ query }),
+    });
+  }
+
   // Exchange Rate APIs
   async getExchangeRate(baseCurrency: string = 'USD', targetCurrency: string = 'KRW'): Promise<ExchangeRate> {
     return this.request<ExchangeRate>(`/api/exchange/rate/${baseCurrency}/${targetCurrency}`);
@@ -176,5 +183,6 @@ export const getReturnsAnalysis = () => apiClient.getReturnsAnalysis();
 export const getPortfolioAnalysis = () => apiClient.getPortfolioAnalysis();
 export const getPortfolioHistory = (days?: number) => apiClient.getPortfolioHistory(days);
 export const getAIAnalysis = () => apiClient.getAIAnalysis();
+export const getAINews = (query?: string) => apiClient.getAINews(query);
 export const getExchangeRate = (baseCurrency?: string, targetCurrency?: string) => apiClient.getExchangeRate(baseCurrency, targetCurrency);
 export const getMajorExchangeRates = () => apiClient.getMajorExchangeRates();

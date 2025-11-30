@@ -54,6 +54,39 @@ async def export_portfolio_excel():
         from src.services.analysis_service import perform_portfolio_analysis
         analysis_result = await perform_portfolio_analysis(balance)
         
+        # 4. AI 분석 수행 (Excel 포함용)
+        try:
+            from src.services.ai_service import GeminiService
+            ai_service = GeminiService()
+            
+            # Gemini용 데이터 구성
+            ai_portfolio_data = {
+                "total_value_usd": balance.stock_value,
+                "total_profit_loss": balance.total_profit_loss,
+                "total_return_rate": balance.total_return_percent,
+                "holdings": [
+                    {
+                        "name": pos.name,
+                        "symbol": pos.ticker,
+                        "quantity": pos.quantity,
+                        "return_rate": pos.profit_loss_percent,
+                        "total_value": pos.market_value
+                    } for pos in balance.positions
+                ]
+            }
+            
+            ai_text = await ai_service.analyze_portfolio(ai_portfolio_data)
+            
+            if not analysis_result:
+                analysis_result = {}
+            
+            # 분석 결과 추가
+            analysis_result["analysis"] = ai_text
+            
+        except Exception as e:
+            print(f"AI Analysis generation failed for export: {e}")
+            # 실패해도 엑셀 다운로드는 진행
+        
         # 일일 수익률 계산 (가중 평균)
         weighted_daily_return = 0
         if total_value > 0:
@@ -79,12 +112,12 @@ async def export_portfolio_excel():
             exchange_rate=balance.exchange_rate
         )
         
-        # 3. 엑셀 생성
+        # 5. 엑셀 생성
         writer = ExcelWriter()
         writer.create_workbook(summary)
         file_content = writer.save_to_bytes()
         
-        # 4. 파일 응답
+        # 6. 파일 응답
         filename = f"portfolio_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx"
         
         return Response(

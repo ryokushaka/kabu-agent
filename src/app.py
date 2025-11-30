@@ -15,8 +15,7 @@ from src.api.auth_routes import router as auth_router
 from src.api.export_routes import router as export_router
 from src.database.connection import init_database, db_manager
 from src.cache.redis_client import redis_cache
-# AI routes는 일단 보류
-# from src.api.ai_routes import router as ai_router
+from src.api.ai_routes import router as ai_router
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
@@ -44,7 +43,7 @@ app.include_router(portfolio_router)
 app.include_router(export_router)
 app.include_router(analysis_router)
 app.include_router(exchange_router)
-# app.include_router(ai_router)  # AI는 보류
+app.include_router(ai_router)
 
 # 헬스 체크 엔드포인트
 @app.get("/")

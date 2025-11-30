@@ -87,3 +87,78 @@ class GeminiService:
         **Tone**: Professional, objective, yet encouraging.
         **Language**: Korean (한국어).
         """
+
+    async def search_news(self, query: str) -> list:
+        """
+        DuckDuckGo를 사용하여 뉴스 검색
+        """
+        try:
+            from duckduckgo_search import DDGS
+            
+            logger.info(f"Searching news for: {query}")
+            results = []
+            
+            with DDGS() as ddgs:
+                # 한국어 뉴스 검색 시도
+                news_gen = ddgs.news(keywords=query, region="kr-kr", safesearch="off", timelimit="d", max_results=5)
+                for r in news_gen:
+                    results.append(r)
+                    
+                # 결과가 적으면 글로벌 뉴스도 검색 (영어 -> 한국어 요약 예정)
+                if len(results) < 3:
+                    news_gen_global = ddgs.news(keywords=query, region="us-en", safesearch="off", timelimit="d", max_results=5)
+                    for r in news_gen_global:
+                        results.append(r)
+                        
+            return results[:8] # 최대 8개 반환
+            
+        except Exception as e:
+            logger.error(f"Error searching news: {e}")
+            return []
+
+    async def summarize_news(self, news_items: list) -> str:
+        """
+        뉴스 항목들을 Gemini를 사용하여 한국어로 요약
+        """
+        if not self.api_key or not news_items:
+            return "뉴스 정보를 가져올 수 없습니다."
+
+        # 뉴스 데이터 텍스트화
+        news_text = ""
+        for i, item in enumerate(news_items):
+            title = item.get('title', 'No Title')
+            snippet = item.get('body', '') or item.get('snippet', '')
+            source = item.get('source', 'Unknown')
+            date = item.get('date', '')
+            news_text += f"[{i+1}] Title: {title}\nSource: {source} ({date})\nContent: {snippet}\n\n"
+
+        prompt = f"""
+        You are a financial news assistant. 
+        Below are the latest news headlines and snippets related to the user's stock portfolio or interest.
+        
+        ## Raw News Data
+        {news_text}
+        
+        ## Task
+        1.  Select the most relevant and important news items (up to 5).
+        2.  Summarize them into a cohesive "Market News Briefing" in **Korean**.
+        3.  For each item, provide a **Title** (in Korean), a **Summary** (1-2 sentences), and cite the **Source**.
+        4.  If the news is in English, translate the core message accurately.
+        5.  Format as a Markdown list.
+        
+        **Format Example:**
+        ### 📰 주요 시장 뉴스
+        
+        1. **[Title in Korean]**
+           - 요약 내용...
+           - *출처: Bloomberg*
+           
+        2. ...
+        """
+        
+        try:
+            response = await self.model.generate_content_async(prompt)
+            return response.text if response.text else "뉴스 요약 생성 실패"
+        except Exception as e:
+            logger.error(f"Error summarizing news: {e}")
+            return f"뉴스 요약 중 오류 발생: {str(e)}"

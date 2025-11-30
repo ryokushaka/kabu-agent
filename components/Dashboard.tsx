@@ -10,6 +10,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { formatCurrency, formatPercent } from '../services/dataService';
 import { getPortfolioSummary, getPortfolioHistory, PortfolioSummary, HistoryData } from '../services/api';
 import { getUSDToKRWRate } from '../services/exchangeService';
+import NewsFeed from './NewsFeed';
 
 const Dashboard: React.FC = () => {
   const [summary, setSummary] = useState<PortfolioSummary | null>(null);
@@ -256,9 +257,10 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Charts Section */}
+      {/* Charts and News Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-3 bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm">
+        {/* Asset Trend Chart */}
+        <div className="lg:col-span-2 bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
             <h3 className="text-lg font-bold text-toss-grey-900">자산 추이</h3>
             <div className="flex gap-1 bg-toss-grey-100 p-1 rounded-xl">
@@ -330,6 +332,11 @@ const Dashboard: React.FC = () => {
               </AreaChart>
             </ResponsiveContainer>
           </div>
+        </div>
+
+        {/* AI News Feed */}
+        <div className="lg:col-span-1 h-[420px]">
+          <NewsFeed />
         </div>
       </div>
     </div>

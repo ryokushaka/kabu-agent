@@ -39,6 +39,12 @@ app.include_router(analysis_routes.router)
 app.include_router(ai_routes.router)
 app.include_router(exchange_routes.router)
 
+@app.on_event("startup")
+async def startup_event():
+    print("Registered Routes:")
+    for route in app.routes:
+        print(f"Path: {route.path} | Name: {route.name} | Methods: {route.methods}")
+
 @app.get("/users/me", response_model=User)
 async def read_users_me(current_user: User = Depends(get_current_active_user)):
     return current_user

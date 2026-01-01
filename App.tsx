@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { HashRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import PortfolioList from './components/PortfolioList';
 import Analysis from './components/Analysis';
 import Settings from './components/Settings';
 import Admin from './components/Admin';
+import LandingPage from './src/components/LandingPage/LandingPage';
 import Login from './src/components/Login';
 import { User, Menu } from 'lucide-react';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
@@ -18,7 +19,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const getPageTitle = () => {
     switch (location.pathname) {
-      case '/': return '홈';
+      case '/dashboard': return '홈';
       case '/portfolio': return '내 주식';
       case '/analysis': return '자산 분석';
       case '/settings': return '설정';
@@ -110,8 +111,12 @@ const AppRoutes: React.FC = () => {
   return (
     <Routes>
       <Route 
+        path="/" 
+        element={!isAuthenticated ? <LandingPage /> : <Navigate to="/dashboard" replace />} 
+      />
+      <Route 
         path="/login" 
-        element={!isAuthenticated ? <Login /> : <Navigate to="/" replace />} 
+        element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" replace />} 
       />
       
       <Route
@@ -120,7 +125,7 @@ const AppRoutes: React.FC = () => {
           <ProtectedRoute>
             <AppLayout>
               <Routes>
-                <Route path="/" element={<Dashboard />} />
+                <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/portfolio" element={<PortfolioList />} />
                 <Route path="/analysis" element={<Analysis />} />
                 <Route path="/settings" element={<Settings />} />
@@ -132,7 +137,7 @@ const AppRoutes: React.FC = () => {
                     </AdminRoute>
                   } 
                 />
-                <Route path="*" element={<Navigate to="/" replace />} />
+                <Route path="*" element={<Navigate to="/dashboard" replace />} />
               </Routes>
             </AppLayout>
           </ProtectedRoute>
@@ -145,9 +150,9 @@ const AppRoutes: React.FC = () => {
 const App: React.FC = () => {
   return (
     <AuthProvider>
-      <HashRouter>
+      <BrowserRouter>
         <AppRoutes />
-      </HashRouter>
+      </BrowserRouter>
     </AuthProvider>
   );
 };

@@ -21,7 +21,7 @@ const Login: React.FC = () => {
     try {
       const response = await AuthService.login(username, password);
       login(response.user);
-      navigate('/');
+      navigate('/dashboard');
     } catch (err: any) {
       console.error('Login failed:', err);
       if (err.response && err.response.status === 401) {

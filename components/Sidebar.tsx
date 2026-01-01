@@ -21,7 +21,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, isAdmin, isOpen, onClose })
   const location = useLocation();
 
   const navItems = [
-    { path: '/', label: '홈', icon: LayoutDashboard },
+    { path: '/dashboard', label: '홈', icon: LayoutDashboard },
     { path: '/portfolio', label: '내 주식', icon: PieChart },
     { path: '/analysis', label: '자산 분석', icon: TrendingUp },
     { path: '/settings', label: '설정', icon: Settings },

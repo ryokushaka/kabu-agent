@@ -13,9 +13,12 @@ from src.api.analysis_routes import router as analysis_router
 from src.api.exchange_routes import router as exchange_router
 from src.api.auth_routes import router as auth_router
 from src.api.export_routes import router as export_router
+from src.api.public_routes import router as public_router
 from src.database.connection import init_database, db_manager
 from src.cache.redis_client import redis_cache
 from src.api.ai_routes import router as ai_router
+
+import os
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
@@ -29,9 +32,15 @@ app = FastAPI(
 )
 
 # CORS 설정 (프론트엔드 연동을 위해)
+cors_origins = os.getenv("CORS_ORIGINS", "*")
+if cors_origins == "*":
+    origins = ["*"]
+else:
+    origins = [origin.strip() for origin in cors_origins.split(",")]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 개발 환경에서는 모두 허용, 프로덕션에서는 특정 도메인만
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -44,6 +53,7 @@ app.include_router(export_router)
 app.include_router(analysis_router)
 app.include_router(exchange_router)
 app.include_router(ai_router)
+app.include_router(public_router)
 
 # 헬스 체크 엔드포인트
 @app.get("/")

@@ -1,7 +1,7 @@
 """
 Public Routes for Non-authenticated Users
 """
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
 import logging
 
 from src.kis_api import kis_client

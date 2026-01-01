@@ -39,6 +39,7 @@ export const LoginInput: React.FC<InputProps> = ({ label, type = "text", error, 
             type="button"
             onClick={() => setShowPassword(!showPassword)}
             className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors p-1"
+            aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
           >
             {showPassword ? (
               <EyeOffIcon className="w-5 h-5" />

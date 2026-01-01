@@ -8,6 +8,7 @@ import Settings from './components/Settings';
 import Admin from './components/Admin';
 import LandingPage from './src/components/LandingPage/LandingPage';
 import Login from './src/components/Login';
+import Contact from './src/components/Contact';
 import { User, Menu } from 'lucide-react';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
 
@@ -117,6 +118,10 @@ const AppRoutes: React.FC = () => {
       <Route 
         path="/login" 
         element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" replace />} 
+      />
+      <Route
+        path="/contact"
+        element={<Contact />}
       />
       
       <Route

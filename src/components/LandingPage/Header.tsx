@@ -32,10 +32,10 @@ const Header: React.FC = () => {
             로그인
           </button>
           <button 
-            onClick={() => navigate('/login')}
+            onClick={() => navigate('/contact')}
             className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-2.5 px-6 rounded-full transition-all shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
           >
-            시작하기
+            이용 문의
           </button>
         </div>
       </div>

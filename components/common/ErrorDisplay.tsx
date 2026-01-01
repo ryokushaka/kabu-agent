@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import { AlertCircle, RefreshCw } from 'lucide-react';
-import { ApiError } from '../../services/api';
+import { ApiError } from '../../services/api/client';
 
 interface ErrorDisplayProps {
   error: Error | ApiError | null;

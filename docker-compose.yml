@@ -1,7 +1,6 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
     container_name: kabu-postgres
@@ -20,16 +19,20 @@ services:
       - kabu-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U kabu_user -d kabu_agent"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
-  # Redis Cache
   redis:
     image: redis:7-alpine
     container_name: kabu-redis
     restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass redis_password
+    command: redis-server --appendonly yes --requirepass redis_password --maxmemory 128mb --maxmemory-policy allkeys-lru
     volumes:
       - redis_data:/data
     ports:
@@ -37,12 +40,16 @@ services:
     networks:
       - kabu-network
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      test: ["CMD", "redis-cli", "-a", "redis_password", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          memory: 256M
 
-  # FastAPI Backend
   backend:
     build:
       context: .
@@ -50,22 +57,16 @@ services:
     container_name: kabu-backend
     restart: unless-stopped
     environment:
-      # Database
       DATABASE_URL: postgresql://kabu_user:kabu_password@postgres:5432/kabu_agent
-      # Redis
       REDIS_URL: redis://:redis_password@redis:6379/0
-      # KIS API (will be loaded from .env)
       KIS_APP_KEY: ${KIS_APP_KEY}
       KIS_APP_SECRET: ${KIS_APP_SECRET}
       KIS_ACCOUNT_NUMBER: ${KIS_ACCOUNT_NUMBER}
       KIS_IS_LIVE: ${KIS_IS_LIVE:-false}
       TRADING_ENV: ${TRADING_ENV}
-      # AI API
       GEMINI_API_KEY: ${GEMINI_API_KEY}
-      # App settings
       ENVIRONMENT: production
     volumes:
-      - ./src:/app/src
       - ./logs:/app/logs
       - ./data:/app/data
     ports:
@@ -82,8 +83,12 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
 
-  # React Frontend
   frontend:
     build:
       context: .
@@ -91,7 +96,6 @@ services:
     container_name: kabu-frontend
     restart: unless-stopped
     environment:
-      REACT_APP_API_BASE_URL: http://localhost:8000
       NODE_ENV: production
     ports:
       - "3000:80"
@@ -100,14 +104,18 @@ services:
     networks:
       - kabu-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
       interval: 30s
       timeout: 10s
       retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 128M
 
-  # Nginx Reverse Proxy (Optional)
   nginx:
-    image: nginx:alpine
+    image: fholzer/nginx-brotli:latest
     container_name: kabu-nginx
     restart: unless-stopped
     ports:
@@ -121,15 +129,17 @@ services:
       - backend
     networks:
       - kabu-network
+    deploy:
+      resources:
+        limits:
+          memory: 128M
 
-# Named volumes for data persistence
 volumes:
   postgres_data:
     driver: local
   redis_data:
     driver: local
 
-# Custom network
 networks:
   kabu-network:
     driver: bridge

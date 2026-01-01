@@ -1,17 +1,25 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Eye, EyeOff, TrendingUp, AlertCircle } from 'lucide-react';
+import { AlertCircle, TrendingUp } from 'lucide-react';
 import AuthService from '../services/auth';
 import { useAuth } from '../contexts/AuthContext';
+import { LoginInput } from './LoginInput';
+import { InfoIcon } from './LoginIcons';
 
 const Login: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    username: '',
+    password: ''
+  });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,7 +27,7 @@ const Login: React.FC = () => {
     setLoading(true);
 
     try {
-      const response = await AuthService.login(username, password);
+      const response = await AuthService.login(formData.username, formData.password);
       login(response.user);
       navigate('/dashboard');
     } catch (err: any) {
@@ -35,91 +43,108 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-toss-grey-50 via-white to-blue-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Logo and Header */}
-        <div className="text-center mb-8 animate-fade-in">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-toss-blue to-blue-600 rounded-3xl shadow-lg shadow-blue-200 mb-6">
-            <TrendingUp className="text-blue w-8 h-8" />
-          </div>
-          <h1 className="text-3xl font-bold text-toss-grey-900 mb-2">
-            Kabu Agent
-          </h1>
-          <p className="text-toss-grey-500">
-            안전하고 편리한 자산 관리
-          </p>
-        </div>
+    <div className="min-h-screen flex flex-col items-center justify-between p-6 md:p-12 relative overflow-hidden bg-white">
+      
+      {/* Background Decor - Subtle premium gradient shapes */}
+      <div className="fixed top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-100 rounded-full blur-3xl opacity-40 pointer-events-none" />
+      <div className="fixed bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-indigo-50 rounded-full blur-3xl opacity-50 pointer-events-none" />
 
+      {/* Header / Brand Area */}
+      <header className="w-full max-w-7xl flex justify-between items-center z-10 mb-8 animate-fade-up">
+        <div className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate('/')}>
+           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform duration-300">
+             <TrendingUp size={20} strokeWidth={3} />
+           </div>
+           <span className="text-xl font-bold tracking-tight text-gray-900">Kabu Agent</span>
+        </div>
+        <nav className="hidden md:flex gap-6 text-sm font-medium text-gray-500">
+          <a href="#" className="hover:text-blue-600 transition-colors">고객센터</a>
+          <a href="#" className="hover:text-blue-600 transition-colors">이용안내</a>
+        </nav>
+      </header>
+
+      {/* Main Content */}
+      <main className="w-full max-w-md z-10 flex-1 flex flex-col justify-center animate-fade-up" style={{ animationDelay: '0.1s' }}>
+        
         {/* Login Card */}
-        <div className="bg-white border border-toss-grey-100 rounded-3xl shadow-sm p-8 animate-fade-in">
-          <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="bg-white rounded-[32px] shadow-xl shadow-blue-900/5 p-8 md:p-10 border border-white/50 backdrop-blur-xl">
+          
+          <div className="text-center mb-10">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-600 rounded-2xl mb-6 shadow-md text-white">
+               <TrendingUp size={32} strokeWidth={2.5} />
+            </div>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3 leading-tight">
+              안녕하세요<br/>
+              <span className="text-blue-600">Kabu Agent</span> 입니다
+            </h1>
+            <p className="text-gray-500 text-[15px] font-medium">
+              안전하고 편리한 자산 관리를 시작해보세요
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Error Alert */}
             {error && (
               <div className="bg-red-50 border border-red-100 rounded-xl p-4 flex items-start gap-3 animate-fade-in">
-                <AlertCircle className="w-5 h-5 text-toss-red shrink-0 mt-0.5" />
+                <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
                 <div>
-                  <h3 className="text-sm font-bold text-toss-grey-900 mb-1">로그인 실패</h3>
-                  <p className="text-sm text-toss-grey-700">{error}</p>
+                  <h3 className="text-sm font-bold text-gray-900 mb-1">로그인 실패</h3>
+                  <p className="text-sm text-gray-700">{error}</p>
                 </div>
               </div>
             )}
 
-            {/* Username Input */}
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-toss-grey-700 mb-2">
-                아이디
-              </label>
-              <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                disabled={loading}
-                required
-                className="w-full bg-white border border-toss-grey-200 text-toss-grey-900 rounded-xl px-4 py-3 focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/10 hover:border-toss-grey-300 disabled:bg-toss-grey-50 disabled:text-toss-grey-400 outline-none transition-all duration-200"
-                placeholder="admin"
-                autoComplete="username"
-              />
-            </div>
+            <LoginInput 
+              label="아이디" 
+              name="username" 
+              placeholder="아이디를 입력해주세요" 
+              value={formData.username}
+              onChange={handleChange}
+              disabled={loading}
+              autoComplete="username"
+            />
+            
+            <LoginInput 
+              label="비밀번호" 
+              name="password" 
+              type="password"
+              placeholder="비밀번호를 입력해주세요" 
+              value={formData.password}
+              onChange={handleChange}
+              disabled={loading}
+              autoComplete="current-password"
+            />
 
-            {/* Password Input */}
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-toss-grey-700 mb-2">
-                비밀번호
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={loading}
-                  required
-                  className="w-full bg-white border border-toss-grey-200 text-toss-grey-900 rounded-xl px-4 py-3 pr-12 focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/10 hover:border-toss-grey-300 disabled:bg-toss-grey-50 disabled:text-toss-grey-400 outline-none transition-all duration-200"
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  disabled={loading}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-toss-grey-400 hover:text-toss-grey-600 disabled:text-toss-grey-300 transition-colors p-1 rounded-lg hover:bg-toss-grey-50 focus:outline-none focus:ring-2 focus:ring-toss-blue/10"
-                  aria-label={showPassword ? "비밀번호 숨기기" : "비밀번호 보기"}
-                >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
+            {/* Default Credentials Hint Box */}
+            <div className="bg-blue-50/80 rounded-xl p-4 flex items-start gap-3">
+              <InfoIcon className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div className="flex-1">
+                <p className="text-xs font-bold text-blue-700 uppercase mb-1">Demo Account (Mock Data)</p>
+                <p className="text-sm text-blue-800 font-medium">
+                  admin / admin123
+                </p>
               </div>
             </div>
 
-            {/* Login Button */}
-            <button
-              type="submit"
+            <button 
+              type="submit" 
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-300/50 active:scale-[0.98] disabled:bg-toss-grey-200 disabled:text-toss-grey-400 disabled:cursor-not-allowed disabled:hover:shadow-none text-white font-bold py-3.5 rounded-xl transition-all duration-200 shadow-sm shadow-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 min-h-[52px] flex items-center justify-center gap-2"
+              className={`
+                w-full py-4 px-6 mt-2
+                bg-blue-500 hover:bg-blue-600 active:bg-blue-700
+                text-white text-[16px] font-bold rounded-2xl
+                shadow-lg shadow-blue-500/20
+                transform transition-all duration-200
+                disabled:opacity-70 disabled:cursor-not-allowed
+                flex justify-center items-center gap-2
+              `}
             >
               {loading ? (
                 <>
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
                   <span>로그인 중...</span>
                 </>
               ) : (
@@ -128,25 +153,30 @@ const Login: React.FC = () => {
             </button>
           </form>
 
-          {/* Demo Account Info */}
-          <div className="mt-6 pt-6 border-t border-toss-grey-100">
-            <div className="bg-blue-50 border border-blue-100 rounded-xl p-4">
-              <p className="text-xs font-medium text-toss-grey-500 mb-2">기본 관리자 계정</p>
-              <p className="text-sm text-toss-grey-700 font-mono">
-                admin / admin123
-              </p>
-            </div>
+          <div className="mt-8 flex justify-center items-center gap-4 text-sm text-gray-500 font-medium">
+             <button type="button" className="hover:text-gray-800 transition-colors">아이디 찾기</button>
+             <div className="w-px h-3 bg-gray-300"></div>
+             <button type="button" className="hover:text-gray-800 transition-colors">비밀번호 재설정</button>
+             <div className="w-px h-3 bg-gray-300"></div>
+             <button type="button" onClick={() => navigate('/contact')} className="hover:text-gray-800 transition-colors">이용 문의</button>
           </div>
-        </div>
 
-        {/* Footer */}
-        <div className="text-center mt-6">
-          <p className="text-xs text-toss-grey-500">
-            로그인하시면 <span className="text-toss-grey-700 font-medium">서비스 이용약관</span> 및{' '}
-            <span className="text-toss-grey-700 font-medium">개인정보처리방침</span>에 동의하는 것으로 간주됩니다.
-          </p>
         </div>
-      </div>
+        
+        {/* Footer Text */}
+        <p className="text-center text-xs text-gray-400 mt-8 font-medium leading-relaxed">
+          로그인하시면 서비스 이용약관 및 개인정보처리방침에 <br className="hidden xs:block"/>동의하는 것으로 간주됩니다.
+        </p>
+
+      </main>
+
+      {/* Footer Area */}
+      <footer className="w-full max-w-7xl text-center md:text-left py-4 z-10 animate-fade-up" style={{ animationDelay: '0.2s' }}>
+         <div className="text-[11px] text-gray-400 space-y-1">
+            <p>Copyright © Kabu Agent Corp. All rights reserved.</p>
+         </div>
+      </footer>
+
     </div>
   );
 };

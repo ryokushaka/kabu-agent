@@ -1,6 +1,9 @@
 from fastapi import APIRouter, HTTPException
 from src.api.portfolio_routes import get_portfolio_balance
 from src.kis_api import kis_client
+from src.database.models import User
+from src.auth.dependencies import get_current_active_user
+from fastapi import Depends
 from src.analysis.metrics import (
     calculate_daily_returns, calculate_volatility, 
     calculate_beta, calculate_sharpe_ratio, calculate_max_drawdown
@@ -14,10 +17,12 @@ router = APIRouter(prefix="/api/analysis", tags=["Analysis"])
 from src.services.analysis_service import perform_portfolio_analysis
 
 @router.get("/portfolio")
-async def get_portfolio_analysis():
+async def get_portfolio_analysis(
+    current_user: User = Depends(get_current_active_user)
+):
     """포트폴리오 리스크 분석 및 벤치마크 비교"""
     try:
-        balance = await get_portfolio_balance()
+        balance = await get_portfolio_balance(current_user=current_user)
         result = await perform_portfolio_analysis(balance)
         
         if not result:
@@ -30,10 +35,12 @@ async def get_portfolio_analysis():
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/sector")
-async def get_sector_analysis():
+async def get_sector_analysis(
+    current_user: User = Depends(get_current_active_user)
+):
     """섹터별 비중 분석"""
     try:
-        balance = await get_portfolio_balance()
+        balance = await get_portfolio_balance(current_user=current_user)
         if not balance.positions:
             return {"sectors": []}
             
@@ -72,10 +79,12 @@ async def get_sector_analysis():
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/returns")
-async def get_returns_analysis():
+async def get_returns_analysis(
+    current_user: User = Depends(get_current_active_user)
+):
     """수익률 분석 (최고/최악 종목 등)"""
     try:
-        balance = await get_portfolio_balance()
+        balance = await get_portfolio_balance(current_user=current_user)
         if not balance.positions:
             return {}
             

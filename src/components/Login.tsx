@@ -154,11 +154,11 @@ const Login: React.FC = () => {
           </form>
 
           <div className="mt-8 flex justify-center items-center gap-4 text-sm text-gray-500 font-medium">
-             <button className="hover:text-gray-800 transition-colors">아이디 찾기</button>
+             <button type="button" className="hover:text-gray-800 transition-colors">아이디 찾기</button>
              <div className="w-px h-3 bg-gray-300"></div>
-             <button className="hover:text-gray-800 transition-colors">비밀번호 재설정</button>
+             <button type="button" className="hover:text-gray-800 transition-colors">비밀번호 재설정</button>
              <div className="w-px h-3 bg-gray-300"></div>
-             <button onClick={() => navigate('/contact')} className="hover:text-gray-800 transition-colors">이용 문의</button>
+             <button type="button" onClick={() => navigate('/contact')} className="hover:text-gray-800 transition-colors">이용 문의</button>
           </div>
 
         </div>

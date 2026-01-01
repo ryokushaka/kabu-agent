@@ -19,14 +19,6 @@ async def get_market_indices():
     """
     try:
         indices = {}
-        # NASDAQ (NAS), S&P 500 (SPX), Dow Jones (DOW), Philadelphia Semiconductor (PHL)
-        target_indices = {
-            "NAS": "NASDAQ", 
-            "SPX": "S&P 500", 
-            "DAU": "Dow Jones", # KIS might use different codes, checking kis_api.py logic or standard codes
-            "PHL": "Philadelphia Semi"
-        }
-        
         # Note: kis_api.py get_overseas_index_price uses EXCD.
         # Common KIS codes: NAS (Nasdaq), NYS (NYSE), AMS (Amex) - these are exchanges.
         # For indices, we might need specific symbols or use the index-price endpoint if available.

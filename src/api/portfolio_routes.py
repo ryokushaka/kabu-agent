@@ -7,6 +7,8 @@ from typing import Dict, List, Optional
 import logging
 from sqlalchemy.orm import Session
 from src.database.connection import get_db
+from src.database.models import User
+from src.auth.dependencies import get_current_active_user
 from src.kis_api import kis_client
 
 logger = logging.getLogger(__name__)
@@ -42,18 +44,12 @@ class PortfolioBalance(BaseModel):
     exchange_rate: float = 1430.0 # 환율 (KRW/USD)
 
 
-def _get_exchange_balance(exchange_code: str):
-    """특정 거래소의 잔고 조회"""
-    try:
-        # kis_client를 사용하여 잔고 조회 (NASD 고정)
-        # TODO: exchange_code 파라미터 지원 추가 필요
-        return kis_client.get_overseas_balance()
-    except Exception as e:
-        logger.error(f"Error fetching {exchange_code} balance: {e}")
-        return None
+
 
 @router.get("/balance", response_model=PortfolioBalance)
-async def get_portfolio_balance():
+async def get_portfolio_balance(
+    current_user: User = Depends(get_current_active_user)
+):
     """
     포트폴리오 잔고 조회
     
@@ -61,10 +57,10 @@ async def get_portfolio_balance():
         포트폴리오 전체 잔고 및 보유 종목 정보
     """
     try:
-        logger.info("Fetching portfolio balance from KIS API")
+        logger.info(f"Fetching portfolio balance for {current_user.username} from KIS API")
         
-        # NASD 거래소에서 조회 (모든 미국 종목이 포함됨)
-        balance_data = _get_exchange_balance("NASD")
+        # KIS Client에 사용자 컨텍스트 전달
+        balance_data = kis_client.get_overseas_balance(user=current_user)
         
         logger.info(f"Raw KIS Balance Data: {balance_data}")
 
@@ -143,7 +139,9 @@ async def get_portfolio_balance():
 
 
 @router.get("/summary")
-async def get_portfolio_summary():
+async def get_portfolio_summary(
+    current_user: User = Depends(get_current_active_user)
+):
     """
     포트폴리오 요약 정보
     
@@ -151,7 +149,7 @@ async def get_portfolio_summary():
         간단한 요약 정보 (총 자산, 수익률 등)
     """
     try:
-        balance = await get_portfolio_balance()
+        balance = await get_portfolio_balance(current_user=current_user)
         
         # 총 자산을 포지션들의 market_value 합으로 계산
         total_assets = sum(pos.market_value for pos in balance.positions)
@@ -181,7 +179,10 @@ class HistoryData(BaseModel):
 
 
 @router.post("/snapshot")
-async def create_portfolio_snapshot(db: Session = Depends(get_db)):
+async def create_portfolio_snapshot(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
     """
     현재 포트폴리오 상태 스냅샷 생성 (일별 기록용)
     """
@@ -190,7 +191,7 @@ async def create_portfolio_snapshot(db: Session = Depends(get_db)):
         from src.database.models import Portfolio, PortfolioHistory
         
         # 1. 현재 포트폴리오 잔고 조회 (KIS API)
-        balance = await get_portfolio_balance()
+        balance = await get_portfolio_balance(current_user=current_user)
         
         # 2. DB에 포트폴리오 정보가 없으면 생성 (임시: 단일 사용자 가정)
         # 실제로는 로그인된 사용자의 포트폴리오를 찾아야 함
@@ -330,7 +331,11 @@ async def seed_portfolio_history(days: int = 365, db: Session = Depends(get_db))
 
 
 @router.get("/history", response_model=List[HistoryData])
-async def get_portfolio_history(days: int = 30, db: Session = Depends(get_db)):
+async def get_portfolio_history(
+    days: int = 30, 
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_active_user)
+):
     """
     포트폴리오 히스토리 조회 (DB 스냅샷 기반)
     """
@@ -363,7 +368,7 @@ async def get_portfolio_history(days: int = 30, db: Session = Depends(get_db)):
                 ]
         
         # 데이터가 없으면 오늘 데이터만 반환 (서비스 시작일)
-        current_balance = await get_portfolio_balance()
+        current_balance = await get_portfolio_balance(current_user=current_user)
         current_value = sum(pos.market_value for pos in current_balance.positions)
         
         current_return_percent = current_balance.total_return_percent

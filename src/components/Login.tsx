@@ -119,7 +119,7 @@ const Login: React.FC = () => {
             <div className="bg-blue-50/80 rounded-xl p-4 flex items-start gap-3">
               <InfoIcon className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
               <div className="flex-1">
-                <p className="text-xs font-bold text-blue-700 uppercase mb-1">Demo Account</p>
+                <p className="text-xs font-bold text-blue-700 uppercase mb-1">Demo Account (Mock Data)</p>
                 <p className="text-sm text-blue-800 font-medium">
                   admin / admin123
                 </p>

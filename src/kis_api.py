@@ -98,6 +98,35 @@ class KISApiClient:
             logger.warning(f"자격증명 DB 로드 실패: {e}. 환경변수를 시도합니다.")
             self._load_credentials_from_env()
 
+    def _get_user_token_entry(self, session: Session, user: User) -> Optional[UserApiToken]:
+        """DB에서 특정 사용자의 토큰 엔트리 조회"""
+        return session.query(UserApiToken).filter(
+            UserApiToken.user_id == user.id,
+            UserApiToken.service == 'KIS'
+        ).first()
+
+    def _load_user_credentials(self, user: User) -> bool:
+        """특정 사용자의 자격증명 로드"""
+        try:
+            with db_manager.get_session_context() as session:
+                token_entry = self._get_user_token_entry(session, user)
+                if token_entry:
+                    self.app_key = token_entry.kis_app_key
+                    self.app_secret = token_entry.kis_app_secret
+                    self.account_number = token_entry.kis_account_number
+                    return True
+            
+            # DB에 없으면 환경변수 시도 (thdus0405가 Real User라면 Env가 Real Key일 수 있음)
+            logger.info(f"{user.username}의 DB 자격증명이 없습니다. 환경변수 확인 중...")
+            self._load_credentials_from_env()
+            if self.app_key and self.app_secret:
+                return True
+                
+        except Exception as e:
+            logger.error(f"사용자 자격증명 로드 실패: {e}")
+        
+        return False
+
     def _load_credentials_from_env(self):
         """환경변수에서 API 자격증명 로드"""
         try:
@@ -251,8 +280,70 @@ class KISApiClient:
         headers["tr_id"] = tr_id
         return headers
     
-    def get_overseas_balance(self) -> Dict:
-        """해외주식 잔고 조회 (계좌번호 필수)"""
+
+    
+    def _get_mock_balance(self) -> Dict:
+        """Mock 잔고 데이터 반환 (admin용)"""
+        return {
+            "rt_cd": "0",
+            "msg1": "Mock Data (Demo)",
+            "output1": [
+                {
+                    "ovrs_pdno": "AAPL",
+                    "ovrs_item_name": "Apple Inc.",
+                    "ovrs_cblc_qty": "50",
+                    "pchs_avg_pric": "150.00",
+                    "now_pric2": "185.00",
+                    "ovrs_stck_evlu_amt": "9250.00",
+                    "frcr_evlu_pfls_amt": "1750.00",
+                    "evlu_pfls_rt": "23.33",
+                    "ovrs_excg_cd": "NASD",
+                    "prdy_ctrt": "1.2"
+                },
+                {
+                    "ovrs_pdno": "MSFT",
+                    "ovrs_item_name": "Microsoft Corp.",
+                    "ovrs_cblc_qty": "20",
+                    "pchs_avg_pric": "250.00",
+                    "now_pric2": "350.00",
+                    "ovrs_stck_evlu_amt": "7000.00",
+                    "frcr_evlu_pfls_amt": "2000.00",
+                    "evlu_pfls_rt": "40.00",
+                    "ovrs_excg_cd": "NASD",
+                    "prdy_ctrt": "0.8"
+                },
+                {
+                    "ovrs_pdno": "TSLA",
+                    "ovrs_item_name": "Tesla Inc.",
+                    "ovrs_cblc_qty": "30",
+                    "pchs_avg_pric": "200.00",
+                    "now_pric2": "240.00",
+                    "ovrs_stck_evlu_amt": "7200.00",
+                    "frcr_evlu_pfls_amt": "1200.00",
+                    "evlu_pfls_rt": "20.00",
+                    "ovrs_excg_cd": "NASD",
+                    "prdy_ctrt": "-1.5"
+                }
+            ],
+            "output2": {
+                "frcr_pchs_amt1": "19500.00", # 총매입금액
+                "tot_pftrt": "25.38", # 총수익률
+                "frcr_dncl_amt_2": "5500.00" # 외화예수금 (Cash)
+            }
+        }
+
+    def get_overseas_balance(self, user: Optional[User] = None) -> Dict:
+        """해외주식 잔고 조회"""
+        # 1. Admin 유저는 Mock Data 반환
+        if user and user.username == 'admin':
+            logger.info("[Mock] Admin User - fetch balance")
+            return self._get_mock_balance()
+            
+        # 2. 일반 유저는 자격증명 로드 후 실제 호출
+        if user:
+            if not self._load_user_credentials(user):
+                return {"rt_cd": "1", "msg1": "API Credentials not found for user", "requires_account": True}
+
         try:
             # 계좌번호 검증 및 설정
             if not self.account_number:
@@ -497,65 +588,7 @@ class KISApiClient:
             logger.error(f"{symbol} 상품기본정보 조회 실패: {e}")
             return {"rt_cd": "1", "msg1": "조회 실패"}
 
-    def get_overseas_balance(self) -> Dict:
-        """해외주식 잔고 조회"""
-        try:
-            url = f"{self.base_url}/uapi/overseas-stock/v1/trading/inquire-balance"
-            # 실전: TTTS3012R, 모의: JTTT3007R
-            tr_id = "TTTS3012R" if "openapi.koreainvestment.com" in self.base_url else "JTTT3007R"
-            headers = self._get_headers(tr_id)
-            
-            params = {
-                "CANO": self.account_number[:8],  # 계좌번호 앞 8자리
-                "ACNT_PRDT_CD": self.account_number[8:],  # 계좌번호 뒤 2자리
-                "OVRS_EXCG_CD": "NASD",  # 해외거래소코드 (미국 전체)
-                "TR_CRCY_CD": "USD",       # 거래통화코드
-                "CTX_AREA_FK200": "",      # 연속조회검색조건200
-                "CTX_AREA_NK200": ""       # 연속조회키200
-            }
-            
-            response = self._session.get(url, headers=headers, params=params)
-            response.raise_for_status()
-            
-            result = response.json()
-            logger.info("해외주식 잔고 조회 성공")
-            return result
-            
-        except Exception as e:
-            logger.error(f"해외주식 잔고 조회 실패: {e}")
-            # Mock Data Fallback
-            logger.info("Returning mock balance data")
-            return {
-                "rt_cd": "0",
-                "msg1": "Mock Data",
-                "output1": [
-                    {
-                        "ovrs_pdno": "AAPL",
-                        "ovrs_item_name": "Apple Inc.",
-                        "ovrs_cblc_qty": "10",
-                        "pchs_avg_pric": "150.00",
-                        "now_pric2": "175.00",
-                        "ovrs_stck_evlu_amt": "1750.00",
-                        "frcr_evlu_pfls_amt": "250.00",
-                        "evlu_pfls_rt": "16.67"
-                    },
-                    {
-                        "ovrs_pdno": "MSFT",
-                        "ovrs_item_name": "Microsoft Corp.",
-                        "ovrs_cblc_qty": "5",
-                        "pchs_avg_pric": "280.00",
-                        "now_pric2": "310.00",
-                        "ovrs_stck_evlu_amt": "1550.00",
-                        "frcr_evlu_pfls_amt": "150.00",
-                        "evlu_pfls_rt": "10.71"
-                    }
-                ],
-                "output2": {
-                    "frcr_pchs_amt1": "3000.00", # 총매입금액
-                    "tot_pftrt": "13.33", # 총수익률
-                    "frcr_dncl_amt_2": "500.00" # 외화예수금 (Cash)
-                }
-            }
+
     
     def get_overseas_stock_details(self, symbol: str) -> Dict:
         """해외주식 상세 정보 조회 (현재가, 52주, 섹터)"""

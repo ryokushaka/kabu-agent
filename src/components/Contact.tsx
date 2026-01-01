@@ -54,6 +54,7 @@ const Contact: React.FC = () => {
           </a>
 
           <button 
+            type="button"
             onClick={() => navigate('/')}
             className="flex items-center justify-center gap-2 w-full py-3.5 text-gray-500 hover:text-gray-900 font-medium transition-colors"
           >

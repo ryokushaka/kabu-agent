@@ -1,6 +1,4 @@
-/**
- * Common Components - Centralized export
- */
 export * from './ErrorBoundary';
 export * from './LoadingSpinner';
 export * from './ErrorDisplay';
+export { default as OptimizedImage } from './OptimizedImage';

@@ -1,18 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
-import Dashboard from './components/Dashboard';
-import PortfolioList from './components/PortfolioList';
-import Analysis from './components/Analysis';
-import Settings from './components/Settings';
-import Admin from './components/Admin';
-import LandingPage from './src/components/LandingPage/LandingPage';
-import Login from './src/components/Login';
-import Contact from './src/components/Contact';
-import { User, Menu } from 'lucide-react';
+import { Menu } from 'lucide-react';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
+import { LoadingSpinner } from './components/common';
 
-// Layout Wrapper
+const Dashboard = lazy(() => import('./components/Dashboard'));
+const PortfolioList = lazy(() => import('./components/PortfolioList'));
+const Analysis = lazy(() => import('./components/Analysis'));
+const Settings = lazy(() => import('./components/Settings'));
+const Admin = lazy(() => import('./components/Admin'));
+const LandingPage = lazy(() => import('./src/components/LandingPage/LandingPage'));
+const Login = lazy(() => import('./src/components/Login'));
+const Contact = lazy(() => import('./src/components/Contact'));
+
+const PageLoader: React.FC = () => (
+  <div className="min-h-screen bg-toss-grey-100 flex items-center justify-center">
+    <LoadingSpinner size="lg" message="페이지 로딩 중..." />
+  </div>
+);
+
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -38,9 +45,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         onClose={() => setIsSidebarOpen(false)}
       />
       
-      {/* Main Content Area */}
       <main className="flex-1 w-full md:ml-64 min-h-screen flex flex-col transition-all duration-300">
-        {/* Header */}
         <header className="h-16 bg-white/80 backdrop-blur-md border-b border-toss-grey-200 sticky top-0 z-40 px-4 md:px-8 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <button 
@@ -62,12 +67,12 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 src="/logo/gamja.png" 
                 alt="Kabu Agent Logo" 
                 className="w-10 h-10 object-cover"
+                loading="lazy"
               />
              </div>
           </div>
         </header>
 
-        {/* Content */}
         <div className="flex-1 p-4 md:p-8 overflow-y-auto">
           <div className="max-w-5xl mx-auto">
             {children}
@@ -82,7 +87,7 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
-    return <div className="min-h-screen bg-toss-grey-100 flex items-center justify-center text-toss-grey-900">로딩 중...</div>;
+    return <PageLoader />;
   }
 
   if (!isAuthenticated) {
@@ -96,7 +101,7 @@ const AdminRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div className="min-h-screen bg-toss-grey-100 flex items-center justify-center text-toss-grey-900">로딩 중...</div>;
+    return <PageLoader />;
   }
 
   if (user?.username !== 'admin') {
@@ -110,45 +115,49 @@ const AppRoutes: React.FC = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <Routes>
-      <Route 
-        path="/" 
-        element={!isAuthenticated ? <LandingPage /> : <Navigate to="/dashboard" replace />} 
-      />
-      <Route 
-        path="/login" 
-        element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" replace />} 
-      />
-      <Route
-        path="/contact"
-        element={<Contact />}
-      />
-      
-      <Route
-        path="*"
-        element={
-          <ProtectedRoute>
-            <AppLayout>
-              <Routes>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/portfolio" element={<PortfolioList />} />
-                <Route path="/analysis" element={<Analysis />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route 
-                  path="/admin" 
-                  element={
-                    <AdminRoute>
-                      <Admin />
-                    </AdminRoute>
-                  } 
-                />
-                <Route path="*" element={<Navigate to="/dashboard" replace />} />
-              </Routes>
-            </AppLayout>
-          </ProtectedRoute>
-        }
-      />
-    </Routes>
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
+        <Route 
+          path="/" 
+          element={!isAuthenticated ? <LandingPage /> : <Navigate to="/dashboard" replace />} 
+        />
+        <Route 
+          path="/login" 
+          element={!isAuthenticated ? <Login /> : <Navigate to="/dashboard" replace />} 
+        />
+        <Route
+          path="/contact"
+          element={<Contact />}
+        />
+        
+        <Route
+          path="*"
+          element={
+            <ProtectedRoute>
+              <AppLayout>
+                <Suspense fallback={<LoadingSpinner size="lg" message="로딩 중..." />}>
+                  <Routes>
+                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/portfolio" element={<PortfolioList />} />
+                    <Route path="/analysis" element={<Analysis />} />
+                    <Route path="/settings" element={<Settings />} />
+                    <Route 
+                      path="/admin" 
+                      element={
+                        <AdminRoute>
+                          <Admin />
+                        </AdminRoute>
+                      } 
+                    />
+                    <Route path="*" element={<Navigate to="/dashboard" replace />} />
+                  </Routes>
+                </Suspense>
+              </AppLayout>
+            </ProtectedRoute>
+          }
+        />
+      </Routes>
+    </Suspense>
   );
 };
 

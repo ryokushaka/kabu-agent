@@ -1,2 +1,2 @@
 export * from './api';
-export * from './domain';
+export type { StockPosition, SectorData, User, PeriodType } from './domain';

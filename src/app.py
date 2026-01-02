@@ -1,12 +1,14 @@
-"""
-FastAPI 메인 애플리케이션
-"""
 from dotenv import load_dotenv
-load_dotenv()  # .env 파일 로드
+load_dotenv()
 
-from fastapi import FastAPI
+from contextlib import asynccontextmanager
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.middleware.gzip import GZipMiddleware
+from starlette.middleware.base import BaseHTTPMiddleware
 import logging
+import os
+import time
 
 from src.api.portfolio_routes import router as portfolio_router
 from src.api.analysis_routes import router as analysis_router
@@ -18,20 +20,68 @@ from src.database.connection import init_database, db_manager
 from src.cache.redis_client import redis_cache
 from src.api.ai_routes import router as ai_router
 
-import os
-
-# 로깅 설정
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# FastAPI 앱 생성
+
+class ResponseTimeMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        start_time = time.perf_counter()
+        response = await call_next(request)
+        process_time = (time.perf_counter() - start_time) * 1000
+        response.headers["X-Process-Time"] = f"{process_time:.2f}ms"
+        return response
+
+
+class CacheControlMiddleware(BaseHTTPMiddleware):
+    async def dispatch(self, request: Request, call_next):
+        response = await call_next(request)
+        
+        if request.url.path.startswith("/api/"):
+            if request.method == "GET":
+                response.headers["Cache-Control"] = "private, max-age=60"
+            else:
+                response.headers["Cache-Control"] = "no-store"
+        
+        return response
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    try:
+        init_database()
+        logger.info("Database initialized")
+        
+        if redis_cache.health_check():
+            logger.info("Redis connection verified")
+        else:
+            logger.warning("Redis connection failed - running without cache")
+    except Exception as e:
+        logger.error(f"Startup error: {e}")
+    
+    yield
+    
+    try:
+        db_manager.close()
+        redis_cache.close()
+        logger.info("Application shutdown complete")
+    except Exception as e:
+        logger.error(f"Shutdown error: {e}")
+
+
 app = FastAPI(
     title="Kabu Agent API",
     description="해외주식 포트폴리오 관리 시스템 API",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan,
+    docs_url="/docs" if os.getenv("ENVIRONMENT") != "production" else None,
+    redoc_url="/redoc" if os.getenv("ENVIRONMENT") != "production" else None,
 )
 
-# CORS 설정 (프론트엔드 연동을 위해)
+app.add_middleware(GZipMiddleware, minimum_size=500)
+app.add_middleware(ResponseTimeMiddleware)
+app.add_middleware(CacheControlMiddleware)
+
 cors_origins = os.getenv("CORS_ORIGINS", "*")
 if cors_origins == "*":
     origins = ["*"]
@@ -44,9 +94,9 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
+    expose_headers=["X-Process-Time"],
 )
 
-# 라우터 등록
 app.include_router(auth_router)
 app.include_router(portfolio_router)
 app.include_router(export_router)
@@ -55,7 +105,7 @@ app.include_router(exchange_router)
 app.include_router(ai_router)
 app.include_router(public_router)
 
-# 헬스 체크 엔드포인트
+
 @app.get("/")
 async def root():
     return {
@@ -64,50 +114,28 @@ async def root():
         "status": "running"
     }
 
+
 @app.get("/health")
 async def health_check():
-    """종합 헬스 체크"""
     health_status = {
         "status": "healthy",
         "database": db_manager.health_check(),
         "redis": redis_cache.health_check()
     }
     
-    # 전체 상태 확인
     if not all([health_status["database"], health_status["redis"]]):
         health_status["status"] = "degraded"
     
     return health_status
 
-# 애플리케이션 시작/종료 이벤트
-@app.on_event("startup")
-async def startup_event():
-    """애플리케이션 시작 시 초기화"""
-    try:
-        # 데이터베이스 초기화
-        init_database()
-        logger.info("데이터베이스 초기화 완료")
-        
-        # Redis 연결 확인
-        if redis_cache.health_check():
-            logger.info("Redis 연결 확인 완료")
-        else:
-            logger.warning("Redis 연결 실패 - 캐시 없이 동작")
-            
-    except Exception as e:
-        logger.error(f"애플리케이션 시작 중 오류: {e}")
-
-@app.on_event("shutdown")
-async def shutdown_event():
-    """애플리케이션 종료 시 정리"""
-    try:
-        db_manager.close()
-        redis_cache.close()
-        logger.info("애플리케이션 정상 종료")
-    except Exception as e:
-        logger.error(f"애플리케이션 종료 중 오류: {e}")
-
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(
+        "src.app:app",
+        host="0.0.0.0",
+        port=8000,
+        workers=4,
+        loop="uvloop",
+        http="httptools",
+    )

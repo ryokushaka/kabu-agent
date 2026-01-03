@@ -106,19 +106,4 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  update-gitops:
-    needs: [build-push-backend, build-push-frontend]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Trigger GitOps Update
-        uses: peter-evans/repository-dispatch@v3
-        with:
-          token: ${{ secrets.GITOPS_PAT }}
-          repository: ${{ github.repository_owner }}/kabu-agent-gitops
-          event-type: update-image
-          client-payload: |
-            {
-              "image_tag": "${{ github.sha }}",
-              "repository": "${{ github.repository }}",
-              "commit_message": "${{ github.event.head_commit.message }}"
-            }
+

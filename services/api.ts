@@ -94,6 +94,26 @@ export interface AnalysisData {
   chart_data: ChartData[];
 }
 
+export interface GlossaryTerm {
+  id: string;
+  term_ko: string;
+  term_en: string;
+  definition: string;
+  example?: string;
+  category: string;
+  difficulty_level: string;
+  view_count: number;
+  is_ai_generated: boolean;
+}
+
+export interface GlossaryTermsParams {
+  category?: string;
+  difficulty?: string;
+  search?: string;
+  limit?: number;
+  offset?: number;
+}
+
 // API Client Class
 class ApiClient {
   private baseUrl: string;
@@ -170,6 +190,41 @@ class ApiClient {
   async getMajorExchangeRates(): Promise<Record<string, number>> {
     return this.request<Record<string, number>>('/api/exchange/rates');
   }
+
+  // Glossary APIs
+  async getGlossaryTerms(params?: GlossaryTermsParams): Promise<GlossaryTerm[]> {
+    const queryParams = new URLSearchParams();
+    if (params?.category) queryParams.append('category', params.category);
+    if (params?.difficulty) queryParams.append('difficulty', params.difficulty);
+    if (params?.search) queryParams.append('search', params.search);
+    if (params?.limit) queryParams.append('limit', params.limit.toString());
+    if (params?.offset) queryParams.append('offset', params.offset.toString());
+
+    const queryString = queryParams.toString();
+    const endpoint = queryString ? `/api/glossary/terms?${queryString}` : '/api/glossary/terms';
+
+    return this.request<GlossaryTerm[]>(endpoint);
+  }
+
+  async getGlossaryTermDetail(termId: string): Promise<GlossaryTerm> {
+    return this.request<GlossaryTerm>(`/api/glossary/terms/${termId}`);
+  }
+
+  async searchGlossaryTerms(keyword: string, limit: number = 20): Promise<GlossaryTerm[]> {
+    const queryParams = new URLSearchParams();
+    queryParams.append('keyword', keyword);
+    queryParams.append('limit', limit.toString());
+
+    return this.request<GlossaryTerm[]>(`/api/glossary/search?${queryParams}`);
+  }
+
+  async getPopularGlossaryTerms(limit: number = 10): Promise<GlossaryTerm[]> {
+    return this.request<GlossaryTerm[]>(`/api/glossary/terms/popular?limit=${limit}`);
+  }
+
+  async getGlossaryTermsByCategory(category: string, limit: number = 20): Promise<GlossaryTerm[]> {
+    return this.request<GlossaryTerm[]>(`/api/glossary/terms/category/${category}?limit=${limit}`);
+  }
 }
 
 // Export singleton instance
@@ -186,3 +241,8 @@ export const getAIAnalysis = () => apiClient.getAIAnalysis();
 export const getAINews = (query?: string) => apiClient.getAINews(query);
 export const getExchangeRate = (baseCurrency?: string, targetCurrency?: string) => apiClient.getExchangeRate(baseCurrency, targetCurrency);
 export const getMajorExchangeRates = () => apiClient.getMajorExchangeRates();
+export const getGlossaryTerms = (params?: GlossaryTermsParams) => apiClient.getGlossaryTerms(params);
+export const getGlossaryTermDetail = (termId: string) => apiClient.getGlossaryTermDetail(termId);
+export const searchGlossaryTerms = (keyword: string, limit?: number) => apiClient.searchGlossaryTerms(keyword, limit);
+export const getPopularGlossaryTerms = (limit?: number) => apiClient.getPopularGlossaryTerms(limit);
+export const getGlossaryTermsByCategory = (category: string, limit?: number) => apiClient.getGlossaryTermsByCategory(category, limit);

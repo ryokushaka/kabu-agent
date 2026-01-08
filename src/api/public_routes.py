@@ -111,7 +111,7 @@ async def get_market_news(
             }
 
             # 캐시 저장 (10분)
-            redis_cache.set(cache_key, result, ex=600)
+            redis_cache.set(cache_key, result, expire=600)
 
             return result
 

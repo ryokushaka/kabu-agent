@@ -34,18 +34,32 @@ async def collect_market_news():
         saved_count = 0
         with db_manager.get_session() as session:
             for item in news_items:
+                # DuckDuckGo news API uses 'url' instead of 'link', 'body' instead of 'snippet'
+                content_url = item.get('url') or item.get('link', '')
+                if not content_url:
+                    continue
+
                 # 중복 체크 (URL 기준)
                 existing = session.execute(
-                    select(MarketNews).where(MarketNews.content_url == item['link'])
+                    select(MarketNews).where(MarketNews.content_url == content_url)
                 ).scalar_one_or_none()
 
                 if not existing:
+                    # Parse published date from 'date' field
+                    published_at = datetime.now()
+                    if item.get('date'):
+                        try:
+                            from dateutil import parser
+                            published_at = parser.parse(item['date'])
+                        except Exception:
+                            pass
+
                     news = MarketNews(
                         source=item.get('source', 'DuckDuckGo'),
-                        title=item['title'],
-                        summary=item.get('snippet', ''),
-                        content_url=item['link'],
-                        published_at=item.get('published_at', datetime.now()),
+                        title=item.get('title', ''),
+                        summary=item.get('body') or item.get('snippet', ''),
+                        content_url=content_url,
+                        published_at=published_at,
                         category='market'
                     )
                     session.add(news)

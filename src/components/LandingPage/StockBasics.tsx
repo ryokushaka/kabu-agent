@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BookOpen, PieChart, Coins, Layers, Scale, ArrowUpRight } from 'lucide-react';
+import { GlossaryModal } from '../../../components/common';
 
 const basics = [
   {
@@ -29,6 +30,8 @@ const basics = [
 ];
 
 const StockBasics: React.FC = () => {
+  const [isGlossaryOpen, setIsGlossaryOpen] = useState(false);
+
   return (
     <section className="py-24 bg-white border-t border-slate-100">
       <div className="max-w-7xl mx-auto px-6">
@@ -46,8 +49,11 @@ const StockBasics: React.FC = () => {
               어렵게 느껴지는 주식 용어, Kabu Agent가 알기 쉽게 설명해 드립니다.
             </p>
           </div>
-          
-           <button className="hidden md:flex items-center gap-2 text-slate-600 font-bold hover:text-blue-600 transition-colors mt-6 md:mt-0 group">
+
+           <button
+            onClick={() => setIsGlossaryOpen(true)}
+            className="hidden md:flex items-center gap-2 text-slate-600 font-bold hover:text-blue-600 transition-colors mt-6 md:mt-0 group"
+          >
             전체 가이드 보기
             <ArrowUpRight className="w-5 h-5 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
           </button>
@@ -76,6 +82,12 @@ const StockBasics: React.FC = () => {
           ))}
         </div>
       </div>
+
+      {/* Glossary Modal */}
+      <GlossaryModal
+        isOpen={isGlossaryOpen}
+        onClose={() => setIsGlossaryOpen(false)}
+      />
     </section>
   );
 };

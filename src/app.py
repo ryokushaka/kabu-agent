@@ -16,9 +16,12 @@ from src.api.exchange_routes import router as exchange_router
 from src.api.auth_routes import router as auth_router
 from src.api.export_routes import router as export_router
 from src.api.public_routes import router as public_router
+from src.api.glossary_routes import router as glossary_router
+from src.api.admin_routes import router as admin_router
 from src.database.connection import init_database, db_manager
 from src.cache.redis_client import redis_cache
 from src.api.ai_routes import router as ai_router
+from src.services.scheduler import start_scheduler, shutdown_scheduler
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -51,17 +54,25 @@ async def lifespan(app: FastAPI):
     try:
         init_database()
         logger.info("Database initialized")
-        
+
         if redis_cache.health_check():
             logger.info("Redis connection verified")
         else:
             logger.warning("Redis connection failed - running without cache")
+
+        # 스케줄러 시작
+        start_scheduler()
+        logger.info("Scheduler started")
     except Exception as e:
         logger.error(f"Startup error: {e}")
-    
+
     yield
-    
+
     try:
+        # 스케줄러 종료
+        shutdown_scheduler()
+        logger.info("Scheduler shut down")
+
         db_manager.close()
         redis_cache.close()
         logger.info("Application shutdown complete")
@@ -104,6 +115,8 @@ app.include_router(analysis_router)
 app.include_router(exchange_router)
 app.include_router(ai_router)
 app.include_router(public_router)
+app.include_router(glossary_router)
+app.include_router(admin_router)
 
 
 @app.get("/")

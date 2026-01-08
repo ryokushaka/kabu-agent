@@ -156,11 +156,63 @@ class UserApiToken(Base):
 class ExchangeRate(Base):
     """환율 캐시 테이블"""
     __tablename__ = "exchange_rates"
-    
+
     id = Column(Integer, primary_key=True, autoincrement=True)
     base_currency = Column(String(3), nullable=False)
     target_currency = Column(String(3), nullable=False)
     rate = Column(Decimal(12, 6), nullable=False)
     source = Column(String(50), nullable=False)
     timestamp = Column(DateTime(timezone=True), nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class MarketNews(Base):
+    """시장 뉴스 테이블"""
+    __tablename__ = "market_news"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    source = Column(String(100), nullable=False)
+    title = Column(String(500), nullable=False)
+    summary = Column(Text)
+    content_url = Column(Text, nullable=False, unique=True)
+    ticker_symbols = Column(Text)  # PostgreSQL TEXT[] stored as comma-separated
+    category = Column(String(50))
+    sentiment = Column(String(20))
+    is_featured = Column(Boolean, default=False)
+    published_at = Column(DateTime(timezone=True), nullable=False)
+    fetched_at = Column(DateTime(timezone=True), server_default=func.now())
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class GlossaryTerm(Base):
+    """투자 용어 가이드 테이블"""
+    __tablename__ = "glossary_terms"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    term_ko = Column(String(200), nullable=False)
+    term_en = Column(String(200), nullable=False)
+    definition = Column(Text, nullable=False)
+    example = Column(Text)
+    category = Column(String(50), nullable=False)
+    difficulty_level = Column(String(20), nullable=False)
+    related_terms = Column(Text)  # PostgreSQL UUID[] stored as comma-separated
+    view_count = Column(Integer, default=0)
+    is_ai_generated = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class BatchJobLog(Base):
+    """배치 작업 로그 테이블"""
+    __tablename__ = "batch_job_logs"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    job_id = Column(String(100), nullable=False)
+    status = Column(String(20), nullable=False)
+    started_at = Column(DateTime(timezone=True), nullable=False)
+    completed_at = Column(DateTime(timezone=True))
+    error_message = Column(Text)
+    items_processed = Column(Integer, default=0)
+    job_metadata = Column("metadata", Text)  # JSONB stored as JSON string (metadata is SQLAlchemy reserved word)
     created_at = Column(DateTime(timezone=True), server_default=func.now())

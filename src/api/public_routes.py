@@ -1,11 +1,16 @@
 """
 Public Routes for Non-authenticated Users
 """
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
+from typing import Optional
 import logging
+from sqlalchemy import select
 
 from src.kis_api import kis_client
 from src.services.ai_service import GeminiService
+from src.database.connection import db_manager
+from src.database.models import MarketNews
+from src.cache.redis_client import redis_cache
 
 logger = logging.getLogger(__name__)
 
@@ -52,19 +57,64 @@ async def get_market_indices():
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.get("/market/news")
-async def get_market_news():
+async def get_market_news(
+    limit: int = Query(10, ge=1, le=50),
+    offset: int = Query(0, ge=0),
+    category: Optional[str] = None
+):
     """
-    Get AI-summarized market news
+    시장 뉴스 조회 (DB 기반)
     """
     try:
-        # 1. Search News
-        query = "미국 주식 시장"
-        news_items = await ai_service.search_news(query)
-        
-        # 2. Summarize
-        summary_text = await ai_service.summarize_news(news_items)
-        
-        return {"summary": summary_text}
+        # Redis 캐시 확인
+        cache_key = f"public:market_news:{limit}:{offset}:{category}"
+        cached = redis_cache.get(cache_key)
+        if cached:
+            return cached
+
+        with db_manager.get_session() as session:
+            query = select(MarketNews).order_by(MarketNews.published_at.desc())
+
+            if category:
+                query = query.where(MarketNews.category == category)
+
+            query = query.limit(limit).offset(offset)
+
+            news_items = session.execute(query).scalars().all()
+
+            # AI 요약 생성 (최신 5개 뉴스)
+            top_news = news_items[:5]
+            if top_news:
+                summary_text = await ai_service.summarize_news([
+                    {"title": n.title, "snippet": n.summary or "", "link": n.content_url}
+                    for n in top_news
+                ])
+            else:
+                summary_text = "뉴스 데이터가 아직 수집되지 않았습니다."
+
+            result = {
+                "summary": summary_text,
+                "news": [
+                    {
+                        "id": str(n.id),
+                        "title": n.title,
+                        "summary": n.summary,
+                        "url": n.content_url,
+                        "source": n.source,
+                        "published_at": n.published_at.isoformat(),
+                        "is_featured": n.is_featured,
+                        "category": n.category
+                    }
+                    for n in news_items
+                ],
+                "total": len(news_items)
+            }
+
+            # 캐시 저장 (10분)
+            redis_cache.set(cache_key, result, ex=600)
+
+            return result
+
     except Exception as e:
         logger.error(f"Error serving market news: {e}")
         raise HTTPException(status_code=500, detail=str(e))

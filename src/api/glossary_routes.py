@@ -62,31 +62,8 @@ async def get_terms(
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@router.get("/terms/{term_id}", response_model=GlossaryTermResponse)
-async def get_term_detail(term_id: str):
-    """용어 상세 조회"""
-    try:
-        term = glossary_service.get_term_by_id(term_id)
-        if not term:
-            raise HTTPException(status_code=404, detail="Term not found")
-
-        return GlossaryTermResponse(
-            id=str(term.id),
-            term_ko=term.term_ko,
-            term_en=term.term_en,
-            definition=term.definition,
-            example=term.example,
-            category=term.category,
-            difficulty_level=term.difficulty_level,
-            view_count=term.view_count,
-            is_ai_generated=term.is_ai_generated
-        )
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-
+# NOTE: Static routes must be defined BEFORE parameterized routes
+# to prevent FastAPI from matching "popular" as a term_id
 @router.get("/terms/popular", response_model=List[GlossaryTermResponse])
 async def get_popular_terms(
     limit: int = Query(10, ge=1, le=50)
@@ -108,6 +85,31 @@ async def get_popular_terms(
             )
             for term in terms
         ]
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/terms/{term_id}", response_model=GlossaryTermResponse)
+async def get_term_detail(term_id: str):
+    """용어 상세 조회"""
+    try:
+        term = glossary_service.get_term_by_id(term_id)
+        if not term:
+            raise HTTPException(status_code=404, detail="Term not found")
+
+        return GlossaryTermResponse(
+            id=str(term.id),
+            term_ko=term.term_ko,
+            term_en=term.term_en,
+            definition=term.definition,
+            example=term.example,
+            category=term.category,
+            difficulty_level=term.difficulty_level,
+            view_count=term.view_count,
+            is_ai_generated=term.is_ai_generated
+        )
+    except HTTPException:
+        raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

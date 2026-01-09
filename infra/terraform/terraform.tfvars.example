@@ -1,0 +1,57 @@
+# =============================================================================
+# Kabu Agent Infrastructure - Example Variables
+# Copy this file to terraform.tfvars and fill in your values
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# General Settings
+# -----------------------------------------------------------------------------
+
+project_name = "kabu-agent"
+environment  = "prod"
+aws_region   = "ap-northeast-2" # Seoul
+
+# -----------------------------------------------------------------------------
+# Network Settings
+# -----------------------------------------------------------------------------
+
+vpc_cidr           = "10.0.0.0/16"
+public_subnet_cidr = "10.0.1.0/24"
+
+# IMPORTANT: Restrict this to your IP for security!
+# Example: allowed_ssh_cidrs = ["1.2.3.4/32"]
+allowed_ssh_cidrs = ["0.0.0.0/0"]
+
+# -----------------------------------------------------------------------------
+# EC2 Instance Settings
+# -----------------------------------------------------------------------------
+
+instance_type   = "t4g.medium" # ARM64, 2 vCPU, 4GB RAM, ~$25/month
+ebs_volume_size = 30           # GB
+
+# SSH Key Pair
+create_key_pair   = true
+# existing_key_name = "my-existing-key" # Set if create_key_pair = false
+
+# -----------------------------------------------------------------------------
+# K3s Settings
+# -----------------------------------------------------------------------------
+
+k3s_version = "v1.28.4+k3s2"
+
+# -----------------------------------------------------------------------------
+# Domain & TLS Settings
+# -----------------------------------------------------------------------------
+
+# Your domain name (optional, but recommended)
+domain_name = "" # e.g., "kabu.example.com"
+admin_email = "" # e.g., "admin@example.com" (for Let's Encrypt)
+
+# -----------------------------------------------------------------------------
+# GitHub Container Registry (GHCR)
+# -----------------------------------------------------------------------------
+
+# Create a Personal Access Token with read:packages scope
+# https://github.com/settings/tokens
+ghcr_username = "" # Your GitHub username
+ghcr_token    = "" # Your GitHub PAT

@@ -50,21 +50,21 @@ const Login: React.FC = () => {
       <div className="fixed bottom-[-10%] right-[-10%] w-[600px] h-[600px] bg-indigo-50 rounded-full blur-3xl opacity-50 pointer-events-none" />
 
       {/* Header / Brand Area */}
-      <header className="w-full max-w-7xl flex justify-between items-center z-10 mb-8 animate-fade-up">
+      <header className="fixed top-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-md border-b border-toss-grey-200 z-50 px-4 md:px-8 flex items-center justify-between">
         <div className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate('/')}>
            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-white shadow-md group-hover:scale-105 transition-transform duration-300">
              <TrendingUp size={20} strokeWidth={3} />
            </div>
-           <span className="text-xl font-bold tracking-tight text-gray-900">Kabu Agent</span>
+           <span className="text-xl font-bold tracking-tight text-toss-grey-900">Kabu Agent</span>
         </div>
-        <nav className="hidden md:flex gap-6 text-sm font-medium text-gray-500">
-          <a href="#" className="hover:text-blue-600 transition-colors">고객센터</a>
-          <a href="#" className="hover:text-blue-600 transition-colors">이용안내</a>
+        <nav className="hidden md:flex gap-6 text-sm font-medium text-toss-grey-500">
+          <button onClick={() => alert('고객센터 서비스 준비 중입니다.')} className="hover:text-blue-600 transition-colors">고객센터</button>
+          <button onClick={() => alert('이용안내 페이지 준비 중입니다.')} className="hover:text-blue-600 transition-colors">이용안내</button>
         </nav>
       </header>
 
       {/* Main Content */}
-      <main className="w-full max-w-md z-10 flex-1 flex flex-col justify-center animate-fade-up" style={{ animationDelay: '0.1s' }}>
+      <main className="w-full max-w-md z-10 flex-1 flex flex-col justify-center pt-16 animate-fade-up" style={{ animationDelay: '0.1s' }}>
         
         {/* Login Card */}
         <div className="bg-white rounded-[32px] shadow-xl shadow-blue-900/5 p-8 md:p-10 border border-white/50 backdrop-blur-xl">
@@ -153,12 +153,12 @@ const Login: React.FC = () => {
             </button>
           </form>
 
-          <div className="mt-8 flex justify-center items-center gap-4 text-sm text-gray-500 font-medium">
-             <button type="button" className="hover:text-gray-800 transition-colors">아이디 찾기</button>
-             <div className="w-px h-3 bg-gray-300"></div>
-             <button type="button" className="hover:text-gray-800 transition-colors">비밀번호 재설정</button>
-             <div className="w-px h-3 bg-gray-300"></div>
-             <button type="button" onClick={() => navigate('/contact')} className="hover:text-gray-800 transition-colors">이용 문의</button>
+          <div className="mt-8 flex justify-center items-center gap-4 text-sm text-toss-grey-500 font-medium">
+             <button type="button" onClick={() => alert('아이디 찾기 기능은 준비 중입니다.')} className="hover:text-toss-grey-800 transition-colors">아이디 찾기</button>
+             <div className="w-px h-3 bg-toss-grey-300"></div>
+             <button type="button" onClick={() => alert('비밀번호 재설정 기능은 준비 중입니다.')} className="hover:text-toss-grey-800 transition-colors">비밀번호 재설정</button>
+             <div className="w-px h-3 bg-toss-grey-300"></div>
+             <button type="button" onClick={() => navigate('/contact')} className="hover:text-toss-grey-800 transition-colors">이용 문의</button>
           </div>
 
         </div>

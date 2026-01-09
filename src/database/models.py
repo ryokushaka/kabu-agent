@@ -16,7 +16,7 @@ Base = declarative_base()
 class User(Base):
     """사용자 테이블"""
     __tablename__ = "users"
-    
+
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = Column(String(255), unique=True, nullable=False, index=True)
     username = Column(String(100), unique=True, nullable=False, index=True)
@@ -24,13 +24,17 @@ class User(Base):
     full_name = Column(String(200))
     is_active = Column(Boolean, default=True)
     is_verified = Column(Boolean, default=False)
+    is_admin = Column(Boolean, default=False)
+    role = Column(String(20), default='user')  # 'user', 'moderator', 'admin', 'superadmin'
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
     last_login = Column(DateTime(timezone=True))
-    
+
     # 관계 설정
     portfolios = relationship("Portfolio", back_populates="user", cascade="all, delete-orphan")
     api_tokens = relationship("UserApiToken", back_populates="user", cascade="all, delete-orphan")
+    notifications = relationship("Notification", back_populates="user", cascade="all, delete-orphan")
+    price_alerts = relationship("PriceAlert", back_populates="user", cascade="all, delete-orphan")
     
     def verify_password(self, password: str) -> bool:
         """비밀번호 검증"""
@@ -216,3 +220,101 @@ class BatchJobLog(Base):
     items_processed = Column(Integer, default=0)
     job_metadata = Column("metadata", Text)  # JSONB stored as JSON string (metadata is SQLAlchemy reserved word)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+
+class Role(Base):
+    """역할 테이블"""
+    __tablename__ = "roles"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    name = Column(String(50), unique=True, nullable=False)
+    description = Column(Text)
+    permissions = Column(Text)  # JSON array of permission strings
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+    updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+class AuditLog(Base):
+    """감사 로그 테이블"""
+    __tablename__ = "audit_logs"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=True)
+    action = Column(String(100), nullable=False)
+    resource_type = Column(String(50), nullable=False)
+    resource_id = Column(String(100))
+    old_value = Column(Text)  # JSON
+    new_value = Column(Text)  # JSON
+    ip_address = Column(String(45))
+    user_agent = Column(Text)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # 인덱스 설정
+    __table_args__ = (
+        Index('idx_audit_user_id', 'user_id'),
+        Index('idx_audit_resource', 'resource_type', 'resource_id'),
+        Index('idx_audit_created_at', 'created_at'),
+    )
+
+
+class Notification(Base):
+    """알림 테이블"""
+    __tablename__ = "notifications"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    type = Column(String(50), nullable=False)  # 'price_alert', 'portfolio_change', 'system'
+    title = Column(String(200), nullable=False)
+    message = Column(Text, nullable=False)
+    is_read = Column(Boolean, default=False)
+    notification_metadata = Column("metadata", Text)  # JSON
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # 관계 설정
+    user = relationship("User", back_populates="notifications")
+
+    # 인덱스 설정
+    __table_args__ = (
+        Index('idx_notification_user_read', 'user_id', 'is_read'),
+    )
+
+
+class PriceAlert(Base):
+    """가격 알림 테이블"""
+    __tablename__ = "price_alerts"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    ticker = Column(String(20), nullable=False)
+    target_price = Column(Decimal(10, 4), nullable=False)
+    condition = Column(String(10), nullable=False)  # 'above', 'below'
+    is_active = Column(Boolean, default=True)
+    triggered_at = Column(DateTime(timezone=True))
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # 관계 설정
+    user = relationship("User", back_populates="price_alerts")
+
+    # 인덱스 설정
+    __table_args__ = (
+        Index('idx_price_alert_user_active', 'user_id', 'is_active'),
+        Index('idx_price_alert_ticker', 'ticker'),
+    )
+
+
+class RebalanceRecommendation(Base):
+    """리밸런싱 추천 테이블"""
+    __tablename__ = "rebalance_recommendations"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = Column(UUID(as_uuid=True), ForeignKey("users.id"), nullable=False)
+    recommendation_data = Column(Text, nullable=False)  # JSON containing AI recommendation
+    current_allocation = Column(Text, nullable=False)  # JSON
+    suggested_allocation = Column(Text, nullable=False)  # JSON
+    status = Column(String(20), default='pending')  # 'pending', 'applied', 'dismissed'
+    created_at = Column(DateTime(timezone=True), server_default=func.now())
+
+    # 인덱스 설정
+    __table_args__ = (
+        Index('idx_rebalance_user', 'user_id'),
+    )

@@ -18,6 +18,10 @@ from src.api.export_routes import router as export_router
 from src.api.public_routes import router as public_router
 from src.api.glossary_routes import router as glossary_router
 from src.api.admin_routes import router as admin_router
+from src.api.stock_routes import router as stock_router
+from src.api.transaction_routes import router as transaction_router
+from src.api.notification_routes import router as notification_router
+from src.api.rebalance_routes import router as rebalance_router
 from src.database.connection import init_database, db_manager
 from src.cache.redis_client import redis_cache
 from src.api.ai_routes import router as ai_router
@@ -110,6 +114,10 @@ app.add_middleware(
 
 app.include_router(auth_router)
 app.include_router(portfolio_router)
+app.include_router(stock_router)
+app.include_router(transaction_router)
+app.include_router(notification_router)
+app.include_router(rebalance_router)
 app.include_router(export_router)
 app.include_router(analysis_router)
 app.include_router(exchange_router)

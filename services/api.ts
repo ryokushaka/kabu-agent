@@ -1,6 +1,10 @@
 /**
  * API Client for backend communication
+ * @deprecated Use @shared/api and @features/* instead
  */
+
+// Re-export auth API for backward compatibility
+export { authApi } from '@features/auth';
 
 const API_BASE_URL = 'http://localhost:8000';
 

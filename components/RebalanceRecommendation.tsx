@@ -57,7 +57,7 @@ interface HistoryItem {
   created_at: string;
 }
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 const COLORS = ['#3182f6', '#f04452', '#00c48c', '#ffb020', '#7c3aed', '#ec4899', '#06b6d4', '#f59e0b'];
 

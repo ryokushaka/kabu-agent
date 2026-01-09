@@ -2,7 +2,7 @@
  * Enhanced API Client with authentication, error handling, and timeout support
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const DEFAULT_TIMEOUT = 10000; // 10 seconds
 
 export class ApiError extends Error {

@@ -124,7 +124,7 @@ const PortfolioList: React.FC = () => {
             <RefreshCw size={16} />
           </button>
           <a
-            href="http://localhost:8000/api/export/excel"
+            href="/api/export/excel"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-300/50 active:scale-[0.98] text-white px-4 py-2.5 rounded-xl transition-all duration-200 text-sm font-medium whitespace-nowrap shadow-sm shadow-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2 min-h-[44px]"

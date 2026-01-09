@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Sidebar } from '@widgets/sidebar';
 import { Header } from '@widgets/header';
 import { useAuthContext } from '@features/auth';
@@ -9,14 +10,20 @@ interface AppLayoutProps {
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const { logout, user } = useAuthContext();
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const isAdmin = user?.username === 'admin';
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login', { replace: true });
+  };
+
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans flex">
+    <div className="min-h-screen bg-toss-grey-100 text-toss-grey-900 font-sans flex">
       <Sidebar
-        onLogout={logout}
+        onLogout={handleLogout}
         isAdmin={isAdmin}
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}

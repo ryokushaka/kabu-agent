@@ -10,6 +10,10 @@ const PortfolioList = lazy(() => import('./components/PortfolioList'));
 const Analysis = lazy(() => import('./components/Analysis'));
 const Settings = lazy(() => import('./components/Settings'));
 const Admin = lazy(() => import('./components/Admin'));
+const StockDetail = lazy(() => import('./components/StockDetail'));
+const TransactionHistory = lazy(() => import('./components/TransactionHistory'));
+const NotificationCenter = lazy(() => import('./components/NotificationCenter'));
+const RebalanceRecommendation = lazy(() => import('./components/RebalanceRecommendation'));
 const LandingPage = lazy(() => import('./src/components/LandingPage/LandingPage'));
 const Login = lazy(() => import('./src/components/Login'));
 const Contact = lazy(() => import('./src/components/Contact'));
@@ -139,6 +143,10 @@ const AppRoutes: React.FC = () => {
                   <Routes>
                     <Route path="/dashboard" element={<Dashboard />} />
                     <Route path="/portfolio" element={<PortfolioList />} />
+                    <Route path="/stock/:ticker" element={<StockDetail />} />
+                    <Route path="/transactions" element={<TransactionHistory />} />
+                    <Route path="/notifications" element={<NotificationCenter />} />
+                    <Route path="/rebalance" element={<RebalanceRecommendation />} />
                     <Route path="/analysis" element={<Analysis />} />
                     <Route path="/settings" element={<Settings />} />
                     <Route 

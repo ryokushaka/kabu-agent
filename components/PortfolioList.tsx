@@ -1,14 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Download, ArrowUpDown, ArrowUp, ArrowDown, RefreshCw } from 'lucide-react';
 import { formatCurrency, formatPercent } from '../services/dataService';
 import { getPortfolioBalance, Position } from '../services/api';
 
 const PortfolioList: React.FC = () => {
+  const navigate = useNavigate();
   const [positions, setPositions] = useState<Position[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: string, direction: 'asc' | 'desc' } | null>(null);
+
+  const handleStockClick = (ticker: string) => {
+    navigate(`/stock/${ticker}`);
+  };
 
   const fetchData = async () => {
     try {
@@ -169,7 +175,7 @@ const PortfolioList: React.FC = () => {
                 const isProfitable = pos.profit_loss_percent >= 0;
 
                 return (
-                  <tr key={pos.ticker} className="hover:bg-toss-grey-50 transition-all duration-200 group cursor-pointer">
+                  <tr key={pos.ticker} onClick={() => handleStockClick(pos.ticker)} className="hover:bg-toss-grey-50 transition-all duration-200 group cursor-pointer">
                     <td className="p-5">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-full bg-toss-grey-100 flex items-center justify-center text-sm font-bold text-toss-grey-600">
@@ -220,7 +226,7 @@ const PortfolioList: React.FC = () => {
           const isProfitable = pos.profit_loss_percent >= 0;
 
           return (
-            <div key={pos.ticker} className="bg-white border border-toss-grey-100 rounded-3xl p-5 shadow-sm hover:shadow-md hover:shadow-toss-grey-200/50 hover:border-toss-grey-200 transition-all duration-200 cursor-pointer active:scale-[0.99]">
+            <div key={pos.ticker} onClick={() => handleStockClick(pos.ticker)} className="bg-white border border-toss-grey-100 rounded-3xl p-5 shadow-sm hover:shadow-md hover:shadow-toss-grey-200/50 hover:border-toss-grey-200 transition-all duration-200 cursor-pointer active:scale-[0.99]">
               <div className="flex justify-between items-start mb-4">
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-toss-grey-100 flex items-center justify-center text-base font-bold text-toss-grey-600">

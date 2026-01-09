@@ -246,3 +246,136 @@ export const getGlossaryTermDetail = (termId: string) => apiClient.getGlossaryTe
 export const searchGlossaryTerms = (keyword: string, limit?: number) => apiClient.searchGlossaryTerms(keyword, limit);
 export const getPopularGlossaryTerms = (limit?: number) => apiClient.getPopularGlossaryTerms(limit);
 export const getGlossaryTermsByCategory = (category: string, limit?: number) => apiClient.getGlossaryTermsByCategory(category, limit);
+
+// Stock Types
+export interface StockInfo {
+  ticker: string;
+  name: string;
+  exchange: string;
+  current_price: number;
+  change: number;
+  change_percent: number;
+  high_52w?: number;
+  low_52w?: number;
+  market_cap?: number;
+  pe_ratio?: number;
+  eps?: number;
+  dividend_yield?: number;
+  volume?: number;
+  avg_volume?: number;
+  sector?: string;
+  industry?: string;
+}
+
+export interface ChartDataPoint {
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+export interface StockNews {
+  id: string;
+  title: string;
+  summary: string;
+  source: string;
+  url: string;
+  published_at: string;
+  sentiment?: 'positive' | 'negative' | 'neutral';
+}
+
+export interface StockAnalysis {
+  recommendation: 'strong_buy' | 'buy' | 'hold' | 'sell' | 'strong_sell';
+  target_price?: number;
+  confidence: number;
+  analysis_summary: string;
+  key_factors: string[];
+  risks: string[];
+  updated_at: string;
+}
+
+export interface UserPosition {
+  quantity: number;
+  avg_price: number;
+  market_value: number;
+  profit_loss: number;
+  profit_loss_percent: number;
+  weight: number;
+}
+
+// Stock API Functions
+export const getStockInfo = async (ticker: string): Promise<StockInfo> => {
+  const token = localStorage.getItem('access_token');
+  const response = await fetch(`${API_BASE_URL}/api/stock/${ticker}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
+    throw new Error(error.detail || `HTTP ${response.status}`);
+  }
+  return response.json();
+};
+
+export const getStockChart = async (ticker: string, period: string = '1M'): Promise<ChartDataPoint[]> => {
+  const token = localStorage.getItem('access_token');
+  const response = await fetch(`${API_BASE_URL}/api/stock/${ticker}/chart?period=${period}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
+    throw new Error(error.detail || `HTTP ${response.status}`);
+  }
+  return response.json();
+};
+
+export const getStockNews = async (ticker: string, limit: number = 10): Promise<StockNews[]> => {
+  const token = localStorage.getItem('access_token');
+  const response = await fetch(`${API_BASE_URL}/api/stock/${ticker}/news?limit=${limit}`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
+    throw new Error(error.detail || `HTTP ${response.status}`);
+  }
+  return response.json();
+};
+
+export const getStockAnalysis = async (ticker: string): Promise<StockAnalysis> => {
+  const token = localStorage.getItem('access_token');
+  const response = await fetch(`${API_BASE_URL}/api/stock/${ticker}/analysis`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({ detail: 'Unknown error' }));
+    throw new Error(error.detail || `HTTP ${response.status}`);
+  }
+  return response.json();
+};
+
+export const getUserStockPosition = async (ticker: string): Promise<UserPosition | null> => {
+  const token = localStorage.getItem('access_token');
+  const response = await fetch(`${API_BASE_URL}/api/stock/${ticker}/position`, {
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+  if (!response.ok) {
+    return null;
+  }
+  return response.json();
+};

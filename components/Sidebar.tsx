@@ -1,13 +1,16 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  PieChart, 
-  TrendingUp, 
-  Settings, 
-  LogOut, 
+import {
+  LayoutDashboard,
+  PieChart,
+  TrendingUp,
+  Settings,
+  LogOut,
   ShieldCheck,
-  X
+  X,
+  Receipt,
+  Bell,
+  Scale
 } from 'lucide-react';
 
 interface SidebarProps {
@@ -23,6 +26,9 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, isAdmin, isOpen, onClose })
   const navItems = [
     { path: '/dashboard', label: '홈', icon: LayoutDashboard },
     { path: '/portfolio', label: '내 주식', icon: PieChart },
+    { path: '/transactions', label: '거래 내역', icon: Receipt },
+    { path: '/notifications', label: '알림', icon: Bell },
+    { path: '/rebalance', label: '리밸런싱', icon: Scale },
     { path: '/analysis', label: '자산 분석', icon: TrendingUp },
     { path: '/settings', label: '설정', icon: Settings },
   ];

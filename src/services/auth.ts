@@ -1,22 +1,10 @@
 import axios from 'axios';
+import type { User, LoginResponse } from '@entities/user';
 
 const API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
-export interface User {
-  id: string;
-  username: string;
-  email: string;
-  full_name?: string;
-  is_active: boolean;
-}
-
-export interface AuthResponse {
-  access_token: string;
-  refresh_token: string;
-  token_type: string;
-  expires_in: number;
-  user: User;
-}
+export type { User };
+export type AuthResponse = LoginResponse;
 
 class AuthService {
   async login(username: string, password: string): Promise<AuthResponse> {

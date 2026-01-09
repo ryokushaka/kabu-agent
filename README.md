@@ -1,107 +1,189 @@
-# Overseas Stock Portfolio Manager (Kabu Agent)
+# Kabu Agent - 해외주식 포트폴리오 관리 시스템
 
-**해외주식 포트폴리오 관리 시스템**은 한국투자증권(KIS) Open API를 활용하여 미국 주식 포트폴리오를 실시간으로 조회하고 분석하는 웹 애플리케이션입니다.
-React 기반의 모던한 UI와 FastAPI 백엔드, 그리고 Google Gemini AI를 활용한 투자 피드백 기능을 제공합니다.
+한국투자증권(KIS) Open API를 활용한 미국 주식 포트폴리오 실시간 조회 및 AI 기반 분석 서비스입니다.
 
-## 📊 주요 기능 및 화면
+## 주요 기능
 
-### 1. 대시보드 (Dashboard)
-전체 자산 현황, 수익률, 자산 추이 및 AI 기반 뉴스 브리핑을 한눈에 확인할 수 있는 중앙 허브입니다.
+### 홈 (대시보드)
+전체 자산 현황과 AI 뉴스 브리핑을 제공합니다.
 ![Dashboard](docs/images/dashboard.png)
 
-- **실시간 자산 현황**: 총 자산(USD/KRW), 총 손익, 수익률을 실시간으로 집계하여 표시합니다.
-- **자산 추이 그래프**: 1개월, 3개월, 1년, 전체 기간의 자산 변화를 시각적으로 추적할 수 있습니다.
-- **AI 뉴스 브리핑**: 보유 종목 및 관심 키워드("미국 주식 시장")와 관련된 최신 뉴스를 DuckDuckGo로 검색하고, Gemini AI가 한국어로 요약하여 제공합니다. (Redis 캐싱 적용으로 빠른 로딩 지원)
+- 총 자산(USD/KRW), 손익, 수익률 실시간 표시
+- 자산 추이 그래프 (1개월/3개월/1년/전체)
+- AI 뉴스 브리핑 (Gemini AI 기반 한국어 요약)
 
-### 2. 포트폴리오 관리 (Portfolio Management)
-보유 중인 해외 주식의 상세 정보와 성과를 테이블 형태로 제공하며, 효율적인 자산 관리를 지원합니다.
+### 내 주식 (포트폴리오)
+보유 종목 상세 정보와 성과를 관리합니다.
 ![Portfolio](docs/images/portfolio.png)
 
-- **종목 상세 정보**: 종목명, 티커, 보유 수량, 평균 단가, 현재가, 평가 금액, 평가 손익, 수익률 등을 상세히 표시합니다.
-- **섹터 자동 분류**: 각 종목의 섹터(Technology, Financials 등)를 자동으로 식별하여 표시합니다.
-- **엑셀 내보내기**: 현재 포트폴리오 상태를 엑셀 파일(.xlsx)로 다운로드하여 별도로 보관하거나 분석할 수 있습니다.
+- 종목별 수량, 평균단가, 현재가, 평가손익, 수익률
+- 섹터 자동 분류 (Technology, Financials 등)
+- 엑셀 내보내기 (.xlsx)
 
-### 3. 자산 분석 (Analysis)
-포트폴리오의 건전성을 평가하고 다각도로 분석하여 투자 인사이트를 제공합니다.
+### 자산 분석
+포트폴리오 건전성 평가 및 AI 진단을 제공합니다.
 ![Analysis](docs/images/analysis.png)
 
-- **섹터 비중 분석**: 파이 차트를 통해 포트폴리오가 특정 섹터에 편중되지 않았는지 시각적으로 확인합니다.
-- **수익률 기여도**: 어떤 종목이나 섹터가 전체 수익률에 가장 큰 영향을 미치는지 분석합니다.
-- **AI 포트폴리오 진단**: Gemini AI가 포트폴리오 구성을 심층 분석하여 리스크 요인을 식별하고, 시장 상황에 맞는 리밸런싱 전략을 제안합니다. (Markdown 리포트 형식 제공)
+- 섹터 비중 분석 (파이 차트)
+- 수익률 기여도 분석
+- AI 포트폴리오 진단 (리스크 분석 + 리밸런싱 제안)
 
-### 4. 관리자 콘솔 (Admin Console)
-시스템의 안정적인 운영을 위한 모니터링 및 관리 도구입니다.
+### 관리자 콘솔
+시스템 운영 및 모니터링 도구입니다.
 ![Admin](docs/images/admin.png)
 
-- **시스템 상태 모니터링**: 한국투자증권(KIS) API 연결 상태, 데이터베이스 및 Redis 캐시 서버의 작동 여부를 실시간으로 확인합니다.
-- **사용자 관리**: 가입된 사용자 목록을 조회하고, 계정 상태(활성/정지) 및 권한(관리자/일반)을 관리합니다.
-- **API 사용량 통계**: 일일 API 호출 횟수와 엔드포인트별 사용량을 시각화하여 API 쿼터 초과를 방지합니다.
+- 시스템 상태 모니터링 (KIS API, DB, Redis)
+- 사용자 관리 (계정 상태, 권한)
+- API 사용량 통계
 
 ---
 
-## � 기술 스택 (Tech Stack)
+## 기술 스택
 
 ### Frontend
-- **Framework**: React 18, Vite
-- **Language**: TypeScript
-- **Styling**: TailwindCSS
-- **State Management**: Context API
-- **Charts**: Recharts
+| 기술 | 버전 | 용도 |
+|-----|------|------|
+| React | 19 | UI 라이브러리 |
+| TypeScript | 5.8 | 타입 안전성 |
+| Vite | 6.2 | 빌드 도구 |
+| TanStack Query | 5.x | 서버 상태 관리 |
+| React Router | 7.9 | 클라이언트 라우팅 |
+| TailwindCSS | 4.x | 스타일링 (Toss 디자인 시스템) |
+| Recharts | 3.5 | 차트 |
+| Lucide React | 0.554 | 아이콘 |
 
 ### Backend
-- **Framework**: FastAPI (Python 3.11)
-- **Database**: PostgreSQL 15
-- **Cache**: Redis 7 (KIS 토큰 및 데이터 캐싱)
-- **API Integration**: KIS Open API, Google Gemini Pro
+| 기술 | 버전 | 용도 |
+|-----|------|------|
+| FastAPI | - | 웹 프레임워크 |
+| Python | 3.11 | 런타임 |
+| PostgreSQL | 15 | 데이터베이스 |
+| Redis | 7 | 캐시 (토큰, 데이터) |
+| Google Gemini | Pro | AI 분석 |
+| KIS Open API | - | 증권 데이터 |
 
 ### DevOps
-- **Container**: Docker, Docker Compose
-- **Server**: Nginx (Reverse Proxy)
+- Docker, Docker Compose
+- Nginx (Reverse Proxy, Brotli 압축)
+- GitHub Actions (CI/CD)
 
 ---
 
-## 🚀 설치 및 실행 (Installation)
+## 설치 및 실행
 
 ### 1. 환경 변수 설정
-`.env` 파일을 생성하고 필요한 설정을 입력합니다.
 
 ```bash
 cp .env.example .env
 ```
 
-**필수 환경 변수:**
-- `KIS_APP_KEY`: 한국투자증권 App Key
-- `KIS_APP_SECRET`: 한국투자증권 App Secret
-- `KIS_ACCOUNT_NUMBER`: 계좌번호 (8자리+2자리)
-- `GEMINI_API_KEY`: Google Gemini API Key
+`.env` 파일에 다음 값들을 설정:
+
+| 변수명 | 설명 | 필수 |
+|-------|------|------|
+| `DATABASE_URL` | PostgreSQL 연결 URL | O |
+| `REDIS_URL` | Redis 연결 URL | O |
+| `KIS_APP_KEY` | 한국투자증권 App Key | O |
+| `KIS_APP_SECRET` | 한국투자증권 App Secret | O |
+| `KIS_ACCOUNT_NUMBER` | 계좌번호 (8자리-2자리) | O |
+| `GEMINI_API_KEY` | Google Gemini API Key | O |
+| `JWT_SECRET_KEY` | JWT 서명 키 | O |
+| `VITE_API_BASE_URL` | 프론트엔드 API URL (Docker: 비워두기) | - |
 
 ### 2. Docker 실행
-Docker Compose를 사용하여 전체 서비스를 실행합니다.
 
 ```bash
 docker-compose up --build
 ```
 
-- **Frontend**: http://localhost:3000
-- **Backend**: http://localhost:8000
-- **Docs**: http://localhost:8000/docs
+| 서비스 | URL |
+|-------|-----|
+| Frontend | http://localhost:3000 |
+| Backend API | http://localhost:8000 |
+| API Docs | http://localhost:8000/docs |
+
+### 3. 로컬 개발 (Docker 없이)
+
+```bash
+# Frontend
+npm install
+npm run dev
+
+# Backend
+pip install -r requirements.txt
+uvicorn src.main:app --reload
+```
 
 ---
 
-## � 프로젝트 구조
+## 프로젝트 구조
 
 ```
 kabu-agent/
-├── components/          # React Frontend Components
-├── src/                 # Python Backend Source
-│   ├── api/             # API Routes
-│   ├── services/        # Business Logic (AI, Analysis)
-│   ├── database/        # DB Models & Connection
-│   └── kis_api.py       # KIS Open API Client
-├── docs/                # Documentation & Images
-├── init-db/             # Database Initialization Scripts
-└── docker-compose.yml   # Docker Configuration
+├── src/
+│   ├── app/                  # 앱 진입점, 라우터, 프로바이더
+│   │   ├── providers/        # QueryProvider, AuthProvider
+│   │   └── router/           # AppRouter, ProtectedRoute
+│   │
+│   ├── pages/                # 페이지 컴포넌트 (라우트 단위)
+│   │   ├── dashboard/        # 홈 (대시보드)
+│   │   ├── portfolio/        # 내 주식
+│   │   ├── analysis/         # 자산 분석
+│   │   ├── admin/            # 관리자
+│   │   ├── settings/         # 설정
+│   │   ├── login/            # 로그인
+│   │   └── landing/          # 랜딩 페이지
+│   │
+│   ├── features/             # 기능 단위 모듈
+│   │   ├── auth/             # 인증 (api, model, hooks)
+│   │   ├── portfolio/        # 포트폴리오 조회
+│   │   ├── analysis/         # 분석 기능
+│   │   ├── ai-analysis/      # AI 분석
+│   │   ├── exchange-rate/    # 환율
+│   │   └── glossary/         # 용어 사전
+│   │
+│   ├── entities/             # 도메인 엔티티
+│   │   ├── stock/            # 주식 (api, model, ui)
+│   │   ├── user/             # 사용자
+│   │   └── news/             # 뉴스
+│   │
+│   ├── widgets/              # 복합 UI 블록
+│   │   ├── app-layout/       # 앱 레이아웃
+│   │   ├── header/           # 헤더
+│   │   └── sidebar/          # 사이드바
+│   │
+│   ├── shared/               # 공유 모듈
+│   │   ├── api/              # API 클라이언트
+│   │   ├── ui/               # 공통 UI 컴포넌트
+│   │   ├── lib/              # 유틸리티 함수
+│   │   ├── types/            # 공통 타입
+│   │   └── config/           # 설정
+│   │
+│   ├── api/                  # Backend API Routes (Python)
+│   ├── services/             # Backend Services
+│   ├── database/             # DB 연결
+│   ├── cache/                # Redis 캐시
+│   └── kis_api.py            # KIS Open API 클라이언트
+│
+├── docs/                     # 문서
+├── init-db/                  # DB 초기화 스크립트
+├── nginx/                    # Nginx 설정
+└── docker-compose.yml        # Docker 구성
 ```
 
-## 📄 라이선스
-이 프로젝트는 MIT 라이선스 하에 배포됩니다.
+**아키텍처**: Feature-Sliced Design (FSD) 패턴을 적용하여 관심사 분리 및 모듈화를 구현했습니다.
+
+---
+
+## 문서
+
+| 문서 | 설명 |
+|-----|------|
+| [프론트엔드 아키텍처](docs/FRONTEND_ARCHITECTURE.md) | FSD 구조, 데이터 흐름, 사용 패턴 |
+| [시스템 요구사항](docs/system-requirements.md) | 기능 요구사항, 비기능 요구사항 |
+
+---
+
+## 라이선스
+
+MIT License

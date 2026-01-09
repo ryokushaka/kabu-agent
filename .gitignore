@@ -147,3 +147,4 @@ infra/terraform/.terraform.lock.hcl
 *.pem
 *.key
 !*.key.pub
+coverage/

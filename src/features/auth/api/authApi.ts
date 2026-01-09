@@ -6,15 +6,8 @@ import type { LoginRequest, LoginResponse, User } from '@entities/user';
 
 export const authApi = {
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {
-    const formData = new URLSearchParams();
-    formData.append('username', credentials.username);
-    formData.append('password', credentials.password);
-
-    return apiClient.post<LoginResponse>('/token', formData, {
-      requiresAuth: false,
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      }
+    return apiClient.post<LoginResponse>('/auth/login', credentials, {
+      requiresAuth: false
     });
   },
 
@@ -26,7 +19,7 @@ export const authApi = {
   },
 
   getCurrentUser: (): Promise<User> =>
-    apiClient.get<User>('/users/me'),
+    apiClient.get<User>('/auth/me'),
 
   isAuthenticated: (): boolean => {
     return !!localStorage.getItem('access_token');
@@ -44,11 +37,10 @@ export const authApi = {
     return null;
   },
 
-  storeAuthData: (data: LoginResponse & { user?: User }) => {
+  storeAuthData: (data: LoginResponse) => {
     localStorage.setItem('access_token', data.access_token);
+    localStorage.setItem('refresh_token', data.refresh_token);
     localStorage.setItem('isAuthenticated', 'true');
-    if (data.user) {
-      localStorage.setItem('user', JSON.stringify(data.user));
-    }
+    localStorage.setItem('user', JSON.stringify(data.user));
   },
 };

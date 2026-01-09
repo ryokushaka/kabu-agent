@@ -127,10 +127,15 @@ class ApiClient {
     data?: unknown,
     config?: RequestConfig
   ): Promise<T> {
+    // Handle URLSearchParams for form data (e.g., OAuth token requests)
+    const isFormData = data instanceof URLSearchParams;
+
     return this.request<T>(endpoint, {
       ...config,
       method: 'POST',
-      body: data ? JSON.stringify(data) : undefined
+      body: data
+        ? (isFormData ? data.toString() : JSON.stringify(data))
+        : undefined
     });
   }
 

@@ -7,14 +7,14 @@ const Hero: React.FC = () => {
 
   return (
     <section className="relative w-full min-h-screen flex flex-col items-center justify-center pt-20 overflow-hidden bg-slate-50">
-      {/* 3D Background Layer */}
-      <div className="absolute inset-0 z-0 opacity-80 md:opacity-100">
-         <iframe 
-            src='https://my.spline.design/interactivecubes-Bt3WelK2LnhkUZ0rgxfEQ7Ng/' 
-            frameBorder='0' 
-            width='100%' 
+      {/* 3D Background Layer - overflow-hidden clips the Spline watermark at bottom */}
+      <div className="absolute inset-0 z-0 opacity-80 md:opacity-100 overflow-hidden">
+         <iframe
+            src='https://my.spline.design/interactivecubes-Bt3WelK2LnhkUZ0rgxfEQ7Ng/'
+            frameBorder='0'
+            width='100%'
             height='100%'
-            className="w-full h-full pointer-events-auto"
+            className="w-full h-[calc(100%+50px)] pointer-events-auto"
             title="Spline 3D Background"
          ></iframe>
       </div>

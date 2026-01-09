@@ -87,9 +87,7 @@ const MarketSummary: React.FC<MarketSummaryProps> = ({ indices, loading }) => {
                 </div>
                 <div className={`flex items-center gap-2 font-bold text-sm ${index.isPositive ? 'text-red-500' : 'text-blue-600'}`}>
                   <span>{index.change}</span>
-                  <span className="bg-opacity-10 px-2 py-0.5 rounded-md bg-current">
-                    {index.changePercent}
-                  </span>
+                  <span>({index.changePercent})</span>
                 </div>
               </div>
 

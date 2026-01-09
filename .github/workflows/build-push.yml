@@ -5,8 +5,17 @@ on:
     branches: [main]
     paths:
       - 'src/**'
+      - 'components/**'
+      - 'services/**'
+      - 'hooks/**'
+      - 'types/**'
+      - 'nginx/**'
       - 'requirements.txt'
       - 'Dockerfile.backend'
+      - 'Dockerfile.frontend'
+      - 'package.json'
+      - 'vite.config.ts'
+      - '.env.example'
   workflow_dispatch:
 
 env:

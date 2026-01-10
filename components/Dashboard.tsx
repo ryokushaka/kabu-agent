@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   TrendingUp,
   TrendingDown,
@@ -13,6 +14,7 @@ import { getUSDToKRWRate } from '../services/exchangeService';
 import NewsFeed from './NewsFeed';
 
 const Dashboard: React.FC = () => {
+  const { t } = useTranslation('common');
   const [summary, setSummary] = useState<PortfolioSummary | null>(null);
   const [history, setHistory] = useState<HistoryData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -118,7 +120,7 @@ const Dashboard: React.FC = () => {
         <div className="text-center py-4">
           <div className="inline-flex items-center gap-2 text-toss-grey-500 text-sm">
             <div className="w-4 h-4 border-2 border-toss-blue border-t-transparent rounded-full animate-spin"></div>
-            <span>실시간 데이터를 불러오는 중...</span>
+            <span>{t('dashboard.loadingData')}</span>
           </div>
         </div>
       </div>
@@ -133,7 +135,7 @@ const Dashboard: React.FC = () => {
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-3xl">⚠️</span>
             </div>
-            <h3 className="text-lg font-bold text-toss-grey-900 mb-2">자산 정보를 불러올 수 없습니다</h3>
+            <h3 className="text-lg font-bold text-toss-grey-900 mb-2">{t('dashboard.loadError')}</h3>
             <p className="text-toss-red mb-6 text-sm">{error}</p>
             <div className="space-y-2">
               <button
@@ -141,10 +143,10 @@ const Dashboard: React.FC = () => {
                 className="w-full px-6 py-2.5 bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-300/50 active:scale-[0.98] text-white rounded-xl transition-all duration-200 font-medium shadow-sm shadow-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 min-h-[44px] inline-flex items-center justify-center gap-2"
               >
                 <RefreshCw size={16} />
-                다시 시도
+                {t('buttons.retry')}
               </button>
               <p className="text-xs text-toss-grey-500 mt-3">
-                문제가 계속되면 KIS API 연동 상태를 확인해주세요
+                {t('dashboard.checkKisApi')}
               </p>
             </div>
           </div>
@@ -163,17 +165,17 @@ const Dashboard: React.FC = () => {
       {/* Header with Refresh */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-toss-grey-900">내 자산</h2>
+          <h2 className="text-2xl font-bold text-toss-grey-900">{t('dashboard.myAssets')}</h2>
           <p className="text-sm text-toss-grey-500 mt-1">
             {refreshing ? (
               <span className="inline-flex items-center gap-1.5 text-toss-blue">
                 <div className="w-1.5 h-1.5 bg-toss-blue rounded-full animate-pulse"></div>
-                실시간 데이터 갱신 중...
+                {t('dashboard.updatingData')}
               </span>
             ) : (
               <span className="inline-flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div>
-                최신 데이터
+                {t('dashboard.latestData')}
               </span>
             )}
           </p>
@@ -184,7 +186,7 @@ const Dashboard: React.FC = () => {
           className="flex items-center justify-center gap-2 px-4 py-2.5 bg-white hover:bg-toss-grey-50 border border-toss-grey-200 text-toss-grey-700 rounded-xl active:scale-[0.98] transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm focus:outline-none focus:ring-2 focus:ring-toss-grey-300 focus:ring-offset-2 min-h-[44px]"
         >
           <RefreshCw className={`h-4 w-4 ${refreshing ? 'animate-spin' : ''}`} />
-          <span className="text-sm font-medium">{refreshing ? '갱신 중...' : '새로고침'}</span>
+          <span className="text-sm font-medium">{refreshing ? t('dashboard.refreshing') : t('dashboard.refresh')}</span>
         </button>
       </div>
 
@@ -193,7 +195,7 @@ const Dashboard: React.FC = () => {
         <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm hover:shadow-md hover:shadow-toss-grey-200/50 hover:border-toss-grey-200 transition-all duration-200 cursor-pointer group relative overflow-hidden">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <p className="text-toss-grey-600 text-sm font-medium mb-1">총 자산 (USD)</p>
+              <p className="text-toss-grey-600 text-sm font-medium mb-1">{t('dashboard.totalAssets')}</p>
               <h2 className="text-3xl font-bold text-toss-grey-900 tracking-tight">
                 {formatCurrency(summary.total_assets)}
               </h2>
@@ -208,7 +210,7 @@ const Dashboard: React.FC = () => {
                 {isProfit ? '▲' : '▼'}
                 {isProfit ? '+' : ''}{formatCurrency(summary.total_profit_loss)} ({formatPercent(summary.total_return_percent)})
              </span>
-             <span className="text-toss-grey-400 text-sm">전체 수익</span>
+             <span className="text-toss-grey-400 text-sm">{t('dashboard.totalProfit')}</span>
           </div>
         </div>
 
@@ -216,7 +218,7 @@ const Dashboard: React.FC = () => {
         <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm hover:shadow-md hover:shadow-toss-grey-200/50 hover:border-toss-grey-200 transition-all duration-200 cursor-pointer group relative overflow-hidden">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <p className="text-toss-grey-600 text-sm font-medium mb-1">일일 손익</p>
+              <p className="text-toss-grey-600 text-sm font-medium mb-1">{t('dashboard.dailyPL')}</p>
               <h2 className={`text-3xl font-bold tracking-tight ${dailyIsProfit ? 'text-toss-red' : 'text-toss-blue'}`}>
                 {dailyIsProfit ? '+' : ''}{formatCurrency(summary.total_profit_loss)}
               </h2>
@@ -234,7 +236,7 @@ const Dashboard: React.FC = () => {
                 {dailyIsProfit ? '▲' : '▼'}
                 {formatPercent(summary.total_return_percent)}
              </span>
-             <span className="text-toss-grey-400 text-sm">오늘 변동</span>
+             <span className="text-toss-grey-400 text-sm">{t('dashboard.todayChange')}</span>
           </div>
         </div>
 
@@ -242,7 +244,7 @@ const Dashboard: React.FC = () => {
         <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm hover:shadow-md hover:shadow-toss-grey-200/50 hover:border-toss-grey-200 transition-all duration-200 cursor-pointer group relative overflow-hidden">
           <div className="flex justify-between items-start mb-4">
             <div>
-              <p className="text-toss-grey-600 text-sm font-medium mb-1">환율 (USD/KRW)</p>
+              <p className="text-toss-grey-600 text-sm font-medium mb-1">{t('dashboard.exchangeRate')}</p>
               <h2 className="text-3xl font-bold text-toss-grey-900 tracking-tight">
                 ₩{exchangeRate.toLocaleString()}
               </h2>
@@ -252,7 +254,7 @@ const Dashboard: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
-             <span className="text-toss-grey-500 text-sm">실시간 고시 환율</span>
+             <span className="text-toss-grey-500 text-sm">{t('dashboard.realtimeRate')}</span>
           </div>
         </div>
       </div>
@@ -262,7 +264,7 @@ const Dashboard: React.FC = () => {
         {/* Asset Trend Chart */}
         <div className="lg:col-span-2 bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
-            <h3 className="text-lg font-bold text-toss-grey-900">자산 추이</h3>
+            <h3 className="text-lg font-bold text-toss-grey-900">{t('dashboard.assetTrend')}</h3>
             <div className="flex gap-1 bg-toss-grey-100 p-1 rounded-xl">
               {(['1M', '3M', '1Y', 'ALL'] as const).map((period) => (
                 <button 

@@ -17,6 +17,7 @@ import {
   ChevronLeft,
   ChevronRight
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { apiClient } from '../services/api';
 
 // Types
@@ -64,6 +65,7 @@ interface UserListResponse {
 }
 
 const Admin: React.FC = () => {
+  const { t } = useTranslation('common');
   const [activeTab, setActiveTab] = useState<'users' | 'monitoring' | 'system'>('users');
   const [searchTerm, setSearchTerm] = useState('');
   const [users, setUsers] = useState<AdminUser[]>([]);
@@ -193,7 +195,7 @@ const Admin: React.FC = () => {
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-toss-grey-900">관리자 콘솔</h2>
+          <h2 className="text-2xl font-bold text-toss-grey-900">{t('admin.title')}</h2>
           <p className="text-toss-grey-500 text-sm mt-1">시스템 관리 및 모니터링</p>
         </div>
       </div>
@@ -208,7 +210,7 @@ const Admin: React.FC = () => {
               : 'bg-white text-toss-grey-700 hover:text-toss-grey-900 hover:bg-toss-grey-50 border border-toss-grey-200'
           }`}
         >
-          <Users size={18} /> 사용자 관리
+          <Users size={18} /> {t('admin.users')}
         </button>
         <button
           onClick={() => setActiveTab('monitoring')}
@@ -228,7 +230,7 @@ const Admin: React.FC = () => {
               : 'bg-white text-toss-grey-700 hover:text-toss-grey-900 hover:bg-toss-grey-50 border border-toss-grey-200'
           }`}
         >
-          <Server size={18} /> 시스템 설정
+          <Server size={18} /> {t('admin.settings')}
         </button>
       </div>
 
@@ -250,7 +252,7 @@ const Admin: React.FC = () => {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-sm text-toss-grey-500">
-                총 {totalUsers}명
+                {t('admin.totalUsers')} {totalUsers}명
               </span>
               <button
                 onClick={fetchUsers}
@@ -279,7 +281,7 @@ const Admin: React.FC = () => {
                 <div className="w-16 h-16 bg-toss-grey-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Search className="w-8 h-8 text-toss-grey-300" />
                 </div>
-                <h3 className="text-lg font-bold text-toss-grey-900 mb-2">검색 결과가 없습니다</h3>
+                <h3 className="text-lg font-bold text-toss-grey-900 mb-2">{t('portfolio.noResults')}</h3>
                 <p className="text-sm text-toss-grey-500">다른 검색어를 시도해보세요</p>
               </div>
             ) : (
@@ -360,7 +362,7 @@ const Admin: React.FC = () => {
                 <div className="w-16 h-16 bg-toss-grey-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Search className="w-8 h-8 text-toss-grey-300" />
                 </div>
-                <h3 className="text-lg font-bold text-toss-grey-900 mb-2">검색 결과가 없습니다</h3>
+                <h3 className="text-lg font-bold text-toss-grey-900 mb-2">{t('portfolio.noResults')}</h3>
                 <p className="text-sm text-toss-grey-500">다른 검색어를 시도해보세요</p>
               </div>
             ) : (
@@ -431,7 +433,7 @@ const Admin: React.FC = () => {
               className="flex items-center gap-2 px-4 py-2 bg-toss-grey-50 hover:bg-toss-grey-100 rounded-xl transition-colors border border-toss-grey-200 text-sm"
             >
               <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-              새로고침
+              {t('dashboard.refresh')}
             </button>
           </div>
 

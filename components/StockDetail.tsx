@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
   TrendingUp,
@@ -43,6 +44,7 @@ import { formatCurrency, formatPercent } from '../services/dataService';
 type ChartPeriod = '1W' | '1M' | '3M' | '6M' | '1Y' | '5Y';
 
 const StockDetail: React.FC = () => {
+  const { t } = useTranslation('common');
   const { ticker } = useParams<{ ticker: string }>();
   const navigate = useNavigate();
 
@@ -109,11 +111,11 @@ const StockDetail: React.FC = () => {
 
   const getRecommendationText = (rec: string) => {
     const map: Record<string, string> = {
-      strong_buy: '적극 매수',
-      buy: '매수',
-      hold: '보유',
-      sell: '매도',
-      strong_sell: '적극 매도'
+      strong_buy: t('rebalance.action.buy'),
+      buy: t('rebalance.action.buy'),
+      hold: t('rebalance.action.hold'),
+      sell: t('rebalance.action.sell'),
+      strong_sell: t('rebalance.action.sell')
     };
     return map[rec] || rec;
   };
@@ -137,8 +139,8 @@ const StockDetail: React.FC = () => {
             <div className="absolute inset-0 border-4 border-toss-grey-200 rounded-full"></div>
             <div className="absolute inset-0 border-4 border-toss-blue border-t-transparent rounded-full animate-spin"></div>
           </div>
-          <h3 className="text-lg font-bold text-toss-grey-900 mb-1">종목 정보를 불러오는 중...</h3>
-          <p className="text-sm text-toss-grey-500">잠시만 기다려주세요</p>
+          <h3 className="text-lg font-bold text-toss-grey-900 mb-1">{t('stockDetail.loading')}</h3>
+          <p className="text-sm text-toss-grey-500">{t('labels.loading')}</p>
         </div>
       </div>
     );
@@ -152,21 +154,21 @@ const StockDetail: React.FC = () => {
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-3xl">!</span>
             </div>
-            <h3 className="text-lg font-bold text-toss-grey-900 mb-2">종목 정보를 불러올 수 없습니다</h3>
-            <p className="text-toss-red mb-6 text-sm">{error || '알 수 없는 오류'}</p>
+            <h3 className="text-lg font-bold text-toss-grey-900 mb-2">{t('dashboard.loadError')}</h3>
+            <p className="text-toss-red mb-6 text-sm">{error || t('errors.general')}</p>
             <div className="flex gap-3 justify-center">
               <button
                 onClick={() => navigate(-1)}
                 className="px-4 py-2.5 bg-white border border-toss-grey-200 text-toss-grey-700 rounded-xl hover:bg-toss-grey-50 transition-colors"
               >
-                뒤로가기
+                {t('buttons.back')}
               </button>
               <button
                 onClick={fetchAllData}
                 className="px-4 py-2.5 bg-toss-blue text-white rounded-xl hover:bg-blue-600 transition-colors inline-flex items-center gap-2"
               >
                 <RefreshCw size={16} />
-                다시 시도
+                {t('buttons.retry')}
               </button>
             </div>
           </div>
@@ -201,7 +203,7 @@ const StockDetail: React.FC = () => {
         <button
           onClick={fetchAllData}
           className="p-2.5 hover:bg-toss-grey-100 rounded-xl transition-colors"
-          title="새로고침"
+          title={t('dashboard.refresh')}
         >
           <RefreshCw className="w-5 h-5 text-toss-grey-500" />
         </button>
@@ -224,37 +226,37 @@ const StockDetail: React.FC = () => {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-toss-grey-100">
           {stockInfo.high_52w && (
             <div>
-              <div className="text-xs text-toss-grey-500">52주 최고</div>
+              <div className="text-xs text-toss-grey-500">{t('stockDetail.high52w')}</div>
               <div className="font-semibold text-toss-grey-900">{formatCurrency(stockInfo.high_52w)}</div>
             </div>
           )}
           {stockInfo.low_52w && (
             <div>
-              <div className="text-xs text-toss-grey-500">52주 최저</div>
+              <div className="text-xs text-toss-grey-500">{t('stockDetail.low52w')}</div>
               <div className="font-semibold text-toss-grey-900">{formatCurrency(stockInfo.low_52w)}</div>
             </div>
           )}
           {stockInfo.pe_ratio && (
             <div>
-              <div className="text-xs text-toss-grey-500">PER</div>
+              <div className="text-xs text-toss-grey-500">{t('stockDetail.pe')}</div>
               <div className="font-semibold text-toss-grey-900">{stockInfo.pe_ratio.toFixed(2)}</div>
             </div>
           )}
           {stockInfo.dividend_yield && (
             <div>
-              <div className="text-xs text-toss-grey-500">배당률</div>
+              <div className="text-xs text-toss-grey-500">{t('stockDetail.dividend')}</div>
               <div className="font-semibold text-toss-grey-900">{stockInfo.dividend_yield.toFixed(2)}%</div>
             </div>
           )}
           {stockInfo.volume && (
             <div>
-              <div className="text-xs text-toss-grey-500">거래량</div>
+              <div className="text-xs text-toss-grey-500">{t('stockDetail.volume')}</div>
               <div className="font-semibold text-toss-grey-900">{stockInfo.volume.toLocaleString()}</div>
             </div>
           )}
           {stockInfo.market_cap && (
             <div>
-              <div className="text-xs text-toss-grey-500">시가총액</div>
+              <div className="text-xs text-toss-grey-500">{t('stockDetail.marketCap')}</div>
               <div className="font-semibold text-toss-grey-900">
                 ${(stockInfo.market_cap / 1e9).toFixed(1)}B
               </div>
@@ -268,23 +270,23 @@ const StockDetail: React.FC = () => {
         <div className="bg-gradient-to-r from-toss-blue/5 to-blue-50 border border-blue-100 rounded-3xl p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
             <Briefcase className="w-5 h-5 text-toss-blue" />
-            <h3 className="font-bold text-toss-grey-900">내 보유 현황</h3>
+            <h3 className="font-bold text-toss-grey-900">{t('portfolio.title')}</h3>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div>
-              <div className="text-xs text-toss-grey-500">보유수량</div>
-              <div className="font-bold text-toss-grey-900">{position.quantity}주</div>
+              <div className="text-xs text-toss-grey-500">{t('portfolio.table.quantity')}</div>
+              <div className="font-bold text-toss-grey-900">{position.quantity}{t('transactions.shares')}</div>
             </div>
             <div>
-              <div className="text-xs text-toss-grey-500">평균단가</div>
+              <div className="text-xs text-toss-grey-500">{t('portfolio.table.avgPrice')}</div>
               <div className="font-semibold text-toss-grey-900">{formatCurrency(position.avg_price)}</div>
             </div>
             <div>
-              <div className="text-xs text-toss-grey-500">평가금액</div>
+              <div className="text-xs text-toss-grey-500">{t('portfolio.table.evalAmount')}</div>
               <div className="font-bold text-toss-grey-900">{formatCurrency(position.market_value)}</div>
             </div>
             <div>
-              <div className="text-xs text-toss-grey-500">수익률</div>
+              <div className="text-xs text-toss-grey-500">{t('portfolio.table.profitRate')}</div>
               <div className={`font-bold ${position.profit_loss_percent >= 0 ? 'text-toss-red' : 'text-toss-blue'}`}>
                 {position.profit_loss_percent >= 0 ? '+' : ''}{formatPercent(position.profit_loss_percent)}
               </div>
@@ -305,7 +307,7 @@ const StockDetail: React.FC = () => {
             }`}
           >
             <BarChart2 className="w-4 h-4" />
-            차트
+            {t('navigation.analysis')}
           </button>
           <button
             onClick={() => setActiveTab('news')}
@@ -316,7 +318,7 @@ const StockDetail: React.FC = () => {
             }`}
           >
             <Newspaper className="w-4 h-4" />
-            뉴스
+            {t('stockDetail.news')}
           </button>
           <button
             onClick={() => setActiveTab('analysis')}
@@ -327,7 +329,7 @@ const StockDetail: React.FC = () => {
             }`}
           >
             <Brain className="w-4 h-4" />
-            AI 분석
+            {t('navigation.analysis')}
           </button>
         </div>
 
@@ -396,8 +398,8 @@ const StockDetail: React.FC = () => {
                         boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                       }}
                       formatter={(value: number, name: string) => {
-                        if (name === 'volume') return [value.toLocaleString(), '거래량'];
-                        return [`$${value.toFixed(2)}`, name === 'close' ? '종가' : name];
+                        if (name === 'volume') return [value.toLocaleString(), t('stockDetail.volume')];
+                        return [`$${value.toFixed(2)}`, name === 'close' ? t('stockDetail.currentPrice') : name];
                       }}
                       labelFormatter={(label) => new Date(label).toLocaleDateString('ko-KR')}
                     />
@@ -427,7 +429,7 @@ const StockDetail: React.FC = () => {
               {news.length === 0 ? (
                 <div className="text-center py-12">
                   <Newspaper className="w-12 h-12 text-toss-grey-300 mx-auto mb-4" />
-                  <p className="text-toss-grey-500">관련 뉴스가 없습니다</p>
+                  <p className="text-toss-grey-500">{t('newsFeed.noNews')}</p>
                 </div>
               ) : (
                 news.map((item) => (
@@ -470,17 +472,17 @@ const StockDetail: React.FC = () => {
                 </div>
                 {analysis.target_price && (
                   <div className="text-toss-grey-700">
-                    목표가: <span className="font-bold">{formatCurrency(analysis.target_price)}</span>
+                    {t('notifications.targetPrice')}: <span className="font-bold">{formatCurrency(analysis.target_price)}</span>
                   </div>
                 )}
                 <div className="text-sm text-toss-grey-500">
-                  신뢰도: {Math.round(analysis.confidence * 100)}%
+                  {t('labels.loading')} {Math.round(analysis.confidence * 100)}%
                 </div>
               </div>
 
               {/* Summary */}
               <div className="bg-toss-grey-50 rounded-2xl p-5">
-                <h4 className="font-bold text-toss-grey-900 mb-2">분석 요약</h4>
+                <h4 className="font-bold text-toss-grey-900 mb-2">{t('navigation.analysis')}</h4>
                 <p className="text-toss-grey-700 leading-relaxed">{analysis.analysis_summary}</p>
               </div>
 
@@ -489,7 +491,7 @@ const StockDetail: React.FC = () => {
                 <div className="bg-green-50 border border-green-100 rounded-2xl p-5">
                   <div className="flex items-center gap-2 mb-3">
                     <CheckCircle className="w-5 h-5 text-green-600" />
-                    <h4 className="font-bold text-green-800">핵심 요인</h4>
+                    <h4 className="font-bold text-green-800">{t('analysis.bestPerformer')}</h4>
                   </div>
                   <ul className="space-y-2">
                     {analysis.key_factors.map((factor, idx) => (
@@ -504,7 +506,7 @@ const StockDetail: React.FC = () => {
                 <div className="bg-amber-50 border border-amber-100 rounded-2xl p-5">
                   <div className="flex items-center gap-2 mb-3">
                     <AlertTriangle className="w-5 h-5 text-amber-600" />
-                    <h4 className="font-bold text-amber-800">리스크 요인</h4>
+                    <h4 className="font-bold text-amber-800">{t('analysis.worstPerformer')}</h4>
                   </div>
                   <ul className="space-y-2">
                     {analysis.risks.map((risk, idx) => (
@@ -518,7 +520,7 @@ const StockDetail: React.FC = () => {
               </div>
 
               <p className="text-xs text-toss-grey-400 text-right">
-                마지막 업데이트: {new Date(analysis.updated_at).toLocaleString('ko-KR')}
+                {t('dashboard.latestData')}: {new Date(analysis.updated_at).toLocaleString('ko-KR')}
               </p>
             </div>
           )}

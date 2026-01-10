@@ -1,36 +1,30 @@
 import React, { useState } from 'react';
 import { BookOpen, PieChart, Coins, Layers, Scale, ArrowUpRight } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { GlossaryModal } from '../../../components/common';
 
-const basics = [
-  {
-    Icon: PieChart,
-    title: "주식 (Stock)",
-    subtitle: "회사의 주인 되기",
-    description: "주식은 회사의 소유권입니다. 주주가 되면 회사의 성장과 이익을 함께 나눌 수 있습니다."
-  },
-  {
-    Icon: Coins,
-    title: "배당금 (Dividend)",
-    subtitle: "보너스 같은 수익",
-    description: "회사가 번 돈의 일부를 주주에게 나눠주는 것입니다. 정기적인 현금 흐름을 만들 수 있죠."
-  },
-  {
-    Icon: Layers,
-    title: "ETF",
-    subtitle: "종합 선물 세트",
-    description: "여러 기업을 한 바구니에 담은 상품입니다. 하나만 사도 분산 투자 효과가 있어 안전합니다."
-  },
-  {
-    Icon: Scale,
-    title: "PER",
-    subtitle: "가격 적정성 판단",
-    description: "현재 주가가 이익 대비 싼지 비싼지를 보여주는 지표입니다. 낮을수록 저평가된 경우가 많습니다."
-  }
-];
-
 const StockBasics: React.FC = () => {
+  const { t } = useTranslation('landing');
   const [isGlossaryOpen, setIsGlossaryOpen] = useState(false);
+
+  const basics = [
+    {
+      Icon: PieChart,
+      key: 'stock',
+    },
+    {
+      Icon: Coins,
+      key: 'dividend',
+    },
+    {
+      Icon: Layers,
+      key: 'etf',
+    },
+    {
+      Icon: Scale,
+      key: 'per',
+    }
+  ];
 
   return (
     <section className="py-24 bg-white border-t border-toss-grey-100">
@@ -39,14 +33,14 @@ const StockBasics: React.FC = () => {
           <div className="max-w-xl">
              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-toss-blue text-sm font-semibold mb-4">
               <BookOpen size={16} />
-              <span>초보자 가이드</span>
+              <span>{t('stockBasics.badge')}</span>
             </div>
             <h2 className="text-3xl md:text-4xl font-black text-toss-grey-900 mb-4 leading-tight">
-              투자가 처음이신가요?<br />
-              <span className="text-toss-blue">핵심 용어</span>부터 시작해보세요.
+              {t('stockBasics.title')}<br />
+              <span className="text-toss-blue">{t('stockBasics.titleHighlight')}</span>{t('stockBasics.titleSuffix')}
             </h2>
             <p className="text-toss-grey-500 text-lg">
-              어렵게 느껴지는 주식 용어, Kabu Agent가 알기 쉽게 설명해 드립니다.
+              {t('stockBasics.subtitle')}
             </p>
           </div>
 
@@ -54,7 +48,7 @@ const StockBasics: React.FC = () => {
             onClick={() => setIsGlossaryOpen(true)}
             className="hidden md:flex items-center gap-2 text-toss-grey-600 font-bold hover:text-toss-blue transition-colors mt-6 md:mt-0 group"
           >
-            전체 가이드 보기
+            {t('stockBasics.viewGuide')}
             <ArrowUpRight className="w-5 h-5 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
@@ -71,11 +65,11 @@ const StockBasics: React.FC = () => {
                   <item.Icon className="w-7 h-7 text-toss-blue group-hover:text-white transition-colors duration-300" />
                 </div>
                 
-                <h3 className="text-xl font-bold text-toss-grey-900 mb-1">{item.title}</h3>
-                <p className="text-sm font-semibold text-toss-blue mb-4">{item.subtitle}</p>
-                
+                <h3 className="text-xl font-bold text-toss-grey-900 mb-1">{t(`stockBasics.terms.${item.key}.title`)}</h3>
+                <p className="text-sm font-semibold text-toss-blue mb-4">{t(`stockBasics.terms.${item.key}.subtitle`)}</p>
+
                 <p className="text-toss-grey-600 leading-relaxed text-sm">
-                  {item.description}
+                  {t(`stockBasics.terms.${item.key}.description`)}
                 </p>
               </div>
             </div>

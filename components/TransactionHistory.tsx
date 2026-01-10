@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowUpRight,
   ArrowDownRight,
@@ -43,6 +44,7 @@ interface TransactionStats {
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 const TransactionHistory: React.FC = () => {
+  const { t } = useTranslation('common');
   const navigate = useNavigate();
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [stats, setStats] = useState<TransactionStats | null>(null);
@@ -170,8 +172,8 @@ const TransactionHistory: React.FC = () => {
             <div className="absolute inset-0 border-4 border-toss-grey-200 rounded-full"></div>
             <div className="absolute inset-0 border-4 border-toss-blue border-t-transparent rounded-full animate-spin"></div>
           </div>
-          <h3 className="text-lg font-bold text-toss-grey-900 mb-1">거래 내역을 불러오는 중...</h3>
-          <p className="text-sm text-toss-grey-500">잠시만 기다려주세요</p>
+          <h3 className="text-lg font-bold text-toss-grey-900 mb-1">{t('transactions.loading')}</h3>
+          <p className="text-sm text-toss-grey-500">{t('labels.loading')}</p>
         </div>
       </div>
     );
@@ -185,14 +187,14 @@ const TransactionHistory: React.FC = () => {
             <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-3xl">!</span>
             </div>
-            <h3 className="text-lg font-bold text-toss-grey-900 mb-2">데이터를 불러올 수 없습니다</h3>
+            <h3 className="text-lg font-bold text-toss-grey-900 mb-2">{t('errors.general')}</h3>
             <p className="text-toss-red mb-6 text-sm">{error}</p>
             <button
               onClick={fetchTransactions}
               className="px-6 py-2.5 bg-toss-blue hover:bg-blue-600 text-white rounded-xl transition-all duration-200 font-medium inline-flex items-center gap-2"
             >
               <RefreshCw size={16} />
-              다시 시도
+              {t('buttons.retry')}
             </button>
           </div>
         </div>
@@ -204,7 +206,7 @@ const TransactionHistory: React.FC = () => {
     <div className="space-y-6 animate-fade-in">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl font-bold text-toss-grey-900">거래 내역</h2>
+        <h2 className="text-2xl font-bold text-toss-grey-900">{t('transactions.title')}</h2>
         <div className="flex items-center gap-2">
           <button
             onClick={fetchTransactions}
@@ -217,7 +219,7 @@ const TransactionHistory: React.FC = () => {
             className="flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl transition-all duration-200 text-sm font-medium shadow-sm"
           >
             <Download size={16} />
-            <span className="hidden sm:inline">CSV 내보내기</span>
+            <span className="hidden sm:inline">{t('transactions.exportCsv')}</span>
           </button>
         </div>
       </div>
@@ -230,12 +232,12 @@ const TransactionHistory: React.FC = () => {
               <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center">
                 <ArrowDownRight className="w-4 h-4 text-toss-red" />
               </div>
-              <span className="text-xs text-toss-grey-500">총 매수</span>
+              <span className="text-xs text-toss-grey-500">{t('transactions.stats.totalBuy')}</span>
             </div>
             <div className="font-bold text-lg text-toss-grey-900">
               {formatCurrency(stats.total_buy_amount)}
             </div>
-            <div className="text-xs text-toss-grey-400">{stats.buy_count}건</div>
+            <div className="text-xs text-toss-grey-400">{stats.buy_count}</div>
           </div>
 
           <div className="bg-white border border-toss-grey-100 rounded-2xl p-4 shadow-sm">
@@ -243,12 +245,12 @@ const TransactionHistory: React.FC = () => {
               <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
                 <ArrowUpRight className="w-4 h-4 text-toss-blue" />
               </div>
-              <span className="text-xs text-toss-grey-500">총 매도</span>
+              <span className="text-xs text-toss-grey-500">{t('transactions.stats.totalSell')}</span>
             </div>
             <div className="font-bold text-lg text-toss-grey-900">
               {formatCurrency(stats.total_sell_amount)}
             </div>
-            <div className="text-xs text-toss-grey-400">{stats.sell_count}건</div>
+            <div className="text-xs text-toss-grey-400">{stats.sell_count}</div>
           </div>
 
           <div className="bg-white border border-toss-grey-100 rounded-2xl p-4 shadow-sm">
@@ -260,7 +262,7 @@ const TransactionHistory: React.FC = () => {
                   <TrendingDown className="w-4 h-4 text-toss-blue" />
                 )}
               </div>
-              <span className="text-xs text-toss-grey-500">실현 손익</span>
+              <span className="text-xs text-toss-grey-500">{t('transactions.stats.realizedPL')}</span>
             </div>
             <div className={`font-bold text-lg ${stats.realized_profit_loss >= 0 ? 'text-toss-red' : 'text-toss-blue'}`}>
               {stats.realized_profit_loss >= 0 ? '+' : ''}{formatCurrency(stats.realized_profit_loss)}
@@ -272,12 +274,12 @@ const TransactionHistory: React.FC = () => {
               <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center">
                 <BarChart2 className="w-4 h-4 text-purple-500" />
               </div>
-              <span className="text-xs text-toss-grey-500">평균 거래금액</span>
+              <span className="text-xs text-toss-grey-500">{t('transactions.stats.avgAmount')}</span>
             </div>
             <div className="font-bold text-lg text-toss-grey-900">
               {formatCurrency(stats.avg_transaction_amount)}
             </div>
-            <div className="text-xs text-toss-grey-400">{stats.transaction_count}건 거래</div>
+            <div className="text-xs text-toss-grey-400">{stats.transaction_count}</div>
           </div>
         </div>
       )}
@@ -294,7 +296,7 @@ const TransactionHistory: React.FC = () => {
                 : 'bg-toss-grey-100 text-toss-grey-600 hover:bg-toss-grey-200'
             }`}
           >
-            {period === 'ALL' ? '전체' : period}
+            {t(`periods.${period}`)}
           </button>
         ))}
       </div>
@@ -303,7 +305,7 @@ const TransactionHistory: React.FC = () => {
       <div className="bg-white border border-toss-grey-100 rounded-2xl p-4 shadow-sm">
         <div className="flex items-center gap-2 mb-4">
           <Filter className="w-4 h-4 text-toss-grey-500" />
-          <span className="text-sm font-semibold text-toss-grey-700">필터</span>
+          <span className="text-sm font-semibold text-toss-grey-700">{t('labels.filter')}</span>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
           <select
@@ -311,16 +313,16 @@ const TransactionHistory: React.FC = () => {
             onChange={(e) => { setFilterType(e.target.value); setPage(1); }}
             className="bg-toss-grey-50 border border-toss-grey-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-toss-blue"
           >
-            <option value="">전체 유형</option>
-            <option value="BUY">매수</option>
-            <option value="SELL">매도</option>
+            <option value="">{t('transactions.filters.allTypes')}</option>
+            <option value="BUY">{t('transactions.filters.buy')}</option>
+            <option value="SELL">{t('transactions.filters.sell')}</option>
           </select>
 
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-toss-grey-400" />
             <input
               type="text"
-              placeholder="종목코드"
+              placeholder={t('transactions.tickerPlaceholder')}
               value={filterTicker}
               onChange={(e) => { setFilterTicker(e.target.value.toUpperCase()); setPage(1); }}
               className="w-full bg-toss-grey-50 border border-toss-grey-200 rounded-xl pl-10 pr-3 py-2.5 text-sm focus:outline-none focus:border-toss-blue"
@@ -351,7 +353,7 @@ const TransactionHistory: React.FC = () => {
             onClick={clearFilters}
             className="bg-toss-grey-100 hover:bg-toss-grey-200 text-toss-grey-600 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors"
           >
-            초기화
+            {t('transactions.reset')}
           </button>
         </div>
       </div>
@@ -363,8 +365,8 @@ const TransactionHistory: React.FC = () => {
             <div className="w-16 h-16 bg-toss-grey-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <Search className="w-8 h-8 text-toss-grey-300" />
             </div>
-            <h3 className="text-lg font-bold text-toss-grey-900 mb-2">거래 내역이 없습니다</h3>
-            <p className="text-sm text-toss-grey-500">조건에 맞는 거래 내역이 없습니다</p>
+            <h3 className="text-lg font-bold text-toss-grey-900 mb-2">{t('transactions.noData')}</h3>
+            <p className="text-sm text-toss-grey-500">{t('transactions.noDataDesc')}</p>
           </div>
         ) : (
           <>
@@ -373,13 +375,13 @@ const TransactionHistory: React.FC = () => {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-toss-grey-50 border-b border-toss-grey-100">
-                    <th className="p-4 text-xs font-semibold text-toss-grey-500 uppercase">거래일시</th>
-                    <th className="p-4 text-xs font-semibold text-toss-grey-500 uppercase">종목</th>
-                    <th className="p-4 text-xs font-semibold text-toss-grey-500 uppercase text-center">유형</th>
-                    <th className="p-4 text-xs font-semibold text-toss-grey-500 uppercase text-right">수량</th>
-                    <th className="p-4 text-xs font-semibold text-toss-grey-500 uppercase text-right">단가</th>
-                    <th className="p-4 text-xs font-semibold text-toss-grey-500 uppercase text-right">거래금액</th>
-                    <th className="p-4 text-xs font-semibold text-toss-grey-500 uppercase text-right">수수료</th>
+                    <th className="p-4 text-xs font-semibold text-toss-grey-500 uppercase">{t('transactions.dateTime')}</th>
+                    <th className="p-4 text-xs font-semibold text-toss-grey-500 uppercase">{t('transactions.table.stock')}</th>
+                    <th className="p-4 text-xs font-semibold text-toss-grey-500 uppercase text-center">{t('transactions.table.type')}</th>
+                    <th className="p-4 text-xs font-semibold text-toss-grey-500 uppercase text-right">{t('transactions.table.quantity')}</th>
+                    <th className="p-4 text-xs font-semibold text-toss-grey-500 uppercase text-right">{t('transactions.table.price')}</th>
+                    <th className="p-4 text-xs font-semibold text-toss-grey-500 uppercase text-right">{t('transactions.table.amount')}</th>
+                    <th className="p-4 text-xs font-semibold text-toss-grey-500 uppercase text-right">{t('transactions.fee')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-toss-grey-100">
@@ -415,12 +417,12 @@ const TransactionHistory: React.FC = () => {
                           {tx.transaction_type === 'BUY' ? (
                             <>
                               <ArrowDownRight className="w-3 h-3" />
-                              매수
+                              {t('transactions.filters.buy')}
                             </>
                           ) : (
                             <>
                               <ArrowUpRight className="w-3 h-3" />
-                              매도
+                              {t('transactions.filters.sell')}
                             </>
                           )}
                         </span>
@@ -460,20 +462,20 @@ const TransactionHistory: React.FC = () => {
                         ? 'bg-red-50 text-toss-red border border-red-100'
                         : 'bg-blue-50 text-toss-blue border border-blue-100'
                     }`}>
-                      {tx.transaction_type === 'BUY' ? '매수' : '매도'}
+                      {tx.transaction_type === 'BUY' ? t('transactions.filters.buy') : t('transactions.filters.sell')}
                     </span>
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-sm">
                     <div>
-                      <div className="text-xs text-toss-grey-500">수량</div>
-                      <div className="font-medium text-toss-grey-900">{tx.quantity}주</div>
+                      <div className="text-xs text-toss-grey-500">{t('transactions.table.quantity')}</div>
+                      <div className="font-medium text-toss-grey-900">{tx.quantity}</div>
                     </div>
                     <div>
-                      <div className="text-xs text-toss-grey-500">단가</div>
+                      <div className="text-xs text-toss-grey-500">{t('transactions.table.price')}</div>
                       <div className="font-medium text-toss-grey-900">{formatCurrency(tx.price)}</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-xs text-toss-grey-500">거래금액</div>
+                      <div className="text-xs text-toss-grey-500">{t('transactions.table.amount')}</div>
                       <div className="font-bold text-toss-grey-900">{formatCurrency(tx.total_amount)}</div>
                     </div>
                   </div>
@@ -487,7 +489,7 @@ const TransactionHistory: React.FC = () => {
         {totalPages > 1 && (
           <div className="flex items-center justify-between p-4 border-t border-toss-grey-100 bg-toss-grey-50">
             <div className="text-sm text-toss-grey-500">
-              총 {total}건 중 {(page - 1) * pageSize + 1}-{Math.min(page * pageSize, total)}건
+              {t('transactions.totalOf', { total, start: (page - 1) * pageSize + 1, end: Math.min(page * pageSize, total) })}
             </div>
             <div className="flex items-center gap-2">
               <button

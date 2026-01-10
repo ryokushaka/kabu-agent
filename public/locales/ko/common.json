@@ -30,7 +30,10 @@
     "learnMore": "자세히 보기",
     "backToHome": "메인으로 돌아가기",
     "connectionTest": "연결 테스트",
-    "saveChanges": "변경사항 저장"
+    "saveChanges": "변경사항 저장",
+    "contact": "이용 문의",
+    "customerService": "고객센터",
+    "guide": "이용안내"
   },
   "labels": {
     "loading": "로딩 중...",
@@ -61,5 +64,217 @@
     "notFound": "페이지를 찾을 수 없습니다",
     "unauthorized": "로그인이 필요합니다",
     "serverError": "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요."
+  },
+  "dashboard": {
+    "myAssets": "내 자산",
+    "totalAssets": "총 자산 (USD)",
+    "dailyPL": "일일 손익",
+    "exchangeRate": "환율 (USD/KRW)",
+    "assetTrend": "자산 추이",
+    "totalProfit": "전체 수익",
+    "todayChange": "오늘 변동",
+    "realtimeRate": "실시간 고시 환율",
+    "refresh": "새로고침",
+    "refreshing": "갱신 중...",
+    "loadingData": "실시간 데이터를 불러오는 중...",
+    "updatingData": "실시간 데이터 갱신 중...",
+    "latestData": "최신 데이터",
+    "loadError": "자산 정보를 불러올 수 없습니다",
+    "checkKisApi": "문제가 계속되면 KIS API 연동 상태를 확인해주세요"
+  },
+  "portfolio": {
+    "title": "내 주식",
+    "loading": "주식 목록을 불러오는 중...",
+    "searchPlaceholder": "종목명 또는 티커 검색",
+    "exportExcel": "엑셀 다운로드",
+    "noResults": "검색 결과가 없습니다",
+    "noData": "보유 주식이 없습니다",
+    "table": {
+      "stock": "종목",
+      "quantity": "보유수량",
+      "avgPrice": "평균단가",
+      "currentPrice": "현재가",
+      "evalAmount": "평가금액",
+      "profitRate": "수익률",
+      "profit": "수익금"
+    },
+    "summary": {
+      "totalEval": "총 평가금액",
+      "totalProfit": "총 수익금",
+      "avgProfitRate": "평균 수익률"
+    }
+  },
+  "analysis": {
+    "title": "자산 심층 분석",
+    "loading": "분석 데이터를 불러오는 중...",
+    "riskMetrics": "리스크 지표 및 벤치마크 비교",
+    "volatility": "변동성",
+    "beta": "베타",
+    "sharpeRatio": "샤프 지수",
+    "maxDrawdown": "최대 낙폭",
+    "spComparison": "S&P 500 비교 성과",
+    "sectorWeight": "섹터 비중",
+    "profitStatus": "수익률 현황",
+    "portfolio": "포트폴리오",
+    "benchmark": "벤치마크",
+    "myPortfolio": "내 포트폴리오",
+    "sp500": "S&P 500",
+    "totalReturn": "총 수익률",
+    "bestPerformer": "최고 수익 종목",
+    "worstPerformer": "최저 수익 종목"
+  },
+  "transactions": {
+    "title": "거래 내역",
+    "loading": "거래 내역을 불러오는 중...",
+    "exportCsv": "CSV 내보내기",
+    "noData": "거래 내역이 없습니다",
+    "noDataDesc": "조건에 맞는 거래 내역이 없습니다",
+    "tickerPlaceholder": "종목코드",
+    "reset": "초기화",
+    "dateTime": "거래일시",
+    "fee": "수수료",
+    "shares": "주",
+    "totalOf": "총 {{total}}건 중 {{start}}-{{end}}건",
+    "stats": {
+      "totalBuy": "총 매수",
+      "totalSell": "총 매도",
+      "realizedPL": "실현 손익",
+      "avgAmount": "평균 거래금액"
+    },
+    "filters": {
+      "allTypes": "전체 유형",
+      "buy": "매수",
+      "sell": "매도"
+    },
+    "table": {
+      "date": "날짜",
+      "type": "유형",
+      "stock": "종목",
+      "quantity": "수량",
+      "price": "단가",
+      "amount": "금액"
+    }
+  },
+  "notifications": {
+    "title": "알림 센터",
+    "loading": "알림을 불러오는 중...",
+    "addAlert": "알림 추가",
+    "tabs": {
+      "notifications": "알림",
+      "priceAlerts": "가격 알림"
+    },
+    "noData": "알림이 없습니다",
+    "noDataDesc": "새로운 알림이 오면 여기에 표시됩니다",
+    "noPriceAlerts": "가격 알림이 없습니다",
+    "noPriceAlertsDesc": "목표가에 도달하면 알려드립니다",
+    "markAsRead": "읽음 처리",
+    "markAllRead": "모두 읽음",
+    "delete": "삭제",
+    "targetPrice": "목표가",
+    "created": "생성",
+    "modal": {
+      "title": "가격 알림 추가",
+      "stock": "종목 코드",
+      "stockPlaceholder": "예: AAPL",
+      "targetPrice": "목표가 ($)",
+      "targetPricePlaceholder": "150.00",
+      "condition": "조건",
+      "above": "이상",
+      "below": "이하"
+    }
+  },
+  "rebalance": {
+    "title": "리밸런싱 추천",
+    "loading": "리밸런싱 분석 중...",
+    "description": "포트폴리오 최적화를 위한 리밸런싱 추천입니다",
+    "currentAllocation": "현재 배분",
+    "targetAllocation": "목표 배분",
+    "recommendation": "추천 사항",
+    "action": {
+      "buy": "매수",
+      "sell": "매도",
+      "hold": "유지"
+    },
+    "noRecommendation": "현재 리밸런싱이 필요하지 않습니다",
+    "selectStrategy": "투자 전략 선택",
+    "strategies": {
+      "aggressive": "공격형",
+      "aggressiveDesc": "성장주 비중 강화",
+      "balanced": "균형형",
+      "balancedDesc": "적정 비중 유지",
+      "conservative": "보수형",
+      "conservativeDesc": "안정성 우선",
+      "equalWeight": "동일 비중",
+      "equalWeightDesc": "균등 배분"
+    },
+    "status": {
+      "pending": "대기 중",
+      "applied": "적용됨",
+      "dismissed": "무시됨"
+    },
+    "analysisResult": "AI 리밸런싱 분석 결과",
+    "portfolioValue": "포트폴리오 가치",
+    "estimatedTrades": "예상 거래 수",
+    "tradesUnit": "건",
+    "estimatedFees": "예상 수수료",
+    "apply": "적용하기",
+    "dismiss": "무시",
+    "weight": "비중",
+    "detailedAdjustments": "상세 조정 내역",
+    "sharesUnit": "주",
+    "history": "추천 이력"
+  },
+  "stockDetail": {
+    "title": "종목 상세",
+    "loading": "종목 정보를 불러오는 중...",
+    "currentPrice": "현재가",
+    "change": "변동",
+    "volume": "거래량",
+    "marketCap": "시가총액",
+    "high52w": "52주 최고",
+    "low52w": "52주 최저",
+    "pe": "PER",
+    "eps": "EPS",
+    "dividend": "배당수익률",
+    "overview": "개요",
+    "financials": "재무정보",
+    "news": "관련 뉴스"
+  },
+  "admin": {
+    "title": "관리자",
+    "users": "사용자 관리",
+    "settings": "시스템 설정",
+    "logs": "로그",
+    "userList": "사용자 목록",
+    "totalUsers": "총 사용자",
+    "activeUsers": "활성 사용자",
+    "newUsers": "신규 가입"
+  },
+  "newsFeed": {
+    "title": "시장 뉴스",
+    "subtitle": "실시간 글로벌 뉴스 요약",
+    "defaultQuery": "미국 주식 시장",
+    "loading": "뉴스를 불러오는 중...",
+    "noNews": "뉴스가 없습니다",
+    "readMore": "자세히 보기",
+    "source": "출처"
+  },
+  "aiAnalysis": {
+    "title": "AI 포트폴리오 진단",
+    "subtitle": "Gemini가 분석한 맞춤형 투자 리포트",
+    "startAnalysis": "AI 분석 시작하기",
+    "reAnalyze": "다시 분석",
+    "analyzing": "AI가 포트폴리오를 분석 중입니다...",
+    "analyzingTime": "약 5-10초 정도 소요될 수 있습니다.",
+    "analysisError": "분석 중 오류가 발생했습니다"
+  },
+  "sidebar": {
+    "collapse": "접기",
+    "expand": "펼치기"
+  },
+  "user": {
+    "user": "사용자",
+    "premiumUser": "프리미엄 사용자",
+    "admin": "관리자"
   }
 }

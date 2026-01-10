@@ -30,7 +30,10 @@
     "learnMore": "Learn More",
     "backToHome": "Back to Home",
     "connectionTest": "Connection Test",
-    "saveChanges": "Save Changes"
+    "saveChanges": "Save Changes",
+    "contact": "Contact",
+    "customerService": "Support",
+    "guide": "Guide"
   },
   "labels": {
     "loading": "Loading...",
@@ -61,5 +64,217 @@
     "notFound": "Page not found",
     "unauthorized": "Login required",
     "serverError": "Server error occurred. Please try again later."
+  },
+  "dashboard": {
+    "myAssets": "My Assets",
+    "totalAssets": "Total Assets (USD)",
+    "dailyPL": "Daily P/L",
+    "exchangeRate": "Exchange Rate (USD/KRW)",
+    "assetTrend": "Asset Trend",
+    "totalProfit": "Total Profit",
+    "todayChange": "Today's Change",
+    "realtimeRate": "Real-time Exchange Rate",
+    "refresh": "Refresh",
+    "refreshing": "Refreshing...",
+    "loadingData": "Loading real-time data...",
+    "updatingData": "Updating real-time data...",
+    "latestData": "Latest Data",
+    "loadError": "Unable to load asset information",
+    "checkKisApi": "If the problem persists, please check your KIS API connection"
+  },
+  "portfolio": {
+    "title": "My Portfolio",
+    "loading": "Loading portfolio...",
+    "searchPlaceholder": "Search by name or ticker",
+    "exportExcel": "Export Excel",
+    "noResults": "No results found",
+    "noData": "No holdings found",
+    "table": {
+      "stock": "Stock",
+      "quantity": "Quantity",
+      "avgPrice": "Avg Price",
+      "currentPrice": "Current Price",
+      "evalAmount": "Value",
+      "profitRate": "Return",
+      "profit": "Profit"
+    },
+    "summary": {
+      "totalEval": "Total Value",
+      "totalProfit": "Total Profit",
+      "avgProfitRate": "Avg Return"
+    }
+  },
+  "analysis": {
+    "title": "Portfolio Analysis",
+    "loading": "Loading analysis...",
+    "riskMetrics": "Risk Metrics & Benchmark Comparison",
+    "volatility": "Volatility",
+    "beta": "Beta",
+    "sharpeRatio": "Sharpe Ratio",
+    "maxDrawdown": "Max Drawdown",
+    "spComparison": "S&P 500 Performance Comparison",
+    "sectorWeight": "Sector Allocation",
+    "profitStatus": "Return Status",
+    "portfolio": "Portfolio",
+    "benchmark": "Benchmark",
+    "myPortfolio": "My Portfolio",
+    "sp500": "S&P 500",
+    "totalReturn": "Total Return",
+    "bestPerformer": "Best Performer",
+    "worstPerformer": "Worst Performer"
+  },
+  "transactions": {
+    "title": "Transaction History",
+    "loading": "Loading transactions...",
+    "exportCsv": "Export CSV",
+    "noData": "No transactions found",
+    "noDataDesc": "No transactions match your filters",
+    "tickerPlaceholder": "Ticker",
+    "reset": "Reset",
+    "dateTime": "Date/Time",
+    "fee": "Fee",
+    "shares": "shares",
+    "totalOf": "{{start}}-{{end}} of {{total}}",
+    "stats": {
+      "totalBuy": "Total Buy",
+      "totalSell": "Total Sell",
+      "realizedPL": "Realized P/L",
+      "avgAmount": "Avg Amount"
+    },
+    "filters": {
+      "allTypes": "All Types",
+      "buy": "Buy",
+      "sell": "Sell"
+    },
+    "table": {
+      "date": "Date",
+      "type": "Type",
+      "stock": "Stock",
+      "quantity": "Qty",
+      "price": "Price",
+      "amount": "Amount"
+    }
+  },
+  "notifications": {
+    "title": "Notification Center",
+    "loading": "Loading notifications...",
+    "addAlert": "Add Alert",
+    "tabs": {
+      "notifications": "Notifications",
+      "priceAlerts": "Price Alerts"
+    },
+    "noData": "No notifications",
+    "noDataDesc": "New notifications will appear here",
+    "noPriceAlerts": "No price alerts",
+    "noPriceAlertsDesc": "We'll notify you when target price is reached",
+    "markAsRead": "Mark as Read",
+    "markAllRead": "Mark All Read",
+    "delete": "Delete",
+    "targetPrice": "Target Price",
+    "created": "Created",
+    "modal": {
+      "title": "Add Price Alert",
+      "stock": "Stock Code",
+      "stockPlaceholder": "e.g. AAPL",
+      "targetPrice": "Target Price ($)",
+      "targetPricePlaceholder": "150.00",
+      "condition": "Condition",
+      "above": "Above",
+      "below": "Below"
+    }
+  },
+  "rebalance": {
+    "title": "Rebalancing Recommendations",
+    "loading": "Analyzing portfolio...",
+    "description": "Recommendations for portfolio optimization",
+    "currentAllocation": "Current Allocation",
+    "targetAllocation": "Target Allocation",
+    "recommendation": "Recommendation",
+    "action": {
+      "buy": "Buy",
+      "sell": "Sell",
+      "hold": "Hold"
+    },
+    "noRecommendation": "No rebalancing needed at this time",
+    "selectStrategy": "Select Investment Strategy",
+    "strategies": {
+      "aggressive": "Aggressive",
+      "aggressiveDesc": "Growth stocks focus",
+      "balanced": "Balanced",
+      "balancedDesc": "Maintain optimal allocation",
+      "conservative": "Conservative",
+      "conservativeDesc": "Stability first",
+      "equalWeight": "Equal Weight",
+      "equalWeightDesc": "Equal distribution"
+    },
+    "status": {
+      "pending": "Pending",
+      "applied": "Applied",
+      "dismissed": "Dismissed"
+    },
+    "analysisResult": "AI Rebalancing Analysis Result",
+    "portfolioValue": "Portfolio Value",
+    "estimatedTrades": "Estimated Trades",
+    "tradesUnit": "",
+    "estimatedFees": "Estimated Fees",
+    "apply": "Apply",
+    "dismiss": "Dismiss",
+    "weight": "Weight",
+    "detailedAdjustments": "Detailed Adjustments",
+    "sharesUnit": "shares",
+    "history": "Recommendation History"
+  },
+  "stockDetail": {
+    "title": "Stock Details",
+    "loading": "Loading stock info...",
+    "currentPrice": "Current Price",
+    "change": "Change",
+    "volume": "Volume",
+    "marketCap": "Market Cap",
+    "high52w": "52W High",
+    "low52w": "52W Low",
+    "pe": "P/E",
+    "eps": "EPS",
+    "dividend": "Dividend Yield",
+    "overview": "Overview",
+    "financials": "Financials",
+    "news": "Related News"
+  },
+  "admin": {
+    "title": "Admin",
+    "users": "User Management",
+    "settings": "System Settings",
+    "logs": "Logs",
+    "userList": "User List",
+    "totalUsers": "Total Users",
+    "activeUsers": "Active Users",
+    "newUsers": "New Users"
+  },
+  "newsFeed": {
+    "title": "Market News",
+    "subtitle": "Real-time global news summary",
+    "defaultQuery": "US stock market",
+    "loading": "Loading news...",
+    "noNews": "No news available",
+    "readMore": "Read More",
+    "source": "Source"
+  },
+  "aiAnalysis": {
+    "title": "AI Portfolio Analysis",
+    "subtitle": "Personalized investment report by Gemini",
+    "startAnalysis": "Start AI Analysis",
+    "reAnalyze": "Re-analyze",
+    "analyzing": "AI is analyzing your portfolio...",
+    "analyzingTime": "This may take 5-10 seconds.",
+    "analysisError": "An error occurred during analysis"
+  },
+  "sidebar": {
+    "collapse": "Collapse",
+    "expand": "Expand"
+  },
+  "user": {
+    "user": "User",
+    "premiumUser": "Premium User",
+    "admin": "Admin"
   }
 }

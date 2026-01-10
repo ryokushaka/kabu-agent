@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Newspaper, Search, ExternalLink, RefreshCw, AlertTriangle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { getAINews } from '../services/api';
 
 interface NewsSource {
@@ -9,7 +10,8 @@ interface NewsSource {
 }
 
 const NewsFeed: React.FC = () => {
-  const [query, setQuery] = useState('미국 주식 시장');
+  const { t } = useTranslation('common');
+  const [query, setQuery] = useState(t('newsFeed.defaultQuery'));
   const [summary, setSummary] = useState<string | null>(null);
   const [sources, setSources] = useState<NewsSource[]>([]);
   const [loading, setLoading] = useState(false);
@@ -23,7 +25,7 @@ const NewsFeed: React.FC = () => {
       setSummary(result.summary);
       setSources(result.sources);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to fetch news');
+      setError(err instanceof Error ? err.message : t('errors.general'));
     } finally {
       setLoading(false);
     }
@@ -82,8 +84,8 @@ const NewsFeed: React.FC = () => {
             <Newspaper className="w-6 h-6 text-green-600" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-toss-grey-900">AI 시장 뉴스</h2>
-            <p className="text-toss-grey-500 text-sm">실시간 글로벌 뉴스 요약</p>
+            <h2 className="text-xl font-bold text-toss-grey-900">{t('newsFeed.title')}</h2>
+            <p className="text-toss-grey-500 text-sm">{t('newsFeed.subtitle')}</p>
           </div>
         </div>
       </div>
@@ -94,7 +96,7 @@ const NewsFeed: React.FC = () => {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="관심 키워드 검색 (예: 엔비디아, 금리)"
+          placeholder={t('labels.search')}
           className="w-full bg-toss-grey-50 border border-toss-grey-200 rounded-xl pl-10 pr-4 py-3 focus:outline-none focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/10 transition-all"
         />
         <Search className="w-5 h-5 text-toss-grey-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -113,16 +115,16 @@ const NewsFeed: React.FC = () => {
         <div className="bg-red-50 border border-red-100 rounded-2xl p-6 text-center">
           <AlertTriangle className="w-8 h-8 text-toss-red mx-auto mb-3" />
           <p className="text-toss-red font-medium mb-2">
-            {error.includes('authenticated') || error.includes('401') ? '로그인이 필요합니다' : '뉴스 로딩 실패'}
+            {error.includes('authenticated') || error.includes('401') ? t('errors.unauthorized') : t('errors.general')}
           </p>
           <p className="text-toss-grey-600 text-sm mb-4">
-            {error.includes('authenticated') || error.includes('401') 
-              ? '세션이 만료되었습니다. 다시 로그인해주세요.' 
+            {error.includes('authenticated') || error.includes('401')
+              ? t('errors.serverError')
               : error}
           </p>
           {(error.includes('authenticated') || error.includes('401')) && (
             <a href="/#/login" className="inline-block px-4 py-2 bg-toss-blue text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors">
-              로그인 페이지로 이동
+              {t('buttons.login')}
             </a>
           )}
         </div>
@@ -144,7 +146,7 @@ const NewsFeed: React.FC = () => {
               <div className="pt-4 border-t border-toss-grey-100">
                 <h3 className="text-sm font-bold text-toss-grey-900 mb-3 flex items-center gap-2">
                   <ExternalLink className="w-4 h-4" />
-                  참고 기사
+                  {t('newsFeed.source')}
                 </h3>
                 <div className="space-y-2">
                   {sources.map((source, idx) => (
@@ -171,7 +173,7 @@ const NewsFeed: React.FC = () => {
           </div>
         ) : (
           <div className="text-center py-12 text-toss-grey-400">
-            검색어를 입력하여 뉴스를 확인해보세요.
+            {t('newsFeed.noNews')}
           </div>
         )}
       </div>

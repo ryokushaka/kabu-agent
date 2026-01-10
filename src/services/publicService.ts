@@ -10,8 +10,21 @@ export interface MarketIndices {
   };
 }
 
+export interface NewsItem {
+  id: string;
+  title: string;
+  summary: string;
+  url: string;
+  source: string;
+  published_at: string;
+  is_featured: boolean;
+  category: string;
+}
+
 export interface MarketNews {
   summary: string;
+  news: NewsItem[];
+  total: number;
 }
 
 class PublicService {

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Bell,
   BellOff,
@@ -38,6 +39,7 @@ interface PriceAlert {
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 const NotificationCenter: React.FC = () => {
+  const { t } = useTranslation('common');
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [alerts, setAlerts] = useState<PriceAlert[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -247,11 +249,11 @@ const NotificationCenter: React.FC = () => {
     const diffHours = Math.floor(diffMins / 60);
     const diffDays = Math.floor(diffHours / 24);
 
-    if (diffMins < 1) return '방금 전';
-    if (diffMins < 60) return `${diffMins}분 전`;
-    if (diffHours < 24) return `${diffHours}시간 전`;
-    if (diffDays < 7) return `${diffDays}일 전`;
-    return date.toLocaleDateString('ko-KR');
+    if (diffMins < 1) return t('time.justNow');
+    if (diffMins < 60) return t('time.minutesAgo', { count: diffMins });
+    if (diffHours < 24) return t('time.hoursAgo', { count: diffHours });
+    if (diffDays < 7) return t('time.daysAgo', { count: diffDays });
+    return date.toLocaleDateString();
   };
 
   if (loading) {
@@ -262,8 +264,8 @@ const NotificationCenter: React.FC = () => {
             <div className="absolute inset-0 border-4 border-toss-grey-200 rounded-full"></div>
             <div className="absolute inset-0 border-4 border-toss-blue border-t-transparent rounded-full animate-spin"></div>
           </div>
-          <h3 className="text-lg font-bold text-toss-grey-900 mb-1">알림을 불러오는 중...</h3>
-          <p className="text-sm text-toss-grey-500">잠시만 기다려주세요</p>
+          <h3 className="text-lg font-bold text-toss-grey-900 mb-1">{t('notifications.loading')}</h3>
+          <p className="text-sm text-toss-grey-500">{t('labels.loading')}</p>
         </div>
       </div>
     );
@@ -274,7 +276,7 @@ const NotificationCenter: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="flex items-center gap-3">
-          <h2 className="text-2xl font-bold text-toss-grey-900">알림 센터</h2>
+          <h2 className="text-2xl font-bold text-toss-grey-900">{t('notifications.title')}</h2>
           {unreadCount > 0 && (
             <span className="px-2.5 py-1 bg-toss-red text-white text-xs font-bold rounded-full">
               {unreadCount}
@@ -288,7 +290,7 @@ const NotificationCenter: React.FC = () => {
               className="flex items-center gap-2 px-4 py-2.5 bg-white border border-toss-grey-200 text-toss-grey-700 rounded-xl hover:bg-toss-grey-50 transition-colors text-sm font-medium"
             >
               <CheckCheck size={16} />
-              모두 읽음
+              {t('notifications.markAllRead')}
             </button>
           )}
           {activeTab === 'alerts' && (
@@ -297,7 +299,7 @@ const NotificationCenter: React.FC = () => {
               className="flex items-center gap-2 px-4 py-2.5 bg-toss-blue text-white rounded-xl hover:bg-blue-600 transition-colors text-sm font-medium"
             >
               <Plus size={16} />
-              알림 추가
+              {t('notifications.addAlert')}
             </button>
           )}
           <button
@@ -321,7 +323,7 @@ const NotificationCenter: React.FC = () => {
         >
           <div className="flex items-center gap-2">
             <Bell className="w-4 h-4" />
-            알림
+            {t('notifications.tabs.notifications')}
             {unreadCount > 0 && (
               <span className="px-1.5 py-0.5 bg-toss-red text-white text-xs font-bold rounded-full min-w-[18px] text-center">
                 {unreadCount}
@@ -342,7 +344,7 @@ const NotificationCenter: React.FC = () => {
         >
           <div className="flex items-center gap-2">
             <AlertCircle className="w-4 h-4" />
-            가격 알림
+            {t('notifications.tabs.priceAlerts')}
             <span className="px-1.5 py-0.5 bg-toss-grey-100 text-toss-grey-600 text-xs font-bold rounded-full">
               {alerts.filter(a => a.is_active).length}
             </span>
@@ -362,8 +364,8 @@ const NotificationCenter: React.FC = () => {
                 <div className="w-16 h-16 bg-toss-grey-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <BellOff className="w-8 h-8 text-toss-grey-300" />
                 </div>
-                <h3 className="text-lg font-bold text-toss-grey-900 mb-2">알림이 없습니다</h3>
-                <p className="text-sm text-toss-grey-500">새로운 알림이 오면 여기에 표시됩니다</p>
+                <h3 className="text-lg font-bold text-toss-grey-900 mb-2">{t('notifications.noData')}</h3>
+                <p className="text-sm text-toss-grey-500">{t('notifications.noDataDesc')}</p>
               </div>
             ) : (
               <div className="divide-y divide-toss-grey-100">
@@ -394,7 +396,7 @@ const NotificationCenter: React.FC = () => {
                               <button
                                 onClick={() => markAsRead(notification.id)}
                                 className="p-2 hover:bg-toss-grey-200 rounded-lg transition-colors"
-                                title="읽음 처리"
+                                title={t('notifications.markAsRead')}
                               >
                                 <Check className="w-4 h-4 text-toss-grey-500" />
                               </button>
@@ -402,7 +404,7 @@ const NotificationCenter: React.FC = () => {
                             <button
                               onClick={() => deleteNotification(notification.id)}
                               className="p-2 hover:bg-red-50 rounded-lg transition-colors"
-                              title="삭제"
+                              title={t('notifications.delete')}
                             >
                               <Trash2 className="w-4 h-4 text-toss-grey-400 hover:text-toss-red" />
                             </button>
@@ -424,14 +426,14 @@ const NotificationCenter: React.FC = () => {
                 <div className="w-16 h-16 bg-toss-grey-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <AlertCircle className="w-8 h-8 text-toss-grey-300" />
                 </div>
-                <h3 className="text-lg font-bold text-toss-grey-900 mb-2">가격 알림이 없습니다</h3>
-                <p className="text-sm text-toss-grey-500 mb-4">목표가에 도달하면 알려드립니다</p>
+                <h3 className="text-lg font-bold text-toss-grey-900 mb-2">{t('notifications.noPriceAlerts')}</h3>
+                <p className="text-sm text-toss-grey-500 mb-4">{t('notifications.noPriceAlertsDesc')}</p>
                 <button
                   onClick={() => setShowCreateAlert(true)}
                   className="px-6 py-2.5 bg-toss-blue text-white rounded-xl hover:bg-blue-600 transition-colors text-sm font-medium inline-flex items-center gap-2"
                 >
                   <Plus size={16} />
-                  알림 추가
+                  {t('notifications.addAlert')}
                 </button>
               </div>
             ) : (
@@ -462,14 +464,14 @@ const NotificationCenter: React.FC = () => {
                                 ? 'bg-red-50 text-toss-red'
                                 : 'bg-blue-50 text-toss-blue'
                             }`}>
-                              {alert.condition === 'above' ? '이상' : '이하'}
+                              {alert.condition === 'above' ? t('notifications.modal.above') : t('notifications.modal.below')}
                             </span>
                           </div>
                           <div className="text-sm text-toss-grey-600 mt-1">
-                            목표가: <span className="font-semibold">{formatCurrency(alert.target_price)}</span>
+                            {t('notifications.targetPrice')}: <span className="font-semibold">{formatCurrency(alert.target_price)}</span>
                           </div>
                           <span className="text-xs text-toss-grey-400">
-                            {new Date(alert.created_at).toLocaleDateString('ko-KR')} 생성
+                            {new Date(alert.created_at).toLocaleDateString()} {t('notifications.created')}
                           </span>
                         </div>
                       </div>
@@ -489,7 +491,7 @@ const NotificationCenter: React.FC = () => {
                         <button
                           onClick={() => deleteAlert(alert.id)}
                           className="p-2 hover:bg-red-50 rounded-lg transition-colors"
-                          title="삭제"
+                          title={t('notifications.delete')}
                         >
                           <Trash2 className="w-4 h-4 text-toss-grey-400 hover:text-toss-red" />
                         </button>
@@ -508,7 +510,7 @@ const NotificationCenter: React.FC = () => {
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl animate-fade-in">
             <div className="flex items-center justify-between p-6 border-b border-toss-grey-100">
-              <h3 className="text-lg font-bold text-toss-grey-900">가격 알림 추가</h3>
+              <h3 className="text-lg font-bold text-toss-grey-900">{t('notifications.modal.title')}</h3>
               <button
                 onClick={() => setShowCreateAlert(false)}
                 className="p-2 hover:bg-toss-grey-100 rounded-lg transition-colors"
@@ -518,27 +520,27 @@ const NotificationCenter: React.FC = () => {
             </div>
             <div className="p-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-toss-grey-700 mb-2">종목 코드</label>
+                <label className="block text-sm font-medium text-toss-grey-700 mb-2">{t('notifications.modal.stock')}</label>
                 <input
                   type="text"
-                  placeholder="예: AAPL"
+                  placeholder={t('notifications.modal.stockPlaceholder')}
                   value={newAlert.ticker}
                   onChange={(e) => setNewAlert({ ...newAlert, ticker: e.target.value.toUpperCase() })}
                   className="w-full bg-toss-grey-50 border border-toss-grey-200 rounded-xl px-4 py-3 focus:outline-none focus:border-toss-blue"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-toss-grey-700 mb-2">목표가 ($)</label>
+                <label className="block text-sm font-medium text-toss-grey-700 mb-2">{t('notifications.modal.targetPrice')}</label>
                 <input
                   type="number"
-                  placeholder="150.00"
+                  placeholder={t('notifications.modal.targetPricePlaceholder')}
                   value={newAlert.target_price}
                   onChange={(e) => setNewAlert({ ...newAlert, target_price: e.target.value })}
                   className="w-full bg-toss-grey-50 border border-toss-grey-200 rounded-xl px-4 py-3 focus:outline-none focus:border-toss-blue"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-toss-grey-700 mb-2">조건</label>
+                <label className="block text-sm font-medium text-toss-grey-700 mb-2">{t('notifications.modal.condition')}</label>
                 <div className="flex gap-3">
                   <button
                     onClick={() => setNewAlert({ ...newAlert, condition: 'above' })}
@@ -549,7 +551,7 @@ const NotificationCenter: React.FC = () => {
                     }`}
                   >
                     <TrendingUp className="w-4 h-4 inline mr-2" />
-                    이상
+                    {t('notifications.modal.above')}
                   </button>
                   <button
                     onClick={() => setNewAlert({ ...newAlert, condition: 'below' })}
@@ -560,7 +562,7 @@ const NotificationCenter: React.FC = () => {
                     }`}
                   >
                     <TrendingDown className="w-4 h-4 inline mr-2" />
-                    이하
+                    {t('notifications.modal.below')}
                   </button>
                 </div>
               </div>
@@ -570,14 +572,14 @@ const NotificationCenter: React.FC = () => {
                 onClick={() => setShowCreateAlert(false)}
                 className="flex-1 py-3 bg-toss-grey-100 text-toss-grey-700 rounded-xl font-medium hover:bg-toss-grey-200 transition-colors"
               >
-                취소
+                {t('buttons.cancel')}
               </button>
               <button
                 onClick={createAlert}
                 disabled={!newAlert.ticker || !newAlert.target_price}
                 className="flex-1 py-3 bg-toss-blue text-white rounded-xl font-medium hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                추가
+                {t('buttons.add')}
               </button>
             </div>
           </div>

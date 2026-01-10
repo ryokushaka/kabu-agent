@@ -30,7 +30,10 @@
     "learnMore": "詳しく見る",
     "backToHome": "ホームに戻る",
     "connectionTest": "接続テスト",
-    "saveChanges": "変更を保存"
+    "saveChanges": "変更を保存",
+    "contact": "お問い合わせ",
+    "customerService": "カスタマーサービス",
+    "guide": "ご利用案内"
   },
   "labels": {
     "loading": "読み込み中...",
@@ -61,5 +64,217 @@
     "notFound": "ページが見つかりません",
     "unauthorized": "ログインが必要です",
     "serverError": "サーバーエラーが発生しました。しばらくしてから再度お試しください。"
+  },
+  "dashboard": {
+    "myAssets": "資産",
+    "totalAssets": "総資産 (USD)",
+    "dailyPL": "日次損益",
+    "exchangeRate": "為替レート (USD/KRW)",
+    "assetTrend": "資産推移",
+    "totalProfit": "総利益",
+    "todayChange": "本日の変動",
+    "realtimeRate": "リアルタイム為替",
+    "refresh": "更新",
+    "refreshing": "更新中...",
+    "loadingData": "リアルタイムデータを読み込み中...",
+    "updatingData": "リアルタイムデータを更新中...",
+    "latestData": "最新データ",
+    "loadError": "資産情報を読み込めません",
+    "checkKisApi": "問題が続く場合は、KIS API接続状態を確認してください"
+  },
+  "portfolio": {
+    "title": "マイ株式",
+    "loading": "株式一覧を読み込み中...",
+    "searchPlaceholder": "銘柄名またはティッカーで検索",
+    "exportExcel": "Excelダウンロード",
+    "noResults": "検索結果がありません",
+    "noData": "保有株式がありません",
+    "table": {
+      "stock": "銘柄",
+      "quantity": "保有数量",
+      "avgPrice": "平均単価",
+      "currentPrice": "現在値",
+      "evalAmount": "評価額",
+      "profitRate": "収益率",
+      "profit": "収益金"
+    },
+    "summary": {
+      "totalEval": "総評価額",
+      "totalProfit": "総収益金",
+      "avgProfitRate": "平均収益率"
+    }
+  },
+  "analysis": {
+    "title": "資産詳細分析",
+    "loading": "分析データを読み込み中...",
+    "riskMetrics": "リスク指標とベンチマーク比較",
+    "volatility": "ボラティリティ",
+    "beta": "ベータ",
+    "sharpeRatio": "シャープレシオ",
+    "maxDrawdown": "最大ドローダウン",
+    "spComparison": "S&P 500比較パフォーマンス",
+    "sectorWeight": "セクター配分",
+    "profitStatus": "収益率状況",
+    "portfolio": "ポートフォリオ",
+    "benchmark": "ベンチマーク",
+    "myPortfolio": "マイポートフォリオ",
+    "sp500": "S&P 500",
+    "totalReturn": "総収益率",
+    "bestPerformer": "最高収益銘柄",
+    "worstPerformer": "最低収益銘柄"
+  },
+  "transactions": {
+    "title": "取引履歴",
+    "loading": "取引履歴を読み込み中...",
+    "exportCsv": "CSV出力",
+    "noData": "取引履歴がありません",
+    "noDataDesc": "条件に合う取引履歴がありません",
+    "tickerPlaceholder": "銘柄コード",
+    "reset": "リセット",
+    "dateTime": "取引日時",
+    "fee": "手数料",
+    "shares": "株",
+    "totalOf": "全{{total}}件中 {{start}}-{{end}}件",
+    "stats": {
+      "totalBuy": "総購入",
+      "totalSell": "総売却",
+      "realizedPL": "実現損益",
+      "avgAmount": "平均取引額"
+    },
+    "filters": {
+      "allTypes": "全種類",
+      "buy": "購入",
+      "sell": "売却"
+    },
+    "table": {
+      "date": "日付",
+      "type": "種類",
+      "stock": "銘柄",
+      "quantity": "数量",
+      "price": "単価",
+      "amount": "金額"
+    }
+  },
+  "notifications": {
+    "title": "通知センター",
+    "loading": "通知を読み込み中...",
+    "addAlert": "アラート追加",
+    "tabs": {
+      "notifications": "通知",
+      "priceAlerts": "価格アラート"
+    },
+    "noData": "通知がありません",
+    "noDataDesc": "新しい通知があればここに表示されます",
+    "noPriceAlerts": "価格アラートがありません",
+    "noPriceAlertsDesc": "目標価格に達したらお知らせします",
+    "markAsRead": "既読にする",
+    "markAllRead": "すべて既読",
+    "delete": "削除",
+    "targetPrice": "目標価格",
+    "created": "作成",
+    "modal": {
+      "title": "価格アラート追加",
+      "stock": "銘柄コード",
+      "stockPlaceholder": "例: AAPL",
+      "targetPrice": "目標価格 ($)",
+      "targetPricePlaceholder": "150.00",
+      "condition": "条件",
+      "above": "以上",
+      "below": "以下"
+    }
+  },
+  "rebalance": {
+    "title": "リバランス推奨",
+    "loading": "リバランス分析中...",
+    "description": "ポートフォリオ最適化のためのリバランス推奨",
+    "currentAllocation": "現在の配分",
+    "targetAllocation": "目標配分",
+    "recommendation": "推奨事項",
+    "action": {
+      "buy": "購入",
+      "sell": "売却",
+      "hold": "保持"
+    },
+    "noRecommendation": "現在リバランスは必要ありません",
+    "selectStrategy": "投資戦略を選択",
+    "strategies": {
+      "aggressive": "攻撃型",
+      "aggressiveDesc": "成長株の比重強化",
+      "balanced": "バランス型",
+      "balancedDesc": "適正比率維持",
+      "conservative": "保守型",
+      "conservativeDesc": "安定性優先",
+      "equalWeight": "均等配分",
+      "equalWeightDesc": "均等分配"
+    },
+    "status": {
+      "pending": "保留中",
+      "applied": "適用済み",
+      "dismissed": "無視"
+    },
+    "analysisResult": "AIリバランス分析結果",
+    "portfolioValue": "ポートフォリオ価値",
+    "estimatedTrades": "予想取引数",
+    "tradesUnit": "件",
+    "estimatedFees": "予想手数料",
+    "apply": "適用する",
+    "dismiss": "無視",
+    "weight": "比重",
+    "detailedAdjustments": "詳細調整内容",
+    "sharesUnit": "株",
+    "history": "推奨履歴"
+  },
+  "stockDetail": {
+    "title": "銘柄詳細",
+    "loading": "銘柄情報を読み込み中...",
+    "currentPrice": "現在値",
+    "change": "変動",
+    "volume": "出来高",
+    "marketCap": "時価総額",
+    "high52w": "52週高値",
+    "low52w": "52週安値",
+    "pe": "PER",
+    "eps": "EPS",
+    "dividend": "配当利回り",
+    "overview": "概要",
+    "financials": "財務情報",
+    "news": "関連ニュース"
+  },
+  "admin": {
+    "title": "管理者",
+    "users": "ユーザー管理",
+    "settings": "システム設定",
+    "logs": "ログ",
+    "userList": "ユーザー一覧",
+    "totalUsers": "総ユーザー数",
+    "activeUsers": "アクティブユーザー",
+    "newUsers": "新規ユーザー"
+  },
+  "newsFeed": {
+    "title": "市場ニュース",
+    "subtitle": "リアルタイムグローバルニュース要約",
+    "defaultQuery": "米国株式市場",
+    "loading": "ニュースを読み込み中...",
+    "noNews": "ニュースがありません",
+    "readMore": "詳しく見る",
+    "source": "出典"
+  },
+  "aiAnalysis": {
+    "title": "AIポートフォリオ診断",
+    "subtitle": "Geminiによるカスタマイズ投資レポート",
+    "startAnalysis": "AI分析を開始",
+    "reAnalyze": "再分析",
+    "analyzing": "AIがポートフォリオを分析中...",
+    "analyzingTime": "約5-10秒かかる場合があります。",
+    "analysisError": "分析中にエラーが発生しました"
+  },
+  "sidebar": {
+    "collapse": "折りたたむ",
+    "expand": "展開"
+  },
+  "user": {
+    "user": "ユーザー",
+    "premiumUser": "プレミアムユーザー",
+    "admin": "管理者"
   }
 }

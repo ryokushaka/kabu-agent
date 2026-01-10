@@ -61,9 +61,9 @@ const Login: React.FC = () => {
            </div>
            <span className="text-xl font-bold tracking-tight text-toss-grey-900">Kabu Agent</span>
         </div>
-        <nav className="hidden md:flex gap-6 text-sm font-medium text-toss-grey-500">
-          <button onClick={() => alert('고객센터 서비스 준비 중입니다.')} className="hover:text-toss-blue transition-colors">고객센터</button>
-          <button onClick={() => alert('이용안내 페이지 준비 중입니다.')} className="hover:text-toss-blue transition-colors">이용안내</button>
+        <nav className="hidden md:flex gap-6 text-sm font-medium text-toss-grey-500 items-center">
+          <button onClick={() => alert(t('common:buttons.customerService'))} className="hover:text-toss-blue transition-colors">{t('common:buttons.customerService')}</button>
+          <button onClick={() => alert(t('common:buttons.guide'))} className="hover:text-toss-blue transition-colors">{t('common:buttons.guide')}</button>
           <LanguageSwitcher />
         </nav>
       </header>

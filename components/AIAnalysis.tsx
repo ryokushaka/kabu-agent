@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Sparkles, RefreshCw, AlertTriangle, FileText } from 'lucide-react';
 import { getAIAnalysis } from '../services/api';
 
 const AIAnalysis: React.FC = () => {
+  const { t } = useTranslation('common');
   const [analysis, setAnalysis] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -83,8 +85,8 @@ const AIAnalysis: React.FC = () => {
             <Sparkles className="w-6 h-6 text-indigo-500" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-toss-grey-900">AI 포트폴리오 진단</h2>
-            <p className="text-toss-grey-500 text-sm">Gemini가 분석한 맞춤형 투자 리포트</p>
+            <h2 className="text-xl font-bold text-toss-grey-900">{t('aiAnalysis.title')}</h2>
+            <p className="text-toss-grey-500 text-sm">{t('aiAnalysis.subtitle')}</p>
           </div>
         </div>
         
@@ -94,7 +96,7 @@ const AIAnalysis: React.FC = () => {
             className="flex items-center gap-2 px-5 py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-colors font-bold shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:translate-y-0"
           >
             <Sparkles className="w-4 h-4" />
-            <span>AI 분석 시작하기</span>
+            <span>{t('aiAnalysis.startAnalysis')}</span>
           </button>
         )}
         
@@ -104,7 +106,7 @@ const AIAnalysis: React.FC = () => {
             className="flex items-center gap-2 px-4 py-2 bg-toss-grey-50 hover:bg-toss-grey-100 text-toss-grey-700 rounded-xl transition-colors font-medium"
           >
             <RefreshCw className="w-4 h-4" />
-            <span>다시 분석</span>
+            <span>{t('aiAnalysis.reAnalyze')}</span>
           </button>
         )}
       </div>
@@ -116,8 +118,8 @@ const AIAnalysis: React.FC = () => {
              <div className="absolute inset-0 border-4 border-indigo-500 rounded-full border-t-transparent animate-spin"></div>
           </div>
           <div>
-            <p className="text-lg font-bold text-toss-grey-900">AI가 포트폴리오를 분석 중입니다...</p>
-            <p className="text-toss-grey-500 text-sm mt-1">약 5-10초 정도 소요될 수 있습니다.</p>
+            <p className="text-lg font-bold text-toss-grey-900">{t('aiAnalysis.analyzing')}</p>
+            <p className="text-toss-grey-500 text-sm mt-1">{t('aiAnalysis.analyzingTime')}</p>
           </div>
         </div>
       )}
@@ -125,13 +127,13 @@ const AIAnalysis: React.FC = () => {
       {error && (
         <div className="bg-red-50 border border-red-100 rounded-2xl p-6 text-center">
           <AlertTriangle className="w-8 h-8 text-toss-red mx-auto mb-3" />
-          <p className="text-toss-red font-medium mb-2">분석 중 오류가 발생했습니다</p>
+          <p className="text-toss-red font-medium mb-2">{t('aiAnalysis.analysisError')}</p>
           <p className="text-toss-grey-600 text-sm mb-4">{error}</p>
           <button
             onClick={handleAnalyze}
             className="px-4 py-2 bg-white border border-red-200 text-toss-red rounded-xl hover:bg-red-50 transition-colors font-medium"
           >
-            다시 시도
+            {t('buttons.retry')}
           </button>
         </div>
       )}

@@ -1,45 +1,47 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { User, Menu } from 'lucide-react';
 import Sidebar from '../Sidebar';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuthContext } from '@features/auth';
 
 interface AppLayoutProps {
   children: React.ReactNode;
 }
 
 const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
+  const { t } = useTranslation('common');
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, user } = useAuthContext();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
-    navigate('/login', { replace: true });
+    navigate('/', { replace: true });
   };
 
   const getPageTitle = () => {
     switch (location.pathname) {
       case '/':
       case '/dashboard':
-        return '홈';
+        return t('navigation.home');
       case '/portfolio':
-        return '내 주식';
+        return t('navigation.portfolio');
       case '/transactions':
-        return '거래 내역';
+        return t('navigation.transactions');
       case '/notifications':
-        return '알림';
+        return t('navigation.notifications');
       case '/rebalance':
-        return '리밸런싱';
+        return t('navigation.rebalance');
       case '/analysis':
-        return '자산 분석';
+        return t('navigation.analysis');
       case '/settings':
-        return '설정';
+        return t('navigation.settings');
       case '/admin':
-        return '관리자';
+        return t('navigation.admin');
       default:
-        return '홈';
+        return t('navigation.home');
     }
   };
 
@@ -47,7 +49,7 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     <div className="min-h-screen bg-toss-grey-100 text-toss-grey-900 font-sans flex">
       <Sidebar
         onLogout={handleLogout}
-        isAdmin={true}
+        isAdmin={user?.username === 'admin'}
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}
       />
@@ -70,8 +72,8 @@ const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
           <div className="flex items-center gap-3 md:gap-4">
             <div className="hidden md:flex flex-col items-end mr-2">
-              <span className="text-sm font-semibold text-toss-grey-900">사용자</span>
-              <span className="text-xs text-toss-grey-500">Premium User</span>
+              <span className="text-sm font-semibold text-toss-grey-900">{user?.full_name || user?.username || t('user.user')}</span>
+              <span className="text-xs text-toss-grey-500">{user?.username === 'admin' ? t('user.admin') : t('user.premiumUser')}</span>
             </div>
             <div className="w-9 h-9 md:w-10 md:h-10 rounded-full bg-toss-grey-200 flex items-center justify-center border border-toss-grey-300">
               <User className="w-5 h-5 text-toss-grey-600" />

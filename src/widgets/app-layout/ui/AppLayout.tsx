@@ -17,7 +17,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   const handleLogout = () => {
     logout();
-    navigate('/login', { replace: true });
+    navigate('/', { replace: true });
   };
 
   return (

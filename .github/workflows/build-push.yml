@@ -22,6 +22,7 @@ env:
   REGISTRY: ghcr.io
   BACKEND_IMAGE: ${{ github.repository_owner }}/kabu-agent-backend
   FRONTEND_IMAGE: ${{ github.repository_owner }}/kabu-agent-frontend
+  IMAGE_TAG: ${{ github.sha }}
 
 jobs:
   build-push-backend:
@@ -115,4 +116,45 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+  update-gitops:
+    needs: [build-push-backend, build-push-frontend]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
+    steps:
+      - name: Checkout GitOps Repository
+        uses: actions/checkout@v4
+        with:
+          repository: ryokushaka/kabu-agent-gitops
+          token: ${{ secrets.GITOPS_PAT }}
+          path: gitops
+
+      - name: Update image tags in manifests
+        run: |
+          cd gitops
+
+          # Update backend image tag
+          sed -i "s|image: ghcr.io/ryokushaka/kabu-agent-backend:.*|image: ghcr.io/ryokushaka/kabu-agent-backend:${{ env.IMAGE_TAG }}|" \
+            manifests/kabu-agent/backend/deployment.yaml
+
+          # Update frontend image tag
+          sed -i "s|image: ghcr.io/ryokushaka/kabu-agent-frontend:.*|image: ghcr.io/ryokushaka/kabu-agent-frontend:${{ env.IMAGE_TAG }}|" \
+            manifests/kabu-agent/frontend/deployment.yaml
+
+          echo "Updated image tags to: ${{ env.IMAGE_TAG }}"
+
+      - name: Commit and Push changes
+        run: |
+          cd gitops
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "🚀 deploy: Update images to ${{ env.IMAGE_TAG }}"
+            git push
+            echo "Successfully pushed changes to GitOps repository"
+          fi

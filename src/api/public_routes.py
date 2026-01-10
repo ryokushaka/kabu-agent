@@ -84,13 +84,27 @@ async def get_market_news(
 
             # AI 요약 생성 (최신 5개 뉴스)
             top_news = news_items[:5]
+            summary_text = None
+
             if top_news:
-                summary_text = await ai_service.summarize_news([
-                    {"title": n.title, "snippet": n.summary or "", "link": n.content_url}
-                    for n in top_news
-                ])
-            else:
-                summary_text = "뉴스 데이터가 아직 수집되지 않았습니다."
+                try:
+                    summary_text = await ai_service.summarize_news([
+                        {"title": n.title, "snippet": n.summary or "", "link": n.content_url}
+                        for n in top_news
+                    ])
+                except Exception as e:
+                    logger.warning(f"AI summary generation failed: {e}")
+                    summary_text = None
+
+            # 폴백 메시지 설정
+            if not summary_text:
+                if top_news:
+                    # 뉴스는 있지만 AI 요약 실패 시 - 뉴스 제목들로 대체
+                    summary_text = "### 📰 오늘의 주요 뉴스\n\n" + "\n".join([
+                        f"• **{n.title}**" for n in top_news
+                    ])
+                else:
+                    summary_text = "뉴스 데이터가 아직 수집되지 않았습니다."
 
             result = {
                 "summary": summary_text,

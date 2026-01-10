@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Scale,
   TrendingUp,
@@ -62,6 +63,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 const COLORS = ['#3182f6', '#f04452', '#00c48c', '#ffb020', '#7c3aed', '#ec4899', '#06b6d4', '#f59e0b'];
 
 const RebalanceRecommendationPage: React.FC = () => {
+  const { t } = useTranslation('common');
   const [recommendation, setRecommendation] = useState<RebalanceRecommendation | null>(null);
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -70,10 +72,10 @@ const RebalanceRecommendationPage: React.FC = () => {
   const [selectedStrategy, setSelectedStrategy] = useState<string>('balanced');
 
   const strategies = [
-    { id: 'aggressive', label: '공격형', icon: Zap, color: 'text-toss-red', bg: 'bg-red-50', description: '성장주 비중 강화' },
-    { id: 'balanced', label: '균형형', icon: Scale, color: 'text-toss-blue', bg: 'bg-blue-50', description: '적정 비중 유지' },
-    { id: 'conservative', label: '보수형', icon: Shield, color: 'text-green-600', bg: 'bg-green-50', description: '안정성 우선' },
-    { id: 'equal_weight', label: '동일 비중', icon: Target, color: 'text-purple-600', bg: 'bg-purple-50', description: '균등 배분' }
+    { id: 'aggressive', labelKey: 'rebalance.strategies.aggressive', icon: Zap, color: 'text-toss-red', bg: 'bg-red-50', descKey: 'rebalance.strategies.aggressiveDesc' },
+    { id: 'balanced', labelKey: 'rebalance.strategies.balanced', icon: Scale, color: 'text-toss-blue', bg: 'bg-blue-50', descKey: 'rebalance.strategies.balancedDesc' },
+    { id: 'conservative', labelKey: 'rebalance.strategies.conservative', icon: Shield, color: 'text-green-600', bg: 'bg-green-50', descKey: 'rebalance.strategies.conservativeDesc' },
+    { id: 'equal_weight', labelKey: 'rebalance.strategies.equalWeight', icon: Target, color: 'text-purple-600', bg: 'bg-purple-50', descKey: 'rebalance.strategies.equalWeightDesc' }
   ];
 
   const fetchHistory = async () => {
@@ -179,9 +181,9 @@ const RebalanceRecommendationPage: React.FC = () => {
 
   const getActionText = (action: string) => {
     switch (action) {
-      case 'buy': return '매수';
-      case 'sell': return '매도';
-      default: return '유지';
+      case 'buy': return t('rebalance.action.buy');
+      case 'sell': return t('rebalance.action.sell');
+      default: return t('rebalance.action.hold');
     }
   };
 
@@ -198,14 +200,14 @@ const RebalanceRecommendationPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-toss-grey-900">리밸런싱 추천</h2>
-          <p className="text-sm text-toss-grey-500 mt-1">AI 기반 포트폴리오 최적화 제안</p>
+          <h2 className="text-2xl font-bold text-toss-grey-900">{t('rebalance.title')}</h2>
+          <p className="text-sm text-toss-grey-500 mt-1">{t('rebalance.description')}</p>
         </div>
       </div>
 
       {/* Strategy Selection */}
       <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm">
-        <h3 className="font-bold text-toss-grey-900 mb-4">투자 전략 선택</h3>
+        <h3 className="font-bold text-toss-grey-900 mb-4">{t('rebalance.selectStrategy')}</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {strategies.map((strategy) => (
             <button
@@ -220,9 +222,9 @@ const RebalanceRecommendationPage: React.FC = () => {
               <div className="flex flex-col items-center text-center">
                 <strategy.icon className={`w-6 h-6 mb-2 ${selectedStrategy === strategy.id ? strategy.color : 'text-toss-grey-400'}`} />
                 <span className={`font-semibold text-sm ${selectedStrategy === strategy.id ? strategy.color : 'text-toss-grey-700'}`}>
-                  {strategy.label}
+                  {t(strategy.labelKey)}
                 </span>
-                <span className="text-xs text-toss-grey-500 mt-1">{strategy.description}</span>
+                <span className="text-xs text-toss-grey-500 mt-1">{t(strategy.descKey)}</span>
               </div>
             </button>
           ))}
@@ -237,12 +239,12 @@ const RebalanceRecommendationPage: React.FC = () => {
             {generating ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                분석 중...
+                {t('rebalance.loading')}
               </>
             ) : (
               <>
                 <Scale className="w-5 h-5" />
-                리밸런싱 추천받기
+                {t('rebalance.title')}
               </>
             )}
           </button>
@@ -273,26 +275,25 @@ const RebalanceRecommendationPage: React.FC = () => {
                     recommendation.status === 'applied' ? 'bg-green-100 text-green-700' :
                     'bg-toss-grey-100 text-toss-grey-600'
                   }`}>
-                    {recommendation.status === 'pending' ? '대기 중' :
-                     recommendation.status === 'applied' ? '적용됨' : '무시됨'}
+                    {t(`rebalance.status.${recommendation.status}`)}
                   </span>
                 </div>
-                <h3 className="text-lg font-bold text-toss-grey-900 mb-2">AI 리밸런싱 분석 결과</h3>
+                <h3 className="text-lg font-bold text-toss-grey-900 mb-2">{t('rebalance.analysisResult')}</h3>
                 <p className="text-sm text-toss-grey-600">{recommendation.analysis_summary}</p>
               </div>
             </div>
 
             <div className="grid grid-cols-3 gap-4 mt-4 pt-4 border-t border-blue-100">
               <div>
-                <div className="text-xs text-toss-grey-500">포트폴리오 가치</div>
+                <div className="text-xs text-toss-grey-500">{t('rebalance.portfolioValue')}</div>
                 <div className="font-bold text-toss-grey-900">{formatCurrency(recommendation.total_portfolio_value)}</div>
               </div>
               <div>
-                <div className="text-xs text-toss-grey-500">예상 거래 수</div>
-                <div className="font-bold text-toss-grey-900">{recommendation.estimated_trades}건</div>
+                <div className="text-xs text-toss-grey-500">{t('rebalance.estimatedTrades')}</div>
+                <div className="font-bold text-toss-grey-900">{recommendation.estimated_trades}{t('rebalance.tradesUnit')}</div>
               </div>
               <div>
-                <div className="text-xs text-toss-grey-500">예상 수수료</div>
+                <div className="text-xs text-toss-grey-500">{t('rebalance.estimatedFees')}</div>
                 <div className="font-bold text-toss-grey-900">{formatCurrency(recommendation.estimated_fees)}</div>
               </div>
             </div>
@@ -304,14 +305,14 @@ const RebalanceRecommendationPage: React.FC = () => {
                   className="flex-1 flex items-center justify-center gap-2 py-3 bg-toss-blue text-white rounded-xl font-medium hover:bg-blue-600 transition-colors"
                 >
                   <Check className="w-4 h-4" />
-                  적용하기
+                  {t('rebalance.apply')}
                 </button>
                 <button
                   onClick={dismissRecommendation}
                   className="flex-1 flex items-center justify-center gap-2 py-3 bg-toss-grey-100 text-toss-grey-700 rounded-xl font-medium hover:bg-toss-grey-200 transition-colors"
                 >
                   <X className="w-4 h-4" />
-                  무시
+                  {t('rebalance.dismiss')}
                 </button>
               </div>
             )}
@@ -321,7 +322,7 @@ const RebalanceRecommendationPage: React.FC = () => {
           <div className="grid md:grid-cols-2 gap-6">
             {/* Current Allocation */}
             <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm">
-              <h4 className="font-bold text-toss-grey-900 mb-4">현재 배분</h4>
+              <h4 className="font-bold text-toss-grey-900 mb-4">{t('rebalance.currentAllocation')}</h4>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -339,7 +340,7 @@ const RebalanceRecommendationPage: React.FC = () => {
                       ))}
                     </Pie>
                     <Tooltip
-                      formatter={(value: number) => [`${value.toFixed(1)}%`, '비중']}
+                      formatter={(value: number) => [`${value.toFixed(1)}%`, t('rebalance.weight')]}
                       contentStyle={{
                         backgroundColor: 'white',
                         border: '1px solid #e5e8eb',
@@ -354,7 +355,7 @@ const RebalanceRecommendationPage: React.FC = () => {
 
             {/* Target Allocation */}
             <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm">
-              <h4 className="font-bold text-toss-grey-900 mb-4">추천 배분</h4>
+              <h4 className="font-bold text-toss-grey-900 mb-4">{t('rebalance.targetAllocation')}</h4>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <PieChart>
@@ -372,7 +373,7 @@ const RebalanceRecommendationPage: React.FC = () => {
                       ))}
                     </Pie>
                     <Tooltip
-                      formatter={(value: number) => [`${value.toFixed(1)}%`, '비중']}
+                      formatter={(value: number) => [`${value.toFixed(1)}%`, t('rebalance.weight')]}
                       contentStyle={{
                         backgroundColor: 'white',
                         border: '1px solid #e5e8eb',
@@ -389,7 +390,7 @@ const RebalanceRecommendationPage: React.FC = () => {
           {/* Detailed Recommendations */}
           <div className="bg-white border border-toss-grey-100 rounded-3xl shadow-sm overflow-hidden">
             <div className="p-6 border-b border-toss-grey-100">
-              <h4 className="font-bold text-toss-grey-900">상세 조정 내역</h4>
+              <h4 className="font-bold text-toss-grey-900">{t('rebalance.detailedAdjustments')}</h4>
             </div>
             <div className="divide-y divide-toss-grey-100">
               {recommendation.suggested_allocation
@@ -420,7 +421,7 @@ const RebalanceRecommendationPage: React.FC = () => {
                       <span className={`px-3 py-1.5 rounded-lg text-xs font-bold border ${getActionColor(item.action)}`}>
                         {item.action === 'buy' && <TrendingUp className="w-3 h-3 inline mr-1" />}
                         {item.action === 'sell' && <TrendingDown className="w-3 h-3 inline mr-1" />}
-                        {getActionText(item.action)} {item.shares_to_trade > 0 && `${item.shares_to_trade}주`}
+                        {getActionText(item.action)} {item.shares_to_trade > 0 && `${item.shares_to_trade}${t('rebalance.sharesUnit')}`}
                       </span>
                     </div>
                   </div>
@@ -428,7 +429,7 @@ const RebalanceRecommendationPage: React.FC = () => {
               ))}
               {recommendation.suggested_allocation.filter(item => item.action !== 'hold').length === 0 && (
                 <div className="p-8 text-center text-toss-grey-500">
-                  현재 포트폴리오가 이미 최적화되어 있습니다
+                  {t('rebalance.noRecommendation')}
                 </div>
               )}
             </div>
@@ -441,7 +442,7 @@ const RebalanceRecommendationPage: React.FC = () => {
         <div className="bg-white border border-toss-grey-100 rounded-3xl shadow-sm">
           <div className="p-6 border-b border-toss-grey-100 flex items-center gap-2">
             <History className="w-5 h-5 text-toss-grey-500" />
-            <h4 className="font-bold text-toss-grey-900">추천 이력</h4>
+            <h4 className="font-bold text-toss-grey-900">{t('rebalance.history')}</h4>
           </div>
           <div className="divide-y divide-toss-grey-100">
             {history.map((item) => (
@@ -453,10 +454,10 @@ const RebalanceRecommendationPage: React.FC = () => {
                     item.strategy === 'equal_weight' ? 'bg-purple-50 text-purple-600' :
                     'bg-blue-50 text-toss-blue'
                   }`}>
-                    {strategies.find(s => s.id === item.strategy)?.label || item.strategy}
+                    {t(strategies.find(s => s.id === item.strategy)?.labelKey || item.strategy)}
                   </div>
                   <span className="text-sm text-toss-grey-600">
-                    {new Date(item.created_at).toLocaleDateString('ko-KR')}
+                    {new Date(item.created_at).toLocaleDateString()}
                   </span>
                 </div>
                 <span className={`px-2.5 py-1 rounded-lg text-xs font-semibold ${
@@ -464,7 +465,7 @@ const RebalanceRecommendationPage: React.FC = () => {
                   item.status === 'applied' ? 'bg-green-50 text-green-600' :
                   'bg-toss-grey-100 text-toss-grey-500'
                 }`}>
-                  {item.status === 'pending' ? '대기' : item.status === 'applied' ? '적용됨' : '무시'}
+                  {t(`rebalance.status.${item.status}`)}
                 </span>
               </div>
             ))}

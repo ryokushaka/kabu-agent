@@ -1,0 +1,318 @@
+# =============================================================================
+# Prometheus Helm Values
+# =============================================================================
+# Optimized for ARM64 single-node K3s with 4GB RAM
+# Install: helm upgrade --install prometheus prometheus-community/prometheus \
+#          --namespace monitoring --values prometheus-values.yaml
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Disabled Components (resource optimization)
+# -----------------------------------------------------------------------------
+alertmanager:
+  enabled: false  # Using standalone Alertmanager
+
+pushgateway:
+  enabled: false
+
+# -----------------------------------------------------------------------------
+# Node Exporter
+# -----------------------------------------------------------------------------
+nodeExporter:
+  enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
+
+# -----------------------------------------------------------------------------
+# Kube State Metrics
+# -----------------------------------------------------------------------------
+kube-state-metrics:
+  enabled: true
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
+
+# -----------------------------------------------------------------------------
+# Prometheus Server
+# -----------------------------------------------------------------------------
+server:
+  # ARM64 compatible image
+  image:
+    repository: quay.io/prometheus/prometheus
+    tag: "v2.48.0"
+
+  # Resource limits for 4GB RAM environment
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 384Mi
+
+  # Short retention for memory optimization
+  retention: "3d"
+
+  # Persistent storage
+  persistentVolume:
+    enabled: true
+    size: 5Gi
+    storageClass: local-path  # K3s default storage class
+
+  # Memory optimization flags
+  extraFlags:
+    - storage.tsdb.min-block-duration=2h
+    - storage.tsdb.max-block-duration=6h
+    - query.max-concurrency=5
+    - storage.tsdb.wal-compression
+
+  # Global configuration
+  global:
+    scrape_interval: 30s      # Reduced from default 15s
+    evaluation_interval: 30s
+
+  # Alertmanager configuration
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager.monitoring.svc.cluster.local:9093
+
+# -----------------------------------------------------------------------------
+# ConfigMap Reload Sidecar
+# -----------------------------------------------------------------------------
+configmapReload:
+  prometheus:
+    enabled: true
+    resources:
+      requests:
+        cpu: 5m
+        memory: 16Mi
+      limits:
+        cpu: 50m
+        memory: 32Mi
+
+# -----------------------------------------------------------------------------
+# Service Configuration
+# -----------------------------------------------------------------------------
+server:
+  service:
+    type: ClusterIP
+    servicePort: 80
+
+# -----------------------------------------------------------------------------
+# Extra Scrape Configs
+# -----------------------------------------------------------------------------
+extraScrapeConfigs: |
+  # FastAPI Backend metrics
+  - job_name: 'kabu-backend'
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names:
+            - kabu-agent
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+      - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:$2
+        target_label: __address__
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: namespace
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: pod
+
+  # PostgreSQL metrics (if postgres-exporter is deployed)
+  - job_name: 'kabu-postgres'
+    kubernetes_sd_configs:
+      - role: service
+        namespaces:
+          names:
+            - kabu-agent
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_service_name]
+        action: keep
+        regex: postgres-exporter
+
+  # Redis metrics (if redis-exporter is deployed)
+  - job_name: 'kabu-redis'
+    kubernetes_sd_configs:
+      - role: service
+        namespaces:
+          names:
+            - kabu-agent
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_service_name]
+        action: keep
+        regex: redis-exporter
+
+# -----------------------------------------------------------------------------
+# Server Config Files (Alert Rules)
+# -----------------------------------------------------------------------------
+serverFiles:
+  alerting_rules.yml:
+    groups:
+      - name: kabu-agent-alerts
+        rules:
+          # Backend Health
+          - alert: BackendDown
+            expr: up{job="kabu-backend"} == 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Kabu Backend is down"
+              description: "Backend service has been down for more than 1 minute"
+              runbook_url: "https://github.com/ryokushaka/kabu-agent/blob/main/infra/k8s/docs/RUNBOOK.md#alert-backenddown"
+
+          # High Error Rate (5xx errors > 5%)
+          - alert: HighErrorRate
+            expr: |
+              sum(rate(http_requests_total{job="kabu-backend",status=~"5.."}[5m]))
+              / sum(rate(http_requests_total{job="kabu-backend"}[5m])) > 0.05
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High error rate detected"
+              description: "Error rate is above 5% for 5 minutes"
+              runbook_url: "https://github.com/ryokushaka/kabu-agent/blob/main/infra/k8s/docs/RUNBOOK.md#alert-higherrorrate"
+
+          # High Latency (P95 > 1s)
+          - alert: HighLatency
+            expr: |
+              histogram_quantile(0.95,
+                sum(rate(http_request_duration_seconds_bucket{job="kabu-backend"}[5m]))
+                by (le)) > 1
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High latency detected"
+              description: "P95 latency is above 1 second"
+              runbook_url: "https://github.com/ryokushaka/kabu-agent/blob/main/infra/k8s/docs/RUNBOOK.md#alert-highlatency"
+
+          # Memory Usage > 85%
+          - alert: HighMemoryUsage
+            expr: |
+              container_memory_working_set_bytes{namespace="kabu-agent"}
+              / container_spec_memory_limit_bytes{namespace="kabu-agent"} > 0.85
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High memory usage"
+              description: "Container memory usage is above 85%"
+              runbook_url: "https://github.com/ryokushaka/kabu-agent/blob/main/infra/k8s/docs/RUNBOOK.md#alert-highmemoryusage"
+
+          # Database Connection Failed
+          - alert: DatabaseConnectionFailed
+            expr: pg_up{job="kabu-postgres"} == 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "PostgreSQL connection failed"
+              description: "Cannot connect to PostgreSQL database"
+              runbook_url: "https://github.com/ryokushaka/kabu-agent/blob/main/infra/k8s/docs/RUNBOOK.md#alert-databaseconnectionfailed"
+
+          # Redis Down
+          - alert: RedisDown
+            expr: redis_up{job="kabu-redis"} == 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Redis is down"
+              description: "Cannot connect to Redis"
+              runbook_url: "https://github.com/ryokushaka/kabu-agent/blob/main/infra/k8s/docs/RUNBOOK.md#alert-redisdown"
+
+      - name: node-alerts
+        rules:
+          # Node Memory > 90%
+          - alert: HighNodeMemory
+            expr: |
+              (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 0.90
+            for: 5m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Node memory is critically high"
+              description: "Node memory usage is above 90%"
+              runbook_url: "https://github.com/ryokushaka/kabu-agent/blob/main/infra/k8s/docs/RUNBOOK.md#alert-highnodememory"
+
+          # Node CPU > 85%
+          - alert: HighNodeCPU
+            expr: |
+              100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+            for: 10m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High CPU usage on node"
+              description: "CPU usage is above 85% for 10 minutes"
+              runbook_url: "https://github.com/ryokushaka/kabu-agent/blob/main/infra/k8s/docs/RUNBOOK.md#alert-highnodecpu"
+
+          # Disk Space < 15%
+          - alert: DiskSpaceLow
+            expr: |
+              (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.15
+            for: 5m
+            labels:
+              severity: warning
+            annotations:
+              summary: "Low disk space"
+              description: "Less than 15% disk space remaining"
+              runbook_url: "https://github.com/ryokushaka/kabu-agent/blob/main/infra/k8s/docs/RUNBOOK.md#alert-diskspacelow"
+
+      - name: slo-alerts
+        rules:
+          # Availability SLO: 99.9% (error budget burn)
+          - alert: SLOAvailabilityBudgetBurn
+            expr: |
+              (
+                1 - (
+                  sum(rate(http_requests_total{job="kabu-backend",status!~"5.."}[1h]))
+                  / sum(rate(http_requests_total{job="kabu-backend"}[1h]))
+                )
+              ) > 0.001
+            for: 5m
+            labels:
+              severity: critical
+              slo: availability
+            annotations:
+              summary: "Availability SLO budget burn rate too high"
+              description: "Error budget is being consumed faster than 0.1% per hour"
+              runbook_url: "https://github.com/ryokushaka/kabu-agent/blob/main/infra/k8s/docs/RUNBOOK.md#alert-sloavailabilitybudgetburn"
+
+          # Latency SLO: P99 < 500ms
+          - alert: SLOLatencyBudgetBurn
+            expr: |
+              histogram_quantile(0.99,
+                sum(rate(http_request_duration_seconds_bucket{job="kabu-backend"}[1h])) by (le)
+              ) > 0.5
+            for: 5m
+            labels:
+              severity: warning
+              slo: latency
+            annotations:
+              summary: "Latency SLO at risk"
+              description: "P99 latency is above 500ms SLO target"
+              runbook_url: "https://github.com/ryokushaka/kabu-agent/blob/main/infra/k8s/docs/RUNBOOK.md#alert-slolatencybudgetburn"

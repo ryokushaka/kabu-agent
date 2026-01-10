@@ -1,0 +1,183 @@
+# =============================================================================
+# Grafana Helm Values
+# =============================================================================
+# Optimized for ARM64 single-node K3s with 4GB RAM
+# Install: helm upgrade --install grafana grafana/grafana \
+#          --namespace monitoring --values grafana-values.yaml
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Image Configuration (ARM64 compatible)
+# -----------------------------------------------------------------------------
+image:
+  repository: grafana/grafana
+  tag: "10.2.2"
+  pullPolicy: IfNotPresent
+
+# -----------------------------------------------------------------------------
+# Resource Limits
+# -----------------------------------------------------------------------------
+resources:
+  requests:
+    cpu: 50m
+    memory: 64Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
+
+# -----------------------------------------------------------------------------
+# Persistence
+# -----------------------------------------------------------------------------
+persistence:
+  enabled: true
+  size: 1Gi
+  storageClassName: local-path  # K3s default
+
+# -----------------------------------------------------------------------------
+# Admin Credentials
+# -----------------------------------------------------------------------------
+# Password will be auto-generated if not set
+# Retrieve with: kubectl get secret --namespace monitoring grafana -o jsonpath="{.data.admin-password}" | base64 --decode
+adminUser: admin
+# adminPassword: ""  # Set via --set or leave empty for auto-generation
+
+# -----------------------------------------------------------------------------
+# Data Sources
+# -----------------------------------------------------------------------------
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://prometheus-server.monitoring.svc.cluster.local:80
+        access: proxy
+        isDefault: true
+        editable: false
+
+      # Prepared for Phase 3 (Distributed Tracing)
+      - name: Jaeger
+        type: jaeger
+        url: http://jaeger-query.monitoring.svc.cluster.local:16686
+        access: proxy
+        editable: false
+
+# -----------------------------------------------------------------------------
+# Dashboard Providers
+# -----------------------------------------------------------------------------
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/default
+      - name: 'kabu-agent'
+        orgId: 1
+        folder: 'Kabu Agent'
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards/kabu-agent
+
+# -----------------------------------------------------------------------------
+# Pre-built Dashboards from Grafana.com
+# -----------------------------------------------------------------------------
+dashboards:
+  default:
+    # Kubernetes Cluster Overview
+    kubernetes-cluster:
+      gnetId: 7249
+      revision: 1
+      datasource: Prometheus
+
+    # Node Exporter Full
+    node-exporter:
+      gnetId: 1860
+      revision: 31
+      datasource: Prometheus
+
+    # FastAPI Dashboard
+    fastapi:
+      gnetId: 16110
+      revision: 1
+      datasource: Prometheus
+
+# -----------------------------------------------------------------------------
+# Custom Dashboards
+# -----------------------------------------------------------------------------
+dashboardsConfigMaps:
+  kabu-agent: grafana-kabu-dashboards
+
+# -----------------------------------------------------------------------------
+# Grafana.ini Configuration
+# -----------------------------------------------------------------------------
+grafana.ini:
+  server:
+    root_url: "%(protocol)s://%(domain)s/"
+
+  # Analytics
+  analytics:
+    check_for_updates: false
+    reporting_enabled: false
+
+  # Security
+  security:
+    disable_gravatar: true
+
+  # Users
+  users:
+    allow_sign_up: false
+    allow_org_create: false
+
+  # Auth
+  auth:
+    disable_login_form: false
+
+  # Logging
+  log:
+    mode: console
+    level: warn
+
+# -----------------------------------------------------------------------------
+# Ingress Configuration (Traefik)
+# -----------------------------------------------------------------------------
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+  hosts:
+    - grafana.${DOMAIN_NAME}
+  # TLS will be handled by Traefik with Let's Encrypt
+
+# -----------------------------------------------------------------------------
+# Service Account
+# -----------------------------------------------------------------------------
+serviceAccount:
+  create: true
+  name: grafana
+
+# -----------------------------------------------------------------------------
+# Pod Security Context
+# -----------------------------------------------------------------------------
+securityContext:
+  runAsUser: 472
+  runAsGroup: 472
+  fsGroup: 472
+
+# -----------------------------------------------------------------------------
+# Sidecar for Dashboard/Datasource Discovery (disabled for resource saving)
+# -----------------------------------------------------------------------------
+sidecar:
+  dashboards:
+    enabled: false
+  datasources:
+    enabled: false

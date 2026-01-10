@@ -1,0 +1,17 @@
+# =============================================================================
+# Namespace Ambient Mode Configuration
+# =============================================================================
+# Labels the kabu-agent namespace to enable Istio Ambient Mode
+# Apply this after Istio is installed to enroll the namespace in the mesh
+# -----------------------------------------------------------------------------
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kabu-agent
+  labels:
+    # Enable Istio Ambient Mode for this namespace
+    istio.io/dataplane-mode: ambient
+    # Additional labels for identification
+    app.kubernetes.io/name: kabu-agent
+    app.kubernetes.io/component: application

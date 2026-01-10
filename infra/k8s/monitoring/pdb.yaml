@@ -1,0 +1,72 @@
+# =============================================================================
+# PodDisruptionBudgets for Monitoring Stack
+# =============================================================================
+# Ensures high availability during node maintenance and cluster upgrades
+#
+# Usage:
+#   kubectl apply -f pdb.yaml
+#
+# Notes:
+#   - PDBs prevent voluntary disruptions (drain, upgrade, scale-down)
+#   - They do NOT prevent involuntary disruptions (node failure, OOM)
+#   - minAvailable or maxUnavailable must leave at least one pod running
+# -----------------------------------------------------------------------------
+
+---
+# =============================================================================
+# Prometheus Server PDB
+# =============================================================================
+# Prometheus is critical for metrics collection and alerting
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: prometheus-server-pdb
+  namespace: monitoring
+  labels:
+    app: prometheus
+    component: server
+spec:
+  # For single replica, use maxUnavailable: 0 during maintenance
+  # This will block eviction until manually overridden
+  maxUnavailable: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: prometheus
+      app.kubernetes.io/component: server
+
+---
+# =============================================================================
+# Alertmanager PDB
+# =============================================================================
+# Alertmanager handles alert routing - critical for incident response
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: alertmanager-pdb
+  namespace: monitoring
+  labels:
+    app: alertmanager
+spec:
+  maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: alertmanager
+
+---
+# =============================================================================
+# Grafana PDB
+# =============================================================================
+# Grafana provides dashboards - less critical but still protected
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: grafana-pdb
+  namespace: monitoring
+  labels:
+    app: grafana
+spec:
+  # Grafana can tolerate brief downtime during maintenance
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: grafana

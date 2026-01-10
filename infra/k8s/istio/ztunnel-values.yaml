@@ -1,0 +1,34 @@
+# =============================================================================
+# Ztunnel Helm Values
+# =============================================================================
+# Per-node L4 proxy for Istio Ambient Mode
+# Replaces per-pod sidecars with per-node ztunnel for 90% resource savings
+#
+# Install: helm upgrade --install ztunnel istio/ztunnel \
+#          --namespace istio-system --values ztunnel-values.yaml
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Ztunnel Configuration
+# -----------------------------------------------------------------------------
+ztunnel:
+  # Resource limits (very lightweight per-node proxy)
+  resources:
+    requests:
+      cpu: 20m
+      memory: 32Mi
+    limits:
+      cpu: 200m
+      memory: 64Mi
+
+  # Logging configuration
+  logging:
+    level: warn
+
+# -----------------------------------------------------------------------------
+# Global Settings
+# -----------------------------------------------------------------------------
+global:
+  # Log level
+  logging:
+    level: "default:warn"

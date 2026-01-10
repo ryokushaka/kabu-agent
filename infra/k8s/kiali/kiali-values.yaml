@@ -1,0 +1,157 @@
+# =============================================================================
+# Kiali Helm Values
+# =============================================================================
+# Service mesh observability dashboard for Istio
+# Provides service graph, traffic visualization, and mesh configuration
+#
+# Install: helm upgrade --install kiali kiali/kiali-server \
+#          --namespace istio-system --values kiali-values.yaml
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Naming
+# -----------------------------------------------------------------------------
+nameOverride: kiali
+fullnameOverride: kiali
+
+# -----------------------------------------------------------------------------
+# Authentication Strategy
+# -----------------------------------------------------------------------------
+# anonymous: No authentication (development only)
+# token: ServiceAccount token
+# openid: OpenID Connect (production recommended)
+auth:
+  strategy: anonymous  # Change to 'openid' for production
+
+# -----------------------------------------------------------------------------
+# Deployment Configuration
+# -----------------------------------------------------------------------------
+deployment:
+  # Image configuration (ARM64 supported)
+  image_name: quay.io/kiali/kiali
+  image_version: v1.78.0
+
+  # Resource limits for 4GB RAM environment
+  resources:
+    requests:
+      cpu: 10m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 128Mi
+
+  # Single replica for single-node cluster
+  replicas: 1
+
+  # Pod annotations
+  pod_annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9090"
+
+# -----------------------------------------------------------------------------
+# Server Configuration
+# -----------------------------------------------------------------------------
+server:
+  port: 20001
+  metrics_enabled: true
+  metrics_port: 9090
+  web_root: /kiali
+  web_fqdn: ""
+
+# -----------------------------------------------------------------------------
+# External Services Integration
+# -----------------------------------------------------------------------------
+external_services:
+  # Prometheus for metrics
+  prometheus:
+    url: http://prometheus-server.monitoring.svc.cluster.local:80
+    # Custom headers if needed
+    # custom_headers:
+    #   Authorization: "Bearer xxx"
+
+  # Grafana for dashboards
+  grafana:
+    enabled: true
+    in_cluster_url: http://grafana.monitoring.svc.cluster.local:80
+    url: https://grafana.${DOMAIN_NAME}
+    # Grafana auth (if needed)
+    # auth:
+    #   type: basic
+    #   username: admin
+    #   password: admin
+
+  # Tracing (Jaeger) - Phase 3
+  tracing:
+    enabled: true
+    in_cluster_url: http://jaeger-query.monitoring.svc.cluster.local:16686
+    url: https://jaeger.${DOMAIN_NAME}
+    use_grpc: false
+    # Whitelist URLs for trace queries
+    whitelist_istio_system: ["jaeger-query"]
+
+  # Istio configuration
+  istio:
+    root_namespace: istio-system
+    component_status:
+      enabled: true
+      components:
+        - app_label: istiod
+          is_core: true
+          namespace: istio-system
+
+# -----------------------------------------------------------------------------
+# Istio Namespace
+# -----------------------------------------------------------------------------
+istio_namespace: istio-system
+
+# -----------------------------------------------------------------------------
+# Kiali Feature Flags
+# -----------------------------------------------------------------------------
+kiali_feature_flags:
+  # UI defaults
+  ui_defaults:
+    graph:
+      traffic:
+        grpc: requests
+        http: requests
+        tcp: sent
+      impl: pf
+    namespaces: []
+    refresh_interval: 30s
+
+  # Validations
+  validations:
+    ignore: []
+    skip_wildcard_gateway_hosts: false
+
+# -----------------------------------------------------------------------------
+# Clustering (Single cluster mode)
+# -----------------------------------------------------------------------------
+clustering:
+  autodetect_secrets:
+    enabled: true
+    label: "istio/multiCluster=true"
+
+# -----------------------------------------------------------------------------
+# Health Configuration
+# -----------------------------------------------------------------------------
+health_config:
+  rate: []
+
+# -----------------------------------------------------------------------------
+# Login Token Configuration
+# -----------------------------------------------------------------------------
+login_token:
+  signing_key: ""  # Auto-generated if empty
+  expiration_seconds: 86400
+
+# -----------------------------------------------------------------------------
+# API Configuration
+# -----------------------------------------------------------------------------
+api:
+  namespaces:
+    exclude:
+      - "istio-operator"
+      - "kube-system"
+      - "kube-public"
+      - "kube-node-lease"

@@ -1,0 +1,55 @@
+# =============================================================================
+# Kiali Ingress Configuration
+# =============================================================================
+# Exposes Kiali dashboard via Traefik ingress
+# -----------------------------------------------------------------------------
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: kiali
+  namespace: istio-system
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    # Security: Add basic auth middleware for production
+    # traefik.ingress.kubernetes.io/router.middlewares: istio-system-kiali-auth@kubernetescrd
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: kiali.${DOMAIN_NAME}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kiali
+                port:
+                  number: 20001
+
+---
+# -----------------------------------------------------------------------------
+# Optional: Basic Auth Middleware for Kiali
+# -----------------------------------------------------------------------------
+# Uncomment and configure for production use
+# ---
+# apiVersion: traefik.io/v1alpha1
+# kind: Middleware
+# metadata:
+#   name: kiali-auth
+#   namespace: istio-system
+# spec:
+#   basicAuth:
+#     secret: kiali-basic-auth
+#     removeHeader: true
+# ---
+# apiVersion: v1
+# kind: Secret
+# metadata:
+#   name: kiali-basic-auth
+#   namespace: istio-system
+# type: Opaque
+# data:
+#   # Generate with: htpasswd -nb admin <password> | base64
+#   users: YWRtaW46JGFwcjEkLi9zL3JnLyRZZ3Q=  # admin:admin (change this!)

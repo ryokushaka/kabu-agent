@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { TrendingUp } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '../../../components/common';
+import { LanguageSwitcher } from '../../../components/common/LanguageSwitcher';
 
 const Header: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation('common');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,21 +27,22 @@ const Header: React.FC = () => {
           </div>
           <span className="text-xl font-bold tracking-tight text-toss-grey-900">Kabu Agent</span>
         </div>
-        
+
         <div className="flex items-center gap-4">
-          <Button 
+          <LanguageSwitcher className="hidden md:flex" />
+          <Button
             variant="ghost"
             onClick={() => navigate('/login')}
             className="hidden md:inline-flex text-toss-grey-700 hover:text-toss-grey-900 font-medium"
           >
-            로그인
+            {t('buttons.login')}
           </Button>
-          <Button 
+          <Button
             variant="primary"
             onClick={() => navigate('/contact')}
             className="rounded-full px-6 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
           >
-            이용 문의
+            {t('buttons.contact')}
           </Button>
         </div>
       </div>

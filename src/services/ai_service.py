@@ -202,7 +202,7 @@ class GeminiService:
                 redis_client.set(cache_key, response.text, expire=7200)
                 return response.text
             else:
-                return "뉴스 요약 생성 실패"
+                return None
         except Exception as e:
             logger.error(f"Error summarizing news: {e}")
-            return f"뉴스 요약 중 오류 발생: {str(e)}"
+            return None

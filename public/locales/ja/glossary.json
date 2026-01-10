@@ -1,0 +1,29 @@
+{
+  "title": "投資用語ガイド",
+  "searchPlaceholder": "用語検索... (例: ボラティリティ、利回り、PER)",
+  "categories": {
+    "all": "すべて",
+    "risk": "リスク",
+    "returns": "利回り",
+    "sector": "セクター",
+    "market": "市場指標",
+    "trading": "取引/投資"
+  },
+  "difficulty": {
+    "all": "すべて",
+    "beginner": "初級",
+    "intermediate": "中級",
+    "advanced": "上級"
+  },
+  "detail": {
+    "backToList": "一覧に戻る",
+    "definition": "定義",
+    "example": "例"
+  },
+  "errors": {
+    "loadFailed": "用語の読み込みに失敗しました。"
+  },
+  "empty": {
+    "noResults": "検索結果がありません。"
+  }
+}

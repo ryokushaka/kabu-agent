@@ -1,0 +1,36 @@
+{
+  "title": "設定",
+  "language": {
+    "title": "言語設定",
+    "description": "アプリの表示言語を選択してください。"
+  },
+  "kis": {
+    "title": "KIS API設定",
+    "accountNumber": "口座番号"
+  },
+  "display": {
+    "title": "表示設定",
+    "currency": "デフォルト通貨",
+    "refreshInterval": "更新間隔",
+    "intervals": {
+      "realtime": "リアルタイム",
+      "1min": "1分",
+      "5min": "5分"
+    }
+  },
+  "messages": {
+    "saved": "設定が安全に保存されました。"
+  },
+  "notifications": {
+    "title": "通知センター",
+    "tabs": {
+      "notifications": "通知",
+      "priceAlerts": "価格アラート"
+    },
+    "addAlert": "アラート追加",
+    "empty": {
+      "title": "通知がありません",
+      "description": "新しい通知があればここに表示されます"
+    }
+  }
+}

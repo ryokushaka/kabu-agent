@@ -1,0 +1,80 @@
+{
+  "title": "NISA (Nippon Individual Savings Account)",
+  "subtitle": "New NISA starting from 2024",
+  "description": "NISA is a tax-exempt investment system where investment gains are not taxed.",
+  "card": {
+    "title": "NISA Information",
+    "subtitle": "Tax-exempt investment system"
+  },
+  "limits": {
+    "title": "Investment Allowances and Limits",
+    "tsumitate": {
+      "title": "Tsumitate Investment Allowance",
+      "annual": "1.2 million yen/year",
+      "description": "Investment trusts suitable for long-term, regular, and diversified investment"
+    },
+    "growth": {
+      "title": "Growth Investment Allowance",
+      "annual": "2.4 million yen/year",
+      "description": "Listed stocks, investment trusts, etc."
+    },
+    "lifetime": {
+      "title": "Tax-exempt Holding Limit",
+      "amount": "18 million yen",
+      "description": "Up to 12 million yen for Growth Investment Allowance"
+    }
+  },
+  "features": {
+    "title": "Features of New NISA",
+    "unlimited": {
+      "title": "Unlimited Tax-exempt Period",
+      "description": "Holdings remain tax-exempt as long as they are not sold"
+    },
+    "reusable": {
+      "title": "Reusable Allowance",
+      "description": "Sold portions of the allowance can be reused from the following year"
+    },
+    "combined": {
+      "title": "Combined Use",
+      "description": "Tsumitate and Growth Investment Allowances can be used together"
+    }
+  },
+  "eligible": {
+    "title": "Eligible Products",
+    "tsumitate": {
+      "title": "Tsumitate Investment Allowance",
+      "items": [
+        "Investment trusts meeting FSA criteria",
+        "Low-cost products suitable for long-term investment"
+      ]
+    },
+    "growth": {
+      "title": "Growth Investment Allowance",
+      "items": [
+        "Listed stocks (domestic and foreign)",
+        "ETFs",
+        "REITs",
+        "Investment trusts"
+      ]
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "items": [
+      {
+        "question": "Can I have multiple NISA accounts?",
+        "answer": "No, each person can only have one NISA account. However, you can change financial institutions on a yearly basis."
+      },
+      {
+        "question": "Can I buy foreign stocks with NISA?",
+        "answer": "Yes, you can purchase foreign listed stocks and ETFs with the Growth Investment Allowance. However, availability varies by securities company."
+      },
+      {
+        "question": "Are dividends also tax-exempt?",
+        "answer": "Yes, dividends from stocks held in a NISA account are also tax-exempt. However, they may be taxed depending on the dividend receiving method."
+      }
+    ]
+  },
+  "learnMore": "Learn More",
+  "disclaimer": "* This information is for reference only. Please confirm details with the FSA or your securities company."
+}

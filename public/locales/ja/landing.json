@@ -1,0 +1,58 @@
+{
+  "hero": {
+    "title": "海外株式ポートフォリオを",
+    "titleHighlight": "AIとスマートに管理しましょう",
+    "subtitle": "複雑な米国株投資、Kabu Agentがお手伝いします。",
+    "description": "リアルタイムポートフォリオ分析からAIベースのニュースブリーフィングまで、あなたの投資をワンランクアップ。"
+  },
+  "features": {
+    "title": "主な機能",
+    "asset": {
+      "title": "直感的な資産状況",
+      "description": "一目で分かる投資状況。セクター別、銘柄別の分布を視覚的に確認できます。"
+    },
+    "news": {
+      "title": "AIニュースブリーフィング",
+      "description": "複雑な海外ニュースをAIが要約。投資に影響を与えるニュースを見逃しません。"
+    },
+    "security": {
+      "title": "安全な投資管理",
+      "description": "検証済みのAPI連携で安全に資産を管理できます。"
+    }
+  },
+  "stockBasics": {
+    "title": "投資が初めてですか？",
+    "subtitle": "基本用語から始めましょう。",
+    "viewGuide": "ガイドを見る",
+    "terms": {
+      "stock": {
+        "title": "株式",
+        "description": "会社の所有権を表す有価証券です。"
+      },
+      "dividend": {
+        "title": "配当金",
+        "description": "会社が株主に支払う利益の一部です。"
+      },
+      "etf": {
+        "title": "ETF",
+        "description": "複数の資産をまとめて取引所で取引されるファンドです。"
+      },
+      "per": {
+        "title": "PER",
+        "description": "株価を1株当たり利益で割った値で、企業価値評価に使用されます。"
+      }
+    }
+  },
+  "market": {
+    "title": "主要指数",
+    "updated": "更新"
+  },
+  "news": {
+    "title": "最新ニュース",
+    "readMore": "続きを読む"
+  },
+  "footer": {
+    "copyright": "© 2024 Kabu Agent. All rights reserved.",
+    "disclaimer": "投資にはリスクが伴い、投資結果の責任はご本人にあります。"
+  }
+}

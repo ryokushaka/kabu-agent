@@ -1,0 +1,29 @@
+{
+  "title": "투자 용어 가이드",
+  "searchPlaceholder": "용어 검색... (예: 변동성, 수익률, PER)",
+  "categories": {
+    "all": "전체",
+    "risk": "리스크",
+    "returns": "수익률",
+    "sector": "섹터",
+    "market": "시장 지표",
+    "trading": "거래/투자"
+  },
+  "difficulty": {
+    "all": "전체",
+    "beginner": "초급",
+    "intermediate": "중급",
+    "advanced": "고급"
+  },
+  "detail": {
+    "backToList": "목록으로 돌아가기",
+    "definition": "정의",
+    "example": "예시"
+  },
+  "errors": {
+    "loadFailed": "용어를 불러오는데 실패했습니다."
+  },
+  "empty": {
+    "noResults": "검색 결과가 없습니다."
+  }
+}

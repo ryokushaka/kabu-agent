@@ -1,0 +1,80 @@
+{
+  "title": "NISA（少額投資非課税制度）",
+  "subtitle": "2024年から始まる新NISA",
+  "description": "NISAは、投資で得た利益が非課税になる制度です。",
+  "card": {
+    "title": "NISA情報",
+    "subtitle": "非課税投資制度"
+  },
+  "limits": {
+    "title": "投資枠と限度額",
+    "tsumitate": {
+      "title": "つみたて投資枠",
+      "annual": "年間120万円",
+      "description": "長期・積立・分散投資に適した投資信託"
+    },
+    "growth": {
+      "title": "成長投資枠",
+      "annual": "年間240万円",
+      "description": "上場株式・投資信託等"
+    },
+    "lifetime": {
+      "title": "非課税保有限度額",
+      "amount": "1,800万円",
+      "description": "うち成長投資枠は1,200万円まで"
+    }
+  },
+  "features": {
+    "title": "新NISAの特徴",
+    "unlimited": {
+      "title": "非課税期間無期限",
+      "description": "売却しない限り、非課税のまま保有できます"
+    },
+    "reusable": {
+      "title": "枠の再利用",
+      "description": "売却した分の枠は翌年以降に再利用可能"
+    },
+    "combined": {
+      "title": "併用可能",
+      "description": "つみたて投資枠と成長投資枠は併用できます"
+    }
+  },
+  "eligible": {
+    "title": "投資対象商品",
+    "tsumitate": {
+      "title": "つみたて投資枠",
+      "items": [
+        "金融庁が定めた基準を満たす投資信託",
+        "低コストで長期投資に適した商品"
+      ]
+    },
+    "growth": {
+      "title": "成長投資枠",
+      "items": [
+        "上場株式（国内・海外）",
+        "ETF",
+        "REIT",
+        "投資信託"
+      ]
+    }
+  },
+  "faq": {
+    "title": "よくある質問",
+    "items": [
+      {
+        "question": "NISAの口座は複数作れますか？",
+        "answer": "いいえ、NISA口座は1人1口座のみです。ただし、金融機関の変更は年単位で可能です。"
+      },
+      {
+        "question": "外国株式もNISAで購入できますか？",
+        "answer": "はい、成長投資枠で海外上場株式やETFを購入できます。ただし、取扱いは証券会社によって異なります。"
+      },
+      {
+        "question": "配当金も非課税ですか？",
+        "answer": "はい、NISA口座で保有する株式の配当金も非課税です。ただし、配当金の受取方法によっては課税される場合があります。"
+      }
+    ]
+  },
+  "learnMore": "詳しく見る",
+  "disclaimer": "※ 本情報は参考情報です。詳細は金融庁や証券会社にご確認ください。"
+}

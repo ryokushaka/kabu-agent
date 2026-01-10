@@ -1,0 +1,29 @@
+{
+  "title": "Investment Glossary",
+  "searchPlaceholder": "Search terms... (e.g., volatility, returns, P/E)",
+  "categories": {
+    "all": "All",
+    "risk": "Risk",
+    "returns": "Returns",
+    "sector": "Sector",
+    "market": "Market Indicators",
+    "trading": "Trading/Investment"
+  },
+  "difficulty": {
+    "all": "All",
+    "beginner": "Beginner",
+    "intermediate": "Intermediate",
+    "advanced": "Advanced"
+  },
+  "detail": {
+    "backToList": "Back to List",
+    "definition": "Definition",
+    "example": "Example"
+  },
+  "errors": {
+    "loadFailed": "Failed to load terms."
+  },
+  "empty": {
+    "noResults": "No results found."
+  }
+}

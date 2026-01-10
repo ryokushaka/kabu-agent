@@ -1,0 +1,58 @@
+{
+  "hero": {
+    "title": "Manage your overseas stock portfolio",
+    "titleHighlight": "smartly with AI",
+    "subtitle": "Kabu Agent helps you navigate complex US stock investments.",
+    "description": "From real-time portfolio analysis to AI-powered news briefings, take your investments to the next level."
+  },
+  "features": {
+    "title": "Key Features",
+    "asset": {
+      "title": "Intuitive Asset Overview",
+      "description": "See your investment status at a glance. Visualize distribution by sector and stock."
+    },
+    "news": {
+      "title": "AI News Briefing",
+      "description": "AI summarizes complex foreign news for you. Never miss news that could impact your investments."
+    },
+    "security": {
+      "title": "Secure Investment Management",
+      "description": "Safely manage your assets with verified API integration."
+    }
+  },
+  "stockBasics": {
+    "title": "New to investing?",
+    "subtitle": "Start with the basics.",
+    "viewGuide": "View Full Guide",
+    "terms": {
+      "stock": {
+        "title": "Stock",
+        "description": "A security representing ownership in a company."
+      },
+      "dividend": {
+        "title": "Dividend",
+        "description": "A portion of profits paid by a company to its shareholders."
+      },
+      "etf": {
+        "title": "ETF",
+        "description": "A fund that bundles multiple assets and trades on an exchange."
+      },
+      "per": {
+        "title": "P/E Ratio",
+        "description": "Price divided by earnings per share, used for company valuation."
+      }
+    }
+  },
+  "market": {
+    "title": "Market Indices",
+    "updated": "Updated"
+  },
+  "news": {
+    "title": "Latest News",
+    "readMore": "Read More"
+  },
+  "footer": {
+    "copyright": "© 2024 Kabu Agent. All rights reserved.",
+    "disclaimer": "Investments carry risk, and you are responsible for your investment decisions."
+  }
+}

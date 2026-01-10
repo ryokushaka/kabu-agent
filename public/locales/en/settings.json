@@ -1,0 +1,36 @@
+{
+  "title": "Settings",
+  "language": {
+    "title": "Language Settings",
+    "description": "Select your preferred display language."
+  },
+  "kis": {
+    "title": "KIS API Settings",
+    "accountNumber": "Account Number"
+  },
+  "display": {
+    "title": "Display Settings",
+    "currency": "Default Currency",
+    "refreshInterval": "Refresh Interval",
+    "intervals": {
+      "realtime": "Real-time",
+      "1min": "1 minute",
+      "5min": "5 minutes"
+    }
+  },
+  "messages": {
+    "saved": "Settings saved successfully."
+  },
+  "notifications": {
+    "title": "Notification Center",
+    "tabs": {
+      "notifications": "Notifications",
+      "priceAlerts": "Price Alerts"
+    },
+    "addAlert": "Add Alert",
+    "empty": {
+      "title": "No notifications",
+      "description": "New notifications will appear here"
+    }
+  }
+}

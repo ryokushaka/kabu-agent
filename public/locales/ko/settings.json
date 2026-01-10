@@ -1,0 +1,36 @@
+{
+  "title": "설정",
+  "language": {
+    "title": "언어 설정",
+    "description": "앱 표시 언어를 선택하세요."
+  },
+  "kis": {
+    "title": "KIS API 설정",
+    "accountNumber": "계좌번호"
+  },
+  "display": {
+    "title": "화면 설정",
+    "currency": "기본 통화",
+    "refreshInterval": "새로고침 주기",
+    "intervals": {
+      "realtime": "실시간",
+      "1min": "1분",
+      "5min": "5분"
+    }
+  },
+  "messages": {
+    "saved": "설정이 안전하게 저장되었습니다."
+  },
+  "notifications": {
+    "title": "알림 센터",
+    "tabs": {
+      "notifications": "알림",
+      "priceAlerts": "가격 알림"
+    },
+    "addAlert": "알림 추가",
+    "empty": {
+      "title": "알림이 없습니다",
+      "description": "새로운 알림이 오면 여기에 표시됩니다"
+    }
+  }
+}

@@ -2,6 +2,7 @@
  * Error Display Component
  */
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 import { ApiError } from '@shared/api';
 
@@ -16,28 +17,30 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
   onRetry,
   message
 }) => {
+  const { t } = useTranslation('common');
+
   const getErrorMessage = () => {
     if (message) return message;
-    if (!error) return 'An unknown error occurred';
+    if (!error) return t('errors.general');
 
     if (error instanceof ApiError) {
       switch (error.status) {
         case 401:
-          return 'Authentication failed. Please login again.';
+          return t('errors.unauthorized');
         case 403:
-          return 'You do not have permission to access this resource.';
+          return t('errors.unauthorized');
         case 404:
-          return 'The requested resource was not found.';
+          return t('errors.notFound');
         case 408:
-          return 'Request timeout. Please check your connection and try again.';
+          return t('errors.network');
         case 500:
-          return 'Server error. Please try again later.';
+          return t('errors.serverError');
         default:
           return error.message;
       }
     }
 
-    return error.message || 'An error occurred';
+    return error.message || t('errors.general');
   };
 
   return (
@@ -48,7 +51,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
             <AlertCircle className="w-6 h-6 text-rose-400" />
           </div>
           <h3 className="text-lg font-semibold text-white mb-2">
-            Something went wrong
+            {t('errors.general')}
           </h3>
           <p className="text-rose-400 mb-4">{getErrorMessage()}</p>
           {onRetry && (
@@ -57,7 +60,7 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
               className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors mx-auto"
             >
               <RefreshCw className="w-4 h-4" />
-              Retry
+              {t('buttons.retry')}
             </button>
           )}
         </div>

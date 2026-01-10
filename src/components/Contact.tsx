@@ -1,9 +1,11 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Mail, ArrowLeft, TrendingUp } from 'lucide-react';
 
 const Contact: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation(['auth', 'common']);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-between p-6 md:p-12 relative overflow-hidden bg-white">
@@ -32,17 +34,15 @@ const Contact: React.FC = () => {
           </div>
           
           <h1 className="text-2xl font-bold text-gray-900 mb-3">
-            이용 문의
+            {t('auth:contact.title')}
           </h1>
-          
+
           <div className="space-y-4 text-gray-600 mb-8 leading-relaxed">
             <p>
-              현재 Kabu Agent는 <br className="hidden xs:block"/> 
-              <span className="font-semibold text-gray-900">회원제</span>로 운영되고 있습니다.
+              {t('auth:contact.description')}
             </p>
             <p className="text-sm">
-              서비스 이용을 원하시거나 기타 문의사항이 있으시면<br/>
-              아래 이메일로 연락 부탁드립니다.
+              {t('auth:contact.helpText')}
             </p>
           </div>
 
@@ -53,13 +53,13 @@ const Contact: React.FC = () => {
             gimyumin40@gmail.com
           </a>
 
-          <button 
+          <button
             type="button"
             onClick={() => navigate('/')}
             className="flex items-center justify-center gap-2 w-full py-3.5 text-gray-500 hover:text-gray-900 font-medium transition-colors"
           >
             <ArrowLeft size={18} />
-            <span>메인으로 돌아가기</span>
+            <span>{t('common:buttons.backToHome')}</span>
           </button>
 
         </div>

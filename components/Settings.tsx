@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { Key, Save, AlertCircle, RefreshCw, Eye, EyeOff } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { Key, Save, AlertCircle, RefreshCw, Eye, EyeOff, Globe } from 'lucide-react';
+import { LanguageSelector } from '@shared/ui';
 
 const Settings: React.FC = () => {
+  const { t } = useTranslation(['settings', 'common']);
   const [apiKey, setApiKey] = useState('************************');
   const [apiSecret, setApiSecret] = useState('************************************************');
   const [showSecret, setShowSecret] = useState(false);
@@ -9,12 +12,26 @@ const Settings: React.FC = () => {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('설정이 안전하게 저장되었습니다 (Mock).');
+    alert(t('settings:messages.saved'));
   };
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto animate-fade-in">
-      <h2 className="text-2xl font-bold text-toss-grey-900">설정</h2>
+      <h2 className="text-2xl font-bold text-toss-grey-900">{t('settings:title')}</h2>
+
+      {/* Language Settings Card */}
+      <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="bg-blue-50 p-2 rounded-xl">
+            <Globe className="w-6 h-6 text-toss-blue" />
+          </div>
+          <div>
+            <h3 className="text-lg font-bold text-toss-grey-900">{t('settings:language.title')}</h3>
+            <p className="text-sm text-toss-grey-500">{t('settings:language.description')}</p>
+          </div>
+        </div>
+        <LanguageSelector variant="buttons" size="lg" showIcon={false} />
+      </div>
 
       {/* Account Integration Card */}
       <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm">
@@ -23,14 +40,14 @@ const Settings: React.FC = () => {
             <Key className="w-6 h-6 text-toss-blue" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-toss-grey-900">KIS API 설정</h3>
-            <p className="text-sm text-toss-grey-500">한국투자증권 API 키를 관리합니다.</p>
+            <h3 className="text-lg font-bold text-toss-grey-900">{t('settings:kis.title')}</h3>
+            <p className="text-sm text-toss-grey-500">KIS API</p>
           </div>
         </div>
 
         <form onSubmit={handleSave} className="space-y-5">
           <div>
-            <label htmlFor="account-number" className="block text-sm font-medium text-toss-grey-700 mb-2">계좌번호</label>
+            <label htmlFor="account-number" className="block text-sm font-medium text-toss-grey-700 mb-2">{t('settings:kis.accountNumber')}</label>
             <input
               id="account-number"
               type="text"
@@ -87,13 +104,13 @@ const Settings: React.FC = () => {
               type="button"
               className="px-4 py-2.5 bg-white border border-toss-grey-200 text-toss-grey-700 hover:bg-toss-grey-50 hover:border-toss-grey-300 active:scale-[0.98] transition-all duration-200 text-sm font-medium flex items-center gap-2 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-toss-grey-300 focus:ring-offset-2 min-h-[44px]"
             >
-              <RefreshCw size={16} /> 연결 테스트
+              <RefreshCw size={16} /> {t('common:buttons.connectionTest')}
             </button>
             <button
               type="submit"
               className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-300/50 active:scale-[0.98] text-white rounded-xl font-medium transition-all duration-200 flex items-center gap-2 shadow-sm shadow-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-2 min-h-[44px]"
             >
-              <Save size={18} /> 변경사항 저장
+              <Save size={18} /> {t('common:buttons.saveChanges')}
             </button>
           </div>
         </form>
@@ -101,20 +118,21 @@ const Settings: React.FC = () => {
 
       {/* Preferences */}
       <div className="bg-white border border-toss-grey-100 rounded-3xl p-6 shadow-sm">
-        <h3 className="text-lg font-bold text-toss-grey-900 mb-4">화면 설정</h3>
+        <h3 className="text-lg font-bold text-toss-grey-900 mb-4">{t('settings:display.title')}</h3>
         <div className="flex items-center justify-between py-3 border-b border-toss-grey-100">
-          <label htmlFor="currency" className="text-toss-grey-700 font-medium">기본 통화</label>
+          <label htmlFor="currency" className="text-toss-grey-700 font-medium">{t('settings:display.currency')}</label>
           <select id="currency" className="bg-white border border-toss-grey-200 text-toss-grey-900 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/10 hover:border-toss-grey-300 transition-all duration-200 cursor-pointer">
             <option>USD ($)</option>
             <option>KRW (₩)</option>
+            <option>JPY (¥)</option>
           </select>
         </div>
         <div className="flex items-center justify-between py-3">
-          <label htmlFor="refresh-interval" className="text-toss-grey-700 font-medium">새로고침 주기</label>
+          <label htmlFor="refresh-interval" className="text-toss-grey-700 font-medium">{t('settings:display.refreshInterval')}</label>
            <select id="refresh-interval" className="bg-white border border-toss-grey-200 text-toss-grey-900 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-toss-blue focus:ring-2 focus:ring-toss-blue/10 hover:border-toss-grey-300 transition-all duration-200 cursor-pointer">
-            <option>실시간</option>
-            <option>1분</option>
-            <option>5분</option>
+            <option>{t('settings:display.intervals.realtime')}</option>
+            <option>{t('settings:display.intervals.1min')}</option>
+            <option>{t('settings:display.intervals.5min')}</option>
           </select>
         </div>
       </div>

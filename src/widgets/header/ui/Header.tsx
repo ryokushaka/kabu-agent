@@ -1,5 +1,6 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { User, Menu } from 'lucide-react';
 
 interface HeaderProps {
@@ -8,16 +9,16 @@ interface HeaderProps {
   userRole?: string;
 }
 
-const pageTitles: Record<string, string> = {
-  '/': '홈',
-  '/dashboard': '홈',
-  '/portfolio': '내 주식',
-  '/transactions': '거래 내역',
-  '/notifications': '알림',
-  '/rebalance': '리밸런싱',
-  '/analysis': '자산 분석',
-  '/settings': '설정',
-  '/admin': '관리자',
+const pageTitleKeys: Record<string, string> = {
+  '/': 'navigation.home',
+  '/dashboard': 'navigation.home',
+  '/portfolio': 'navigation.portfolio',
+  '/transactions': 'navigation.transactions',
+  '/notifications': 'navigation.notifications',
+  '/rebalance': 'navigation.rebalance',
+  '/analysis': 'navigation.analysis',
+  '/settings': 'navigation.settings',
+  '/admin': 'navigation.admin',
 };
 
 export const Header: React.FC<HeaderProps> = ({
@@ -26,9 +27,11 @@ export const Header: React.FC<HeaderProps> = ({
   userRole = 'Member'
 }) => {
   const location = useLocation();
+  const { t } = useTranslation('common');
 
   const getPageTitle = () => {
-    return pageTitles[location.pathname] || '홈';
+    const key = pageTitleKeys[location.pathname] || 'navigation.home';
+    return t(key);
   };
 
   return (

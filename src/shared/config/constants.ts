@@ -50,11 +50,13 @@ export const QUERY_KEYS = {
   },
 } as const;
 
+// Chart period values with translation keys
+// Use with t(`common:periods.${period.value}`) for labels
 export const CHART_PERIODS = [
-  { value: '1W', label: '1주' },
-  { value: '1M', label: '1개월' },
-  { value: '3M', label: '3개월' },
-  { value: '6M', label: '6개월' },
-  { value: '1Y', label: '1년' },
-  { value: 'ALL', label: '전체' },
+  { value: '1W', labelKey: 'periods.1W' },
+  { value: '1M', labelKey: 'periods.1M' },
+  { value: '3M', labelKey: 'periods.3M' },
+  { value: '6M', labelKey: 'periods.6M' },
+  { value: '1Y', labelKey: 'periods.1Y' },
+  { value: 'ALL', labelKey: 'periods.ALL' },
 ] as const;

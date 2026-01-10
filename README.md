@@ -43,7 +43,7 @@
 ### Frontend
 | 기술 | 버전 | 용도 |
 |-----|------|------|
-| React | 19 | UI 라이브러리 |
+| React | 19.2 | UI 라이브러리 |
 | TypeScript | 5.8 | 타입 안전성 |
 | Vite | 6.2 | 빌드 도구 |
 | TanStack Query | 5.x | 서버 상태 관리 |
@@ -51,21 +51,30 @@
 | TailwindCSS | 4.x | 스타일링 (Toss 디자인 시스템) |
 | Recharts | 3.5 | 차트 |
 | Lucide React | 0.554 | 아이콘 |
+| i18next | 25.x | 다국어 지원 (한/영/일) |
 
 ### Backend
 | 기술 | 버전 | 용도 |
 |-----|------|------|
-| FastAPI | - | 웹 프레임워크 |
+| FastAPI | 0.109 | 웹 프레임워크 |
 | Python | 3.11 | 런타임 |
 | PostgreSQL | 15 | 데이터베이스 |
 | Redis | 7 | 캐시 (토큰, 데이터) |
+| SQLAlchemy | 2.0 | ORM |
 | Google Gemini | Pro | AI 분석 |
 | KIS Open API | - | 증권 데이터 |
 
-### DevOps
-- Docker, Docker Compose
-- Nginx (Reverse Proxy, Brotli 압축)
-- GitHub Actions (CI/CD)
+### DevOps & Observability
+| 기술 | 용도 |
+|-----|------|
+| Docker, Docker Compose | 컨테이너화 |
+| Nginx | Reverse Proxy, Brotli 압축 |
+| GitHub Actions | CI/CD |
+| ArgoCD | GitOps 배포 |
+| Prometheus | 메트릭 수집 |
+| Grafana | 대시보드 |
+| OpenTelemetry | 분산 추적 |
+| Jaeger | 트레이싱 시각화 |
 
 ---
 
@@ -112,6 +121,18 @@ npm run dev
 # Backend
 pip install -r requirements.txt
 uvicorn src.main:app --reload
+```
+
+### 4. 테스트
+
+```bash
+# Frontend 테스트
+npm run test           # Watch 모드
+npm run test:run       # 단일 실행
+npm run test:coverage  # 커버리지 포함
+
+# Backend 테스트
+pytest
 ```
 
 ---
@@ -166,8 +187,10 @@ kabu-agent/
 │   └── kis_api.py            # KIS Open API 클라이언트
 │
 ├── docs/                     # 문서
+├── infra/                    # 인프라 설정 (Terraform 등)
 ├── init-db/                  # DB 초기화 스크립트
 ├── nginx/                    # Nginx 설정
+├── tests/                    # 테스트 코드
 └── docker-compose.yml        # Docker 구성
 ```
 

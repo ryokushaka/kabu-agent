@@ -1,5 +1,6 @@
 import React from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
   PieChart,
@@ -22,19 +23,20 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ onLogout, isAdmin, isOpen, onClose }) => {
   const location = useLocation();
+  const { t } = useTranslation('common');
 
   const navItems = [
-    { path: '/dashboard', label: '홈', icon: LayoutDashboard },
-    { path: '/portfolio', label: '내 주식', icon: PieChart },
-    { path: '/transactions', label: '거래 내역', icon: Receipt },
-    { path: '/notifications', label: '알림', icon: Bell },
-    { path: '/rebalance', label: '리밸런싱', icon: Scale },
-    { path: '/analysis', label: '자산 분석', icon: TrendingUp },
-    { path: '/settings', label: '설정', icon: Settings },
+    { path: '/dashboard', label: t('navigation.home'), icon: LayoutDashboard },
+    { path: '/portfolio', label: t('navigation.portfolio'), icon: PieChart },
+    { path: '/transactions', label: t('navigation.transactions'), icon: Receipt },
+    { path: '/notifications', label: t('navigation.notifications'), icon: Bell },
+    { path: '/rebalance', label: t('navigation.rebalance'), icon: Scale },
+    { path: '/analysis', label: t('navigation.analysis'), icon: TrendingUp },
+    { path: '/settings', label: t('navigation.settings'), icon: Settings },
   ];
 
   if (isAdmin) {
-    navItems.push({ path: '/admin', label: '관리자', icon: ShieldCheck });
+    navItems.push({ path: '/admin', label: t('navigation.admin'), icon: ShieldCheck });
   }
 
   return (
@@ -58,7 +60,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onLogout, isAdmin, isOpen, onC
             </div>
             <div>
               <h1 className="text-lg font-bold text-toss-grey-900 leading-tight">Kabu Agent</h1>
-              <p className="text-xs text-toss-grey-500 font-medium tracking-wider">안전하고 편리한 자산 관리</p>
+              <p className="text-xs text-toss-grey-500 font-medium tracking-wider">{t('app.tagline')}</p>
             </div>
           </div>
           {/* Mobile Close Button */}
@@ -99,7 +101,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ onLogout, isAdmin, isOpen, onC
             className="flex items-center gap-3 w-full px-4 py-3.5 text-toss-grey-500 hover:text-toss-red hover:bg-red-50 rounded-xl transition-colors"
           >
             <LogOut className="w-5 h-5" />
-            <span className="font-medium">로그아웃</span>
+            <span className="font-medium">{t('buttons.logout')}</span>
           </button>
         </div>
       </aside>

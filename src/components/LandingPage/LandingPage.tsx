@@ -33,7 +33,7 @@ const LandingPage: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
+    <div className="min-h-screen bg-toss-grey-50 font-sans text-toss-grey-900">
       <Header />
       <main>
         <Hero />

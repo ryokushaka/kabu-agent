@@ -15,7 +15,7 @@ export const LoginInput: React.FC<InputProps> = ({ label, type = "text", error, 
 
   return (
     <div className={`flex flex-col gap-1.5 w-full ${className || ''}`}>
-      <label className="text-sm font-semibold text-gray-700 ml-1">
+      <label className="text-sm font-semibold text-toss-grey-700 ml-1">
         {label}
       </label>
       <div className="relative group">
@@ -23,12 +23,12 @@ export const LoginInput: React.FC<InputProps> = ({ label, type = "text", error, 
           type={inputType}
           className={`
             w-full px-4 py-3.5 
-            bg-gray-50 border border-transparent 
-            rounded-2xl text-gray-900 placeholder-gray-400
+            bg-toss-grey-50 border border-transparent 
+            rounded-2xl text-toss-grey-900 placeholder-toss-grey-400
             transition-all duration-200 ease-in-out
-            focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10
+            focus:bg-white focus:border-toss-blue focus:ring-4 focus:ring-blue-500/10
             outline-none text-[15px]
-            ${error ? 'bg-red-50 border-red-500 focus:border-red-500 focus:ring-red-500/10' : 'hover:bg-gray-100'}
+            ${error ? 'bg-red-50 border-toss-red focus:border-toss-red focus:ring-red-500/10' : 'hover:bg-toss-grey-100'}
           `}
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}

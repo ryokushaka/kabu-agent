@@ -62,10 +62,10 @@ const MarketSummary: React.FC<MarketSummaryProps> = ({ indices, loading }) => {
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="bg-white rounded-3xl p-6 shadow-xl border border-slate-100 h-48 animate-pulse">
-                <div className="h-4 bg-slate-100 rounded w-20 mb-4"></div>
-                <div className="h-8 bg-slate-100 rounded w-32 mb-4"></div>
-                <div className="h-4 bg-slate-100 rounded w-24"></div>
+              <div key={i} className="bg-white rounded-3xl p-6 shadow-xl border border-toss-grey-100 h-48 animate-pulse">
+                <div className="h-4 bg-toss-grey-100 rounded w-20 mb-4"></div>
+                <div className="h-8 bg-toss-grey-100 rounded w-32 mb-4"></div>
+                <div className="h-4 bg-toss-grey-100 rounded w-24"></div>
               </div>
             ))}
           </div>
@@ -79,13 +79,13 @@ const MarketSummary: React.FC<MarketSummaryProps> = ({ indices, loading }) => {
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {displayIndices.map((index) => (
-            <div key={index.name} className="bg-white rounded-3xl p-6 shadow-xl border border-slate-100 hover:shadow-2xl transition-shadow duration-300 flex flex-col justify-between h-48 relative overflow-hidden group">
+            <div key={index.name} className="bg-white rounded-3xl p-6 shadow-xl border border-toss-grey-100 hover:shadow-2xl transition-shadow duration-300 flex flex-col justify-between h-48 relative overflow-hidden group">
               <div className="relative z-10">
-                <h3 className="text-slate-500 font-medium text-sm mb-1 uppercase tracking-wider">{index.name}</h3>
-                <div className="text-3xl font-black text-slate-900 tracking-tight mb-2">
+                <h3 className="text-toss-grey-500 font-medium text-sm mb-1 uppercase tracking-wider">{index.name}</h3>
+                <div className="text-3xl font-black text-toss-grey-900 tracking-tight mb-2">
                   {index.value}
                 </div>
-                <div className={`flex items-center gap-2 font-bold text-sm ${index.isPositive ? 'text-red-500' : 'text-blue-600'}`}>
+                <div className={`flex items-center gap-2 font-bold text-sm ${index.isPositive ? 'text-toss-red' : 'text-toss-blue'}`}>
                   <span>{index.change}</span>
                   <span>({index.changePercent})</span>
                 </div>
@@ -97,15 +97,15 @@ const MarketSummary: React.FC<MarketSummaryProps> = ({ indices, loading }) => {
                   <AreaChart data={index.chartData.map(val => ({ val }))}>
                     <defs>
                       <linearGradient id={`color${index.name}`} x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={index.isPositive ? '#ef4444' : '#2563eb'} stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor={index.isPositive ? '#ef4444' : '#2563eb'} stopOpacity={0}/>
+                        <stop offset="5%" stopColor={index.isPositive ? '#F04452' : '#3182F6'} stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor={index.isPositive ? '#F04452' : '#3182F6'} stopOpacity={0}/>
                       </linearGradient>
                     </defs>
                     <YAxis domain={['dataMin', 'dataMax']} hide />
                     <Area 
                       type="monotone" 
                       dataKey="val" 
-                      stroke={index.isPositive ? '#ef4444' : '#2563eb'} 
+                      stroke={index.isPositive ? '#F04452' : '#3182F6'} 
                       strokeWidth={3}
                       fillOpacity={1} 
                       fill={`url(#color${index.name})`} 

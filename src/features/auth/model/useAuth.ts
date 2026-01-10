@@ -26,7 +26,7 @@ export const useAuth = () => {
   const logout = () => {
     authApi.logout();
     queryClient.clear();
-    navigate('/login');
+    navigate('/');
   };
 
   const isAuthenticated = authApi.isAuthenticated();

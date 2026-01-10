@@ -1,5 +1,5 @@
 import React, { useState, Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
 import { Menu } from 'lucide-react';
 import { AuthProvider, useAuth } from './src/contexts/AuthContext';
@@ -26,8 +26,14 @@ const PageLoader: React.FC = () => (
 
 const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
+  };
 
   const getPageTitle = () => {
     switch (location.pathname) {
@@ -43,7 +49,7 @@ const AppLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className="min-h-screen bg-toss-grey-100 text-toss-grey-900 font-sans flex">
       <Sidebar 
-        onLogout={logout} 
+        onLogout={handleLogout} 
         isAdmin={user?.username === 'admin'} 
         isOpen={isSidebarOpen}
         onClose={() => setIsSidebarOpen(false)}

@@ -1,0 +1,65 @@
+{
+  "app": {
+    "name": "Kabu Agent",
+    "tagline": "安全で便利な資産管理"
+  },
+  "navigation": {
+    "home": "ホーム",
+    "dashboard": "ダッシュボード",
+    "portfolio": "マイ株式",
+    "transactions": "取引履歴",
+    "notifications": "通知",
+    "rebalance": "リバランス",
+    "analysis": "資産分析",
+    "settings": "設定",
+    "admin": "管理者"
+  },
+  "buttons": {
+    "submit": "送信",
+    "cancel": "キャンセル",
+    "save": "保存",
+    "close": "閉じる",
+    "retry": "再試行",
+    "back": "戻る",
+    "login": "ログイン",
+    "logout": "ログアウト",
+    "startFree": "無料で始める",
+    "markAllRead": "すべて既読",
+    "add": "追加",
+    "viewAll": "すべて表示",
+    "learnMore": "詳しく見る",
+    "backToHome": "ホームに戻る",
+    "connectionTest": "接続テスト",
+    "saveChanges": "変更を保存"
+  },
+  "labels": {
+    "loading": "読み込み中...",
+    "pageLoading": "ページを読み込み中...",
+    "noData": "データがありません",
+    "search": "検索",
+    "filter": "フィルター",
+    "all": "すべて",
+    "views": "閲覧"
+  },
+  "time": {
+    "justNow": "たった今",
+    "minutesAgo": "{{count}}分前",
+    "hoursAgo": "{{count}}時間前",
+    "daysAgo": "{{count}}日前"
+  },
+  "periods": {
+    "1W": "1週間",
+    "1M": "1ヶ月",
+    "3M": "3ヶ月",
+    "6M": "6ヶ月",
+    "1Y": "1年",
+    "ALL": "全期間"
+  },
+  "errors": {
+    "general": "エラーが発生しました",
+    "network": "ネットワークエラーが発生しました",
+    "notFound": "ページが見つかりません",
+    "unauthorized": "ログインが必要です",
+    "serverError": "サーバーエラーが発生しました。しばらくしてから再度お試しください。"
+  }
+}

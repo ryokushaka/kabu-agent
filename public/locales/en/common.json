@@ -1,0 +1,65 @@
+{
+  "app": {
+    "name": "Kabu Agent",
+    "tagline": "Safe and convenient asset management"
+  },
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "portfolio": "My Portfolio",
+    "transactions": "Transactions",
+    "notifications": "Notifications",
+    "rebalance": "Rebalancing",
+    "analysis": "Analysis",
+    "settings": "Settings",
+    "admin": "Admin"
+  },
+  "buttons": {
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "save": "Save",
+    "close": "Close",
+    "retry": "Retry",
+    "back": "Back",
+    "login": "Login",
+    "logout": "Logout",
+    "startFree": "Start Free",
+    "markAllRead": "Mark All Read",
+    "add": "Add",
+    "viewAll": "View All",
+    "learnMore": "Learn More",
+    "backToHome": "Back to Home",
+    "connectionTest": "Connection Test",
+    "saveChanges": "Save Changes"
+  },
+  "labels": {
+    "loading": "Loading...",
+    "pageLoading": "Loading page...",
+    "noData": "No data available",
+    "search": "Search",
+    "filter": "Filter",
+    "all": "All",
+    "views": "views"
+  },
+  "time": {
+    "justNow": "Just now",
+    "minutesAgo": "{{count}} minutes ago",
+    "hoursAgo": "{{count}} hours ago",
+    "daysAgo": "{{count}} days ago"
+  },
+  "periods": {
+    "1W": "1W",
+    "1M": "1M",
+    "3M": "3M",
+    "6M": "6M",
+    "1Y": "1Y",
+    "ALL": "All"
+  },
+  "errors": {
+    "general": "An error occurred",
+    "network": "A network error occurred",
+    "notFound": "Page not found",
+    "unauthorized": "Login required",
+    "serverError": "Server error occurred. Please try again later."
+  }
+}

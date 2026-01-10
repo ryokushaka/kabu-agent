@@ -25,6 +25,7 @@ import authKo from '../../../public/locales/ko/auth.json';
 import landingKo from '../../../public/locales/ko/landing.json';
 import glossaryKo from '../../../public/locales/ko/glossary.json';
 import settingsKo from '../../../public/locales/ko/settings.json';
+import nisaKo from '../../../public/locales/ko/nisa.json';
 
 import commonJa from '../../../public/locales/ja/common.json';
 import authJa from '../../../public/locales/ja/auth.json';
@@ -47,6 +48,7 @@ const resources = {
     landing: landingKo,
     glossary: glossaryKo,
     settings: settingsKo,
+    nisa: nisaKo,
   },
   ja: {
     common: commonJa,

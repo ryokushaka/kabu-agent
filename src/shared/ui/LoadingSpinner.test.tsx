@@ -1,6 +1,21 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { LoadingSpinner } from './LoadingSpinner';
+
+// Mock react-i18next
+vi.mock('react-i18next', () => ({
+  useTranslation: () => ({
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'labels.loading': 'Loading...',
+      };
+      return translations[key] || key;
+    },
+    i18n: {
+      language: 'en',
+    },
+  }),
+}));
 
 describe('LoadingSpinner', () => {
   it('renders with default message', () => {

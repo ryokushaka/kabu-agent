@@ -21,25 +21,32 @@
     }
   },
   "stockBasics": {
+    "badge": "Beginner's Guide",
     "title": "New to investing?",
-    "subtitle": "Start with the basics.",
+    "titleHighlight": "key terms",
+    "titleSuffix": "Start with the",
+    "subtitle": "Stock terminology can feel overwhelming. Kabu Agent explains it simply.",
     "viewGuide": "View Full Guide",
     "terms": {
       "stock": {
         "title": "Stock",
-        "description": "A security representing ownership in a company."
+        "subtitle": "Become a Company Owner",
+        "description": "A stock represents ownership in a company. As a shareholder, you share in the company's growth and profits."
       },
       "dividend": {
         "title": "Dividend",
-        "description": "A portion of profits paid by a company to its shareholders."
+        "subtitle": "Bonus-like Returns",
+        "description": "A portion of a company's earnings distributed to shareholders. It creates regular cash flow for investors."
       },
       "etf": {
         "title": "ETF",
-        "description": "A fund that bundles multiple assets and trades on an exchange."
+        "subtitle": "All-in-One Package",
+        "description": "A product containing multiple companies in one basket. Buy one for instant diversification and safety."
       },
       "per": {
         "title": "P/E Ratio",
-        "description": "Price divided by earnings per share, used for company valuation."
+        "subtitle": "Price Fairness Check",
+        "description": "Shows whether a stock price is cheap or expensive relative to earnings. Lower often means undervalued."
       }
     }
   },
@@ -48,8 +55,12 @@
     "updated": "Updated"
   },
   "news": {
-    "title": "Latest News",
-    "readMore": "Read More"
+    "title": "Today's Key Market News",
+    "subtitle": "Market trends analyzed in real-time by Kabu Agent AI.",
+    "aiReport": "AI Summary Report",
+    "readMore": "View More News",
+    "noNews": "Unable to load news.",
+    "source": "Source"
   },
   "footer": {
     "copyright": "© 2024 Kabu Agent. All rights reserved.",

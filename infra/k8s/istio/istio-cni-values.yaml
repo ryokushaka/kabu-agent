@@ -1,0 +1,46 @@
+# =============================================================================
+# Istio CNI Helm Values
+# =============================================================================
+# Required for Istio Ambient Mode - handles traffic redirection at CNI level
+#
+# Install: helm upgrade --install istio-cni istio/cni \
+#          --namespace istio-system --values istio-cni-values.yaml
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# CNI Plugin Configuration
+# -----------------------------------------------------------------------------
+cni:
+  # Resource limits
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
+
+  # CNI binary and config paths (K3s defaults)
+  cniBinDir: /opt/cni/bin
+  cniConfDir: /etc/cni/net.d
+
+  # Enable ambient mode
+  ambient:
+    enabled: true
+
+  # Logging
+  logLevel: warn
+
+  # Repair settings
+  repair:
+    enabled: true
+    hub: ""
+    tag: ""
+
+# -----------------------------------------------------------------------------
+# Global Settings
+# -----------------------------------------------------------------------------
+global:
+  # Log level
+  logging:
+    level: "default:warn"

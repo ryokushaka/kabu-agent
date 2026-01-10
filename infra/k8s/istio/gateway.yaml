@@ -1,0 +1,127 @@
+# =============================================================================
+# Istio Gateway Configuration
+# =============================================================================
+# Gateway API resources for routing external traffic to services
+# Option A: Use Istio Gateway (replaces Traefik for full mesh features)
+# Option B: Keep Traefik with Istio for internal mesh only
+# -----------------------------------------------------------------------------
+
+---
+# -----------------------------------------------------------------------------
+# Gateway: Main entry point for external traffic
+# -----------------------------------------------------------------------------
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: kabu-gateway
+  namespace: kabu-agent
+  annotations:
+    # Auto-provision TLS certificate
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  gatewayClassName: istio
+  listeners:
+    # HTTP listener (redirects to HTTPS)
+    - name: http
+      port: 80
+      protocol: HTTP
+      allowedRoutes:
+        namespaces:
+          from: Same
+
+    # HTTPS listener
+    - name: https
+      port: 443
+      protocol: HTTPS
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - name: kabu-tls-secret
+            kind: Secret
+      allowedRoutes:
+        namespaces:
+          from: Same
+
+---
+# -----------------------------------------------------------------------------
+# HTTPRoute: API routes to backend
+# -----------------------------------------------------------------------------
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kabu-api-routes
+  namespace: kabu-agent
+spec:
+  parentRefs:
+    - name: kabu-gateway
+      sectionName: https
+  hostnames:
+    - "api.${DOMAIN_NAME}"
+  rules:
+    # API routes to backend
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /api
+      backendRefs:
+        - name: kabu-backend
+          port: 8000
+      # Retry policy
+      timeouts:
+        request: 30s
+        backendRequest: 25s
+
+    # Health check endpoint
+    - matches:
+        - path:
+            type: Exact
+            value: /health
+      backendRefs:
+        - name: kabu-backend
+          port: 8000
+
+---
+# -----------------------------------------------------------------------------
+# HTTPRoute: Frontend routes
+# -----------------------------------------------------------------------------
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: kabu-frontend-routes
+  namespace: kabu-agent
+spec:
+  parentRefs:
+    - name: kabu-gateway
+      sectionName: https
+  hostnames:
+    - "${DOMAIN_NAME}"
+    - "www.${DOMAIN_NAME}"
+  rules:
+    # All other traffic to frontend
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /
+      backendRefs:
+        - name: kabu-frontend
+          port: 80
+
+---
+# -----------------------------------------------------------------------------
+# HTTPRoute: HTTP to HTTPS redirect
+# -----------------------------------------------------------------------------
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: http-redirect
+  namespace: kabu-agent
+spec:
+  parentRefs:
+    - name: kabu-gateway
+      sectionName: http
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301

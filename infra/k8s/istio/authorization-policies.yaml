@@ -1,0 +1,153 @@
+# =============================================================================
+# Istio Authorization Policies
+# =============================================================================
+# Zero-trust security model: deny all by default, then allow specific paths
+# -----------------------------------------------------------------------------
+
+---
+# -----------------------------------------------------------------------------
+# Deny-All Default Policy
+# -----------------------------------------------------------------------------
+# Uncomment to enable strict deny-all policy
+# Note: Enable this only after verifying all allow policies work correctly
+# ---
+# apiVersion: security.istio.io/v1beta1
+# kind: AuthorizationPolicy
+# metadata:
+#   name: deny-all
+#   namespace: kabu-agent
+# spec:
+#   {}
+
+---
+# -----------------------------------------------------------------------------
+# Allow: Ingress Gateway to Services
+# -----------------------------------------------------------------------------
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-ingress-gateway
+  namespace: kabu-agent
+spec:
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces: ["istio-system"]
+      to:
+        - operation:
+            methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+
+---
+# -----------------------------------------------------------------------------
+# Allow: Frontend to Backend API
+# -----------------------------------------------------------------------------
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-frontend-to-backend
+  namespace: kabu-agent
+spec:
+  selector:
+    matchLabels:
+      app: kabu-backend
+  action: ALLOW
+  rules:
+    # Allow from frontend service
+    - from:
+        - source:
+            principals: ["cluster.local/ns/kabu-agent/sa/kabu-frontend"]
+      to:
+        - operation:
+            paths: ["/api/*", "/health", "/metrics"]
+            methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+
+    # Allow from ingress gateway
+    - from:
+        - source:
+            namespaces: ["istio-system"]
+      to:
+        - operation:
+            paths: ["/api/*", "/health"]
+            methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"]
+
+---
+# -----------------------------------------------------------------------------
+# Allow: Backend to PostgreSQL
+# -----------------------------------------------------------------------------
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-backend-to-postgres
+  namespace: kabu-agent
+spec:
+  selector:
+    matchLabels:
+      app: kabu-postgres
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals: ["cluster.local/ns/kabu-agent/sa/kabu-backend"]
+      to:
+        - operation:
+            ports: ["5432"]
+
+---
+# -----------------------------------------------------------------------------
+# Allow: Backend to Redis
+# -----------------------------------------------------------------------------
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-backend-to-redis
+  namespace: kabu-agent
+spec:
+  selector:
+    matchLabels:
+      app: kabu-redis
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            principals: ["cluster.local/ns/kabu-agent/sa/kabu-backend"]
+      to:
+        - operation:
+            ports: ["6379"]
+
+---
+# -----------------------------------------------------------------------------
+# Allow: Prometheus to scrape metrics
+# -----------------------------------------------------------------------------
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-prometheus-scrape
+  namespace: kabu-agent
+spec:
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces: ["monitoring"]
+      to:
+        - operation:
+            paths: ["/metrics", "/health"]
+            methods: ["GET"]
+
+---
+# -----------------------------------------------------------------------------
+# Allow: Kiali to access mesh data
+# -----------------------------------------------------------------------------
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-kiali
+  namespace: kabu-agent
+spec:
+  action: ALLOW
+  rules:
+    - from:
+        - source:
+            namespaces: ["istio-system"]
+            principals: ["cluster.local/ns/istio-system/sa/kiali"]

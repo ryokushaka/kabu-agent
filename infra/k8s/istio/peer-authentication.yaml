@@ -1,0 +1,45 @@
+# =============================================================================
+# Istio Peer Authentication (mTLS)
+# =============================================================================
+# Configures mutual TLS between services in the mesh
+# Ambient mode automatically provides mTLS, this makes it STRICT
+# -----------------------------------------------------------------------------
+
+---
+# -----------------------------------------------------------------------------
+# Mesh-wide mTLS Policy (istio-system namespace)
+# -----------------------------------------------------------------------------
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: istio-system
+spec:
+  mtls:
+    mode: STRICT
+
+---
+# -----------------------------------------------------------------------------
+# Application Namespace mTLS Policy
+# -----------------------------------------------------------------------------
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: kabu-agent
+spec:
+  mtls:
+    mode: STRICT
+
+---
+# -----------------------------------------------------------------------------
+# Monitoring Namespace mTLS Policy
+# -----------------------------------------------------------------------------
+apiVersion: security.istio.io/v1beta1
+kind: PeerAuthentication
+metadata:
+  name: default
+  namespace: monitoring
+spec:
+  mtls:
+    mode: STRICT

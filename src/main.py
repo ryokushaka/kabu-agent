@@ -3,18 +3,23 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from datetime import timedelta
 from typing import List
+import os
 
 from src.api import auth_routes, portfolio_routes, analysis_routes, ai_routes, exchange_routes, export_routes
 from src.models import User, PortfolioSummary, MarketNews
 from src.kis_api import kis_client
 from src.utils import setup_logging, setup_project_path
 from src.auth.dependencies import get_current_active_user
+from src.telemetry import setup_telemetry, shutdown_telemetry
 
 # Setup logging and path
 setup_project_path()
 setup_logging()
 
 app = FastAPI(title="Overseas Stock Portfolio Management System")
+
+# Setup OpenTelemetry (if enabled via OTEL_ENABLED=true)
+setup_telemetry(app)
 
 # CORS configuration
 origins = [
@@ -44,6 +49,22 @@ async def startup_event():
     print("Registered Routes:")
     for route in app.routes:
         print(f"Path: {route.path} | Name: {route.name} | Methods: {route.methods}")
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Cleanup on application shutdown."""
+    shutdown_telemetry()
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for Kubernetes probes."""
+    return {
+        "status": "healthy",
+        "service": "kabu-backend",
+        "version": os.getenv("SERVICE_VERSION", "1.0.0")
+    }
 
 @app.get("/users/me", response_model=User)
 async def read_users_me(current_user: User = Depends(get_current_active_user)):

@@ -1,0 +1,95 @@
+# =============================================================================
+# Istiod Helm Values
+# =============================================================================
+# Minimal Istiod configuration for ARM64 single-node K3s with 4GB RAM
+# Uses Ambient Mode for 90% resource reduction vs sidecar mode
+#
+# Install: helm upgrade --install istiod istio/istiod \
+#          --namespace istio-system --values istiod-values.yaml
+# -----------------------------------------------------------------------------
+
+# -----------------------------------------------------------------------------
+# Global Settings
+# -----------------------------------------------------------------------------
+global:
+  # Enable Istio Ambient Mode
+  proxy:
+    resources:
+      requests:
+        cpu: 10m
+        memory: 32Mi
+      limits:
+        cpu: 100m
+        memory: 64Mi
+
+  # Logging configuration
+  logging:
+    level: "default:warn"
+
+  # Use K3s default gateway API
+  defaultPodDisruptionBudget:
+    enabled: false
+
+# -----------------------------------------------------------------------------
+# Pilot (Istiod) Configuration
+# -----------------------------------------------------------------------------
+pilot:
+  # Ambient mode enablement
+  env:
+    PILOT_ENABLE_AMBIENT: "true"
+    # Performance optimizations
+    PILOT_ENABLE_WORKLOAD_ENTRY_AUTOREGISTRATION: "false"
+    PILOT_ENABLE_WORKLOAD_ENTRY_HEALTHCHECKS: "false"
+
+  # Resource limits for 4GB RAM environment
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+  # Disable autoscaling for single-node
+  autoscaleEnabled: false
+  replicaCount: 1
+
+  # Pod disruption budget
+  podDisruptionBudget:
+    enabled: false
+
+  # Tracing configuration (for Jaeger integration in Phase 3)
+  traceSampling: 10.0
+
+# -----------------------------------------------------------------------------
+# Profile Settings
+# -----------------------------------------------------------------------------
+# Using ambient profile for minimal resource usage
+profile: ambient
+
+# -----------------------------------------------------------------------------
+# Telemetry Configuration
+# -----------------------------------------------------------------------------
+# Disable Telemetry V2 to reduce overhead (will use OpenTelemetry instead)
+telemetry:
+  enabled: false
+
+meshConfig:
+  # Enable access logging for observability
+  accessLogFile: /dev/stdout
+  accessLogEncoding: JSON
+
+  # Default proxy settings
+  defaultConfig:
+    # Reduce trace sampling for resource efficiency
+    tracing:
+      sampling: 10
+
+  # Enable ambient mode mesh-wide
+  enablePrometheusMerge: true
+
+# -----------------------------------------------------------------------------
+# Service Configuration
+# -----------------------------------------------------------------------------
+service:
+  type: ClusterIP

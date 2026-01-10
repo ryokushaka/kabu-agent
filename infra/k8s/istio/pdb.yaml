@@ -1,0 +1,42 @@
+# =============================================================================
+# PodDisruptionBudgets for Istio Components
+# =============================================================================
+# Protects service mesh control plane during maintenance
+# -----------------------------------------------------------------------------
+
+---
+# =============================================================================
+# Istiod PDB
+# =============================================================================
+# Istiod is the control plane - critical for mesh operation
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: istiod-pdb
+  namespace: istio-system
+  labels:
+    app: istiod
+spec:
+  # Istiod is critical - block all evictions
+  maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: istiod
+
+---
+# =============================================================================
+# Kiali PDB
+# =============================================================================
+# Kiali provides mesh visualization - can tolerate brief downtime
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: kiali-pdb
+  namespace: istio-system
+  labels:
+    app: kiali
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: kiali

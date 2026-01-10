@@ -1,0 +1,14 @@
+# =============================================================================
+# Monitoring Namespace
+# =============================================================================
+# Creates the monitoring namespace with labels for future Istio ambient mode
+# -----------------------------------------------------------------------------
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    name: monitoring
+    # Prepared for Istio Ambient Mode (Phase 2)
+    istio.io/dataplane-mode: ambient

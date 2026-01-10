@@ -1,0 +1,42 @@
+# =============================================================================
+# PodDisruptionBudgets for Tracing Stack
+# =============================================================================
+# Ensures service continuity during maintenance operations
+# -----------------------------------------------------------------------------
+
+---
+# =============================================================================
+# Jaeger PDB
+# =============================================================================
+# Jaeger handles distributed tracing - protects trace collection
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: jaeger-pdb
+  namespace: monitoring
+  labels:
+    app: jaeger
+spec:
+  # Jaeger in-memory can lose data on restart, protect during maintenance
+  maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: jaeger
+
+---
+# =============================================================================
+# OpenTelemetry Collector PDB
+# =============================================================================
+# OTel Collector is the ingestion point for all traces
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: otel-collector-pdb
+  namespace: monitoring
+  labels:
+    app: otel-collector
+spec:
+  maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: otel-collector
